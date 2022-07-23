@@ -18,7 +18,7 @@ class CreateUsersTable extends Migration
             $table->string('nama');
             $table->integer('overall');
             $table->string('email')->unique();
-            $table->string('role');
+            $table->string('rank');
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->rememberToken();
