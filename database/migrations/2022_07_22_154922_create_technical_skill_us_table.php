@@ -15,8 +15,8 @@ class CreateTechnicalSkillUsTable extends Migration
     {
         Schema::create('technical_skill_us', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id');
-            $table->foreignId('technical_skill_id');
+            $table->foreignId('user_id')->constrained('users');
+            $table->foreignId('technical_skill_id')->constrained('technical_skills');
             $table->integer('technical_skill_skor');
             $table->timestamps();
         });

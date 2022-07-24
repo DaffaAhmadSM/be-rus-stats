@@ -16,7 +16,7 @@ class CreateSpecialitiesTable extends Migration
         Schema::create('specialities', function (Blueprint $table) {
             $table->id();
             $table->string('nama');
-            $table->foreignId('divisi_id');
+            $table->foreignId('divisi_id')->constrained('divisis');
             $table->timestamps();
         });
     }

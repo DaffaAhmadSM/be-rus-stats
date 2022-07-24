@@ -16,7 +16,7 @@ class CreateDivisisTable extends Migration
         Schema::create('divisis', function (Blueprint $table) {
             $table->id();
             $table->string('nama');
-            $table->foreignId('department_id');
+            $table->foreignId('department_id')->constrained('departments');
             $table->timestamps();
         });
     }
