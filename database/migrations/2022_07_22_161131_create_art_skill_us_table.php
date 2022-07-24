@@ -15,8 +15,8 @@ class CreateArtSkillUsTable extends Migration
     {
         Schema::create('art_skill_us', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id');
-            $table->foreignId('art_skill_id');
+            $table->foreignId('user_id')->constrained('users');
+            $table->foreignId('art_skill_id')->constrained('art_skills');
             $table->integer('art_skill_skor');
             $table->timestamps();
         });

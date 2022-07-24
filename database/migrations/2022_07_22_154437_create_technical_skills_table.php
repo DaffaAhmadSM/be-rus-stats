@@ -16,7 +16,7 @@ class CreateTechnicalSkillsTable extends Migration
         Schema::create('technical_skills', function (Blueprint $table) {
             $table->id();
             $table->string('nama');
-            $table->foreignId('divisi_id');
+            $table->foreignId('divisi_id')->constrained('divisis');
             $table->timestamps();
         });
     }

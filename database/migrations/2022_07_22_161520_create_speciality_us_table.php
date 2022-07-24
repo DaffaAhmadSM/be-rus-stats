@@ -15,8 +15,8 @@ class CreateSpecialityUsTable extends Migration
     {
         Schema::create('speciality_us', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id');
-            $table->foreignId('specility_id');
+            $table->foreignId('user_id')->constrained('users');
+            $table->foreignId('specility_id')->constrained('specialities');
             $table->integer('specility_skor');
             $table->timestamps();
         });
