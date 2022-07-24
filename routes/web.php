@@ -14,5 +14,9 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-    return view('welcome');
-});
+    return response()
+        ->json([
+            'message' => 'Authentication Failed',
+            'status'  => 'error'
+        ], 403);
+})->name("login");
