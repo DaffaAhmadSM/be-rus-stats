@@ -14,7 +14,7 @@ class LoginController extends Controller
     public function login(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'name' => 'required',
+            'nama' => 'required',
             'password' => 'required',
         ]);
         
@@ -22,7 +22,7 @@ class LoginController extends Controller
             return response()->json(["Error" =>$validator->errors()->first()]);
         }
         
-        $user = User::where('name', $request['name'])->first();
+        $user = User::where('nama', $request['nama'])->first();
 
         if($user){
 

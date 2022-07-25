@@ -5,6 +5,7 @@ use Illuminate\Http\Request;
 use Spatie\Permission\Models\Role;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LoginController;
+use App\Http\Controllers\SiswaController;
 use Illuminate\Auth\Events\Login;
 
 /*
@@ -18,8 +19,22 @@ use Illuminate\Auth\Events\Login;
 |
 */
 
+// Route::get('/set', function () {
+//     Role::create(['name' => 'supervisor']);
+//     Role::create(['name' => 'mentor']);
+//     Role::create(['name' => 'student']);
+
+//     User::find(3)->assignRole('mentor');
+// });
+
 Route::post('/login', [LoginController::class, 'login']);
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
+Route::group(['middleware' => ['auth:sanctum']], function () {
+    Route::group(['middleware' => ['role:student|supervisor|mentor'], "prefix" => "/student"], function(){
+        Route::get('user/{id}', [SiswaController::class, 'show']);
+    });
+    // Route::group(['middleware' => ['role:Student|Supervisor|Mentor'], "prefix" => "/Supervisor"], function(){
+    //     Route::get('user', [SiswaController::class, 'show']);
+    // });
+
 });
