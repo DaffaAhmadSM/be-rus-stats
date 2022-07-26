@@ -5,14 +5,15 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class speciality extends Model
+class TechnicalSkill extends Model
 {
     use HasFactory;
+    protected $table = "technical_skills";
     public function user()
     {
         return $this->belongsToMany(User::class);
     }
-    Public function SpecialityU(){
-        return $this->hasMany(SpecialityU::class, "speciality_id","id");
+    Public function TechnicalSkillUs(){
+        return $this->hasMany(TechnicalSkillUs::class, "technical_skill_id","id");
     }
 }

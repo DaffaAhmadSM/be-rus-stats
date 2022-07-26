@@ -12,4 +12,9 @@ class divisi extends Model
     {
         return $this->hasMany(technical_skill::class, 'divisi_id', 'id');
     }
+
+    public function user()
+    {
+        return $this->hasMany(User::class, 'divisi_id', 'id');
+    }
 }

@@ -27,6 +27,9 @@ class User extends Authenticatable
     protected $hidden = [
         'password',
         'remember_token',
+        'created_at',
+        'updated_at',
+        'roles'
     ];
 
     /**
@@ -52,5 +55,8 @@ class User extends Authenticatable
     public function userHistory()
     {
         return $this->hasMany(user_detail_history::class);
+    }
+    public function divisi(){
+        return $this->belongsTo(divisi::class);
     }
 }
