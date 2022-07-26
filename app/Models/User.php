@@ -40,6 +40,14 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+    protected $appends = ['link'];
+    public function getLinkAttribute()
+    {
+        // $this->roles();
+        if ($this->hasRole('student')) {
+            return  '/student/user/' . $this->id;
+        }
+    }
     public function technical_skill()
     {
         return $this->belongsToMany(technical_skill::class);
@@ -56,7 +64,20 @@ class User extends Authenticatable
     {
         return $this->hasMany(user_detail_history::class);
     }
-    public function divisi(){
+    public function divisi()
+    {
         return $this->belongsTo(divisi::class);
+    }
+    public function techskilu()
+    {
+        return $this->hasMany(TechnicalSkillUs::class);
+    }
+    public function artskilu()
+    {
+        return $this->hasMany(ArtSkillU::class);
+    }
+    public function specskilu()
+    {
+        return $this->hasMany(SpecialityU::class);
     }
 }
