@@ -80,4 +80,16 @@ class User extends Authenticatable
     {
         return $this->hasMany(SpecialityU::class);
     }
+    public function TechHistory()
+    {
+        return $this->hasMany(Technical_Skill_u_history::class);
+    }
+    public function ArtHistory()
+    {
+        return $this->hasMany(Art_Skill_u_history::class);
+    }
+    public function SpesialyHistory()
+    {
+        return $this->hasMany(Speciality_u_history::class);
+    }
 }
