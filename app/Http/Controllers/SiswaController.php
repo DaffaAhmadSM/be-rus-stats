@@ -66,7 +66,9 @@ class SiswaController extends Controller
                     "nama" => $each->TechnicalSkill->nama,
                     "skor" => $each->technical_skill_skor
                 ];
+                $user_technical_skill_skor [] = $each->technical_skill_skor;
             }
+            $user_technical_skill_average = array_sum($user_technical_skill_skor)/count($user_technical_skill_skor);
 
             foreach ($user_speciality_u as $each) {
                 $user_speciality_u_each[] = [
@@ -78,10 +80,27 @@ class SiswaController extends Controller
                     "nama" => $each->ArtSkill->nama,
                     "skor" => $each->art_skill_skor
                 ];
+                $user_art_skill_skor [] = $each->art_skill_skor;
             }
-
+            $user_art_skill_average = array_sum($user_art_skill_skor)/count($user_art_skill_skor);  
             
             // dd($user_technical_skill);
+            $user_mental = $user_detail->mental->toArray();
+            $user_mental_average = array_sum(array_values($user_mental))/count($user_mental);
+            
+            $user_speed = $user_detail->speed->toArray();
+            $user_speed_average = array_sum(array_values($user_speed))/count($user_speed);
+
+            
+            $user_physical = $user_detail->physical->toArray();
+            $user_physical_average = array_sum(array_values($user_physical))/count($user_physical);
+
+            
+            $user_management = $user_detail->management->toArray();
+            $user_management_average = array_sum(array_values($user_management))/count($user_management);
+
+            $user_all = array_merge($user_technical_skill_skor,$user_art_skill_skor,array_values($user_mental),array_values($user_speed),array_values($user_physical),array_values($user_management));
+            $user_average = array_sum($user_all)/count($user_all);
             if ($user_detail_history){
 
                 return response()->json([
@@ -89,37 +108,47 @@ class SiswaController extends Controller
                     "nama" => $user->nama,
                     "Age" => date_diff(date_create($user->tanggal_lahir), date_create(date("Y-m-d")))->y,
                     "Email" => $user->email,
-                    "Divisi" => $user->divisi->nama,
+                    "Devision" => $user->divisi->nama,
+                    "Overall" => $user_average,
+                    "Speciality" => $user_speciality_u_each,
                     "user_detail" => [
                         "Mental" => $user_detail->mental,
                         "Physical" => $user_detail->physical,
                         "Speed" => $user_detail->speed,
                         "Management" => $user_detail->management,
                         "Technical_skill" => $user_technical_skill_u_each,
-                        "Speciality" => $user_speciality_u_each,
                         "Art_skill" => $user_art_skill_u_e
                     ],
-                "user_detail_history" => [
-                    "Mental" => $user_detail_history->mental,
-                    "Physical" => $user_detail_history->physical,
-                    "Speed" => $user_detail_history->speed,
-                    "Management" => $user_detail_history->management
-                ]
-            ], 200);
+                    "user_detail_history" => [
+                        "Mental" => $user_detail_history->mental,
+                        "Physical" => $user_detail_history->physical,
+                        "Speed" => $user_detail_history->speed,
+                        "Management" => $user_detail_history->management
+                    ],
+                    "radar_chart" => [
+                        "Technical_skill_average" => $user_technical_skill_average,
+                        "Art_skill_average" => $user_art_skill_average,
+                        "Mental_average" => $user_mental_average,
+                        "Physical_average" => $user_physical_average,
+                        "Management_average" => $user_management_average,
+                        "Speed_average" => $user_speed_average
+                    ]
+                ], 200);
         }else{
             return response()->json([
                 "Message" => "Success",
                 "nama" => $user->nama,
                 "Age" => date_diff(date_create($user->tanggal_lahir), date_create(date("Y-m-d")))->y,
                 "Email" => $user->email,
-                "Divisi" => $user->divisi->nama,
+                "Devision" => $user->divisi->nama,
+                "Overall" => $user_average,
+                "Speciality" => $user_speciality_u_each,
             "user_detail" => [
                 "Mental" => $user_detail->mental,
                 "Physical" => $user_detail->physical,
                 "Speed" => $user_detail->speed,
                 "Management" => $user_detail->management,
                 "Technical_skill" => $user_technical_skill_u_each,
-                "Speciality" => $user_speciality_u_each,
                 "Art_skill" => $user_art_skill_u_e
             ],
             "user_detail_history" => [
@@ -127,6 +156,14 @@ class SiswaController extends Controller
                 "Physical" => null,
                 "Speed" => null,
                 "Management" => null
+            ],
+            "radar_chart" => [
+                "Technical_skill_average" => $user_technical_skill_average,
+                "Art_skill_average" => $user_art_skill_average,
+                "Mental_average" => $user_mental_average,
+                "Physical_average" => $user_physical_average,
+                "Management_average" => $user_management_average,
+                "Speed_average" => $user_speed_average
             ]
         ], 200);
 

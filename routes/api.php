@@ -31,13 +31,16 @@ use Illuminate\Auth\Events\Login;
 Route::post('/login', [LoginController::class, 'login']);
 
 Route::group(['middleware' => ['auth:sanctum']], function () {
-    Route::group(['middleware' => ['role:student|supervisor|mentor'], "prefix" => "/student"], function () {
-        Route::get('user/{id}', [SiswaController::class, 'show']);
+    Route::get("search", function() {
+        
     });
-    Route::group(['middleware' => ['role:student|supervisor|mentor'], "prefix" => "/mentor"], function () {
+    Route::group(['middleware' => ['role:student|supervisor|mentor'], "prefix" => "/student"], function () {
+        Route::get('user', [SiswaController::class, 'show']);
+    });
+    Route::group(['middleware' => ['role:supervisor|mentor'], "prefix" => "/mentor"], function () {
         Route::get('user', [MentorController::class, 'mentorData']);
     });
-    Route::group(['middleware' => ['role:student|supervisor|mentor'], "prefix" => "/supervisor"], function () {
+    Route::group(['middleware' => ['role:supervisor'], "prefix" => "/supervisor"], function () {
         Route::get('user', [MentorController::class, 'MentorData']);
     });
 });

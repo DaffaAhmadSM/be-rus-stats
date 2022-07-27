@@ -9,15 +9,15 @@ use Illuminate\Support\Facades\Http;
 
 class MentorController extends Controller
 {
-    public function mentorData($id)
+    public function mentorData()
     {
-        $data = User::find($id);
+        $data = User::find(Auth::id());
         $login = Auth::user();
         if ($data) {
             if ($login->hasRole('supervisor')) {
-                return response([
+                return response()->json([
                     'Message' => 'Maaf Posisi Anda Sebagai Mentor!'
-                ])->json();
+                ]);
             }
             if ($login->hasRole('mentor')) {
                 $dataStudent = User::all()->hasRole('student');
@@ -26,7 +26,7 @@ class MentorController extends Controller
                     'student' => $dataStudent,
                     'link' => '/mentor/user/' . $data['id']
                 ];
-                return response($response)->json();
+                return $re;
             }
         }
     }
