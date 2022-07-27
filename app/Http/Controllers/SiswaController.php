@@ -2,11 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Art_Skill_u_history;
 use App\Models\User;
 use App\Models\mental;
 use App\Models\ArtSkillU;
+use App\Models\speciality;
+use App\Models\Speciality_u_history;
 use App\Models\UserDetail;
 use App\Models\SpecialityU;
+use App\Models\Technical_Skill_u_history;
 use Illuminate\Http\Request;
 use App\Models\TechnicalSkill;
 use App\Models\TechnicalSkillUs;
@@ -170,8 +174,8 @@ class SiswaController extends Controller
         }
     }
 
-        /**
-         * Show the form for editing the specified resource.
+    /**
+     * Show the form for editing the specified resource.
      *
      * @param  int  $id
      * @return \Illuminate\Http\Response

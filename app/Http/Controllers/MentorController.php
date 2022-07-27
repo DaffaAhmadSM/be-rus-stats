@@ -15,18 +15,23 @@ class MentorController extends Controller
         $login = Auth::user();
         if ($data) {
             if ($login->hasRole('supervisor')) {
-                return response()->json([
-                    'Message' => 'Maaf Posisi Anda Sebagai Mentor!'
-                ]);
+                $allData = User::all();
+                $reponse = [
+                    'user' => $login,
+                    'mentor' => $allData->hasRole('mentor'),
+                    'student' => $allData->hasRole('student')
+                ];
             }
             if ($login->hasRole('mentor')) {
-                $dataStudent = User::all()->hasRole('student');
-                $response = [
-                    'user' => $data,
-                    'student' => $dataStudent,
-                    'link' => '/mentor/user/' . $data['id']
-                ];
-                return $re;
+                $dataStudent = User::role('student')->get();
+                foreach ($dataStudent as $dat) {
+
+                    $response = [
+                        'user' => $data,
+                        'student' => $dataStudent
+                    ];
+                    return response()->json($response);
+                }
             }
         }
     }

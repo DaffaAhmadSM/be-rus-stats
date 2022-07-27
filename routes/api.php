@@ -21,11 +21,11 @@ use Illuminate\Auth\Events\Login;
 */
 
 // Route::get('/set', function () {
-//     Role::create(['name' => 'supervisor']);
-//     Role::create(['name' => 'mentor']);
-//     Role::create(['name' => 'student']);
+//     // Role::create(['name' => 'supervisor']);
+//     // Role::create(['name' => 'mentor']);
+//     // Role::create(['name' => 'student']);
 
-//     User::find(3)->assignRole('mentor');
+//     User::find(6)->assignRole('student');
 // });
 
 Route::post('/login', [LoginController::class, 'login']);
