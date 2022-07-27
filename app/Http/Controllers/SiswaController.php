@@ -2,11 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Art_Skill_u_history;
 use App\Models\User;
 use App\Models\mental;
 use App\Models\ArtSkillU;
+use App\Models\speciality;
+use App\Models\Speciality_u_history;
 use App\Models\UserDetail;
 use App\Models\SpecialityU;
+use App\Models\Technical_Skill_u_history;
 use Illuminate\Http\Request;
 use App\Models\TechnicalSkill;
 use App\Models\TechnicalSkillUs;
@@ -61,7 +65,34 @@ class SiswaController extends Controller
         $user_technical_skill_u = TechnicalSkillUs::where('user_id', Auth::id())->get();
         $user_speciality_u = SpecialityU::where('user_id', Auth::id())->get();
         $user_art_skill_u = ArtSkillU::where('user_id', Auth::id())->get();
+        // $techhistory = $user->TechHistory ? $user->TechHistory : ' Maaf User Belum Memiliki History';
+        // $arthistory = $user->ArtHistory ? $user->ArtHistory : ' Maaf User Belum Memiliki History';
+        // $spesialhistory = $user->SpesialyHistory ? $user->SpesialyHistory : ' Maaf User Belum Memiliki History';
+        $spesialhistoryname = Speciality_u_history::where('user_id', Auth::id())->get();
+        $techhistory = Technical_Skill_u_history::where('user_id', Auth::id())->get();
+        $arthistory = Art_Skill_u_history::where('user_id', Auth::id())->get();
+        // return $user_spesialhistory_each;
+        // dd('a');
         $skor = [];
+        foreach ($spesialhistoryname as $each) {
+            $user_spesialhistory_each[] = [
+                "nama" => $each->speciality->nama,
+            ];
+        }
+        foreach ($techhistory as $each) {
+            $user_technical_skill_history_u_each[] = [
+                "nama" => $each->TechnicalSkill->nama,
+                "skor" => $each->technical_skill_skor
+            ];
+            array_push($skor, $each->technical_skill_skor);
+        }
+        foreach ($arthistory as $each) {
+            $user_art_skill_history_u_e[] = [
+                "nama" => $each->ArtSkill->nama,
+                "skor" => $each->art_skill_skor
+            ];
+            array_push($skor, $each->art_skill_skor);
+        }
         foreach ($user_technical_skill_u as $each) {
             $user_technical_skill_u_each[] = [
                 "nama" => $each->TechnicalSkill->nama,
@@ -114,7 +145,10 @@ class SiswaController extends Controller
                     "Speed" => $user_detail_history->speed,
                     "Management" => $user_detail_history->management
                 ],
-                'Overral' => $rata
+                'Overral' => $rata,
+                'Technical_History' => $user_technical_skill_u_each,
+                'Art_History' => $user_art_skill_history_u_e,
+                'Specialy_History' => $user_spesialhistory_each
             ], 200);
         } else {
             return response()->json([
@@ -138,7 +172,10 @@ class SiswaController extends Controller
                     "Speed" => null,
                     "Management" => null
                 ],
-                'Overral' => $rata
+                'Overral' => $rata,
+                'Technical_History' => $user_technical_skill_u_each,
+                'Art_History' => $user_art_skill_history_u_e,
+                'Specialy_History' => $user_spesialhistory_each
             ], 200);
         }
     }

@@ -9,6 +9,10 @@ class UserDetail extends Model
 {
     protected $table = "user_details";
     use HasFactory;
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
     public function mental()
     {
         return $this->belongsTo(mental::class);
