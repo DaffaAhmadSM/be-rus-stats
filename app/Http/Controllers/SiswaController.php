@@ -65,6 +65,22 @@ class SiswaController extends Controller
             $user_technical_skill_u = TechnicalSkillUs::where('user_id', Auth::id())->get();
             $user_speciality_u = SpecialityU::where('user_id', Auth::id())->get();
             $user_art_skill_u = ArtSkillU::where('user_id', Auth::id())->get();
+            $techhistory = Technical_Skill_u_history::where('user_id', Auth::id())->get();
+        $arthistory = Art_Skill_u_history::where('user_id', Auth::id())->get();
+        // return $user_spesialhistory_each;
+        // dd('a');
+        foreach ($techhistory as $each) {
+            $user_technical_skill_history_u_each[] = [
+                "nama" => $each->TechnicalSkill->nama,
+                "skor" => $each->technical_skill_skor
+            ];
+        }
+        foreach ($arthistory as $each) {
+            $user_art_skill_history_u_each[] = [
+                "nama" => $each->ArtSkill->nama,
+                "skor" => $each->art_skill_skor
+            ];
+        }
             foreach ($user_technical_skill_u as $each) {
                 $user_technical_skill_u_each[] = [
                     "nama" => $each->TechnicalSkill->nama,
@@ -127,7 +143,9 @@ class SiswaController extends Controller
                         "Mental" => $user_detail_history->mental,
                         "Physical" => $user_detail_history->physical,
                         "Speed" => $user_detail_history->speed,
-                        "Management" => $user_detail_history->management
+                        "Management" => $user_detail_history->management,
+                        "Technical_skill" => $user_technical_skill_history_u_each,
+                        "Art_skill" => $user_art_skill_history_u_each
                     ],
                     "radar_chart" => [
                         "Technical_skill_average" => $user_technical_skill_average,
@@ -159,7 +177,9 @@ class SiswaController extends Controller
                 "Mental" => null,
                 "Physical" => null,
                 "Speed" => null,
-                "Management" => null
+                "Management" => null,
+                "Technical_skill" => null,
+                "Art_skill" => null
             ],
             "radar_chart" => [
                 "Technical_skill_average" => $user_technical_skill_average,
