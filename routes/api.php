@@ -31,9 +31,9 @@ use Illuminate\Auth\Events\Login;
 Route::post('/login', [LoginController::class, 'login']);
 
 Route::group(['middleware' => ['auth:sanctum']], function () {
-    Route::get("search", function() {
-        
-    });
+
+    Route::post('/logout', [LoginController::class, 'logout']);
+
     Route::group(['middleware' => ['role:student|supervisor|mentor'], "prefix" => "/student"], function () {
         Route::get('user', [SiswaController::class, 'show']);
     });
