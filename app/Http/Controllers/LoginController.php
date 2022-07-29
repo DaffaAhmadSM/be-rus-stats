@@ -43,4 +43,12 @@ class LoginController extends Controller
         ]);
         
     }
+
+    public function logout()
+    {
+        Auth::user()->tokens()->delete();
+        return [
+            'message' => 'You have successfully logged out and the token was successfully deleted'
+        ];
+    }
 }
