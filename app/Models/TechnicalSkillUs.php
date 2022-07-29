@@ -9,10 +9,14 @@ class TechnicalSkillUs extends Model
 {
     use HasFactory;
     protected $table = "technical_skill_us";
-    protected $hidden = ["id","created_at","updated_at", "user_id"];
-    public function TechnicalSkill()
+    protected $hidden = ["id", "created_at", "updated_at", "user_id"];
+    // protected $appends = ['nama'];
+    // public function getNamaAttribute()
+    // {
+    //     return $this->TechnicalSkill->nama;
+    // }
+    public function technicalSkill()
     {
         return $this->belongsTo(TechnicalSkill::class);
     }
-
 }

@@ -13,7 +13,12 @@ class TechnicalSkill extends Model
     {
         return $this->belongsToMany(User::class);
     }
-    Public function TechnicalSkillUs(){
-        return $this->hasMany(TechnicalSkillUs::class, "technical_skill_id","id");
+    public function TechnicalSkillUs()
+    {
+        return $this->hasMany(TechnicalSkillUs::class, "technical_skill_id", "id");
+    }
+    public function TechnicalSkillUsH()
+    {
+        return $this->hasMany(Technical_Skill_u_history::class, "technical_skill_id", "id");
     }
 }
