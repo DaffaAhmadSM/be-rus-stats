@@ -40,10 +40,19 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
-    protected $appends = ['link'];
-    public function getLinkAttribute()
+    // protected $appends = ['link'];
+    protected $appends = ['skill'];
+    // public function getLinkAttribute()
+    // {
+    //     // $this->roles();
+    //     if ($this->hasRole('student')) {
+    //         return  '/student/user/' . $this->id;
+    //     }
+    // }
+    public function getSkillAttribute()
     {
         // $this->roles();
+        // return $this->artskilu;
         if ($this->hasRole('student')) {
             return  '/student/user/' . $this->id;
         }
@@ -56,10 +65,10 @@ class User extends Authenticatable
     {
         return $this->belongsToMany(art_skill::class);
     }
-    public function userDetail()
-    {
-        return $this->hasMany(user_detail::class);
-    }
+    // public function userDetail()
+    // {
+    //     return $this->hasMany(user_detail::class);
+    // }
     public function userHistory()
     {
         return $this->hasMany(user_detail_history::class);
@@ -91,5 +100,10 @@ class User extends Authenticatable
     public function SpesialyHistory()
     {
         return $this->hasMany(Speciality_u_history::class);
+    }
+
+    public function userDetail()
+    {
+        return $this->hasOne(UserDetail::class);
     }
 }

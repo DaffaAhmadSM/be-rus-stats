@@ -6,16 +6,20 @@ use App\Models\Art_Skill_u_history;
 use App\Models\User;
 use App\Models\mental;
 use App\Models\ArtSkillU;
+use App\Models\management;
+use App\Models\physical;
 use App\Models\speciality;
 use App\Models\Speciality_u_history;
 use App\Models\UserDetail;
 use App\Models\SpecialityU;
+use App\Models\speed;
 use App\Models\Technical_Skill_u_history;
 use Illuminate\Http\Request;
 use App\Models\TechnicalSkill;
 use App\Models\TechnicalSkillUs;
 use App\Models\UserDetailHistory;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class SiswaController extends Controller
 {
@@ -58,139 +62,171 @@ class SiswaController extends Controller
      */
     public function show()
     {
-            $user = Auth::user();
-            $user_detail = UserDetail::where('user_id', Auth::id())->first();
-            $user_detail_history = UserDetailHistory::where('user_id', Auth::id())->first();
-            // $user_technical_skill = TechnicalSkill::where('divisi_id', $user->divisi_id)->get();
-            $user_technical_skill_u = TechnicalSkillUs::where('user_id', Auth::id())->get();
-            $user_speciality_u = SpecialityU::where('user_id', Auth::id())->get();
-            $user_art_skill_u = ArtSkillU::where('user_id', Auth::id())->get();
-            $techhistory = Technical_Skill_u_history::where('user_id', Auth::id())->get();
+        $user = Auth::user();
+        $user_detail = UserDetail::where('user_id', Auth::id())->first();
+        $user_detail_history = UserDetailHistory::where('user_id', Auth::id())->first();
+        // $user_technical_skill = TechnicalSkill::where('divisi_id', $user->divisi_id)->get();
+        $user_technical_skill_u = TechnicalSkillUs::where('user_id', Auth::id())->get();
+        $user_speciality_u = SpecialityU::where('user_id', Auth::id())->get();
+        $user_art_skill_u = ArtSkillU::where('user_id', Auth::id())->get();
+        $techhistory = Technical_Skill_u_history::where('user_id', Auth::id())->get();
         $arthistory = Art_Skill_u_history::where('user_id', Auth::id())->get();
         // return $user_spesialhistory_each;
         // dd('a');
         foreach ($techhistory as $each) {
             $user_technical_skill_history_u_each[] = [
                 "nama" => $each->TechnicalSkill->nama,
-                "skor" => $each->technical_skill_skor
+                "total" => $each->technical_skill_skor
             ];
+            $user_technical_skill_history_skor[] = $each->technical_skill_skor;
         }
+        $user_technical_skill_h_average = array_sum($user_technical_skill_history_skor) / count($user_technical_skill_history_skor);
         foreach ($arthistory as $each) {
             $user_art_skill_history_u_each[] = [
                 "nama" => $each->ArtSkill->nama,
-                "skor" => $each->art_skill_skor
+                "total" => $each->art_skill_skor
+            ];
+            $user_art_skill_history[] = $each->art_skill_skor;
+        }
+        $user_art_skill_h_average = array_sum($user_art_skill_history) / count($user_art_skill_history);
+        foreach ($user_technical_skill_u as $each) {
+            $user_technical_skill_u_each[] = [
+                "nama" => $each->TechnicalSkill->nama,
+                "total" => $each->technical_skill_skor
+            ];
+            $user_technical_skill_skor[] = $each->technical_skill_skor;
+        }
+        $user_technical_skill_average = array_sum($user_technical_skill_skor) / count($user_technical_skill_skor);
+
+        foreach ($user_speciality_u as $each) {
+            $user_speciality_u_each[] = [
+                "nama" => $each->speciality->nama,
             ];
         }
-            foreach ($user_technical_skill_u as $each) {
-                $user_technical_skill_u_each[] = [
-                    "nama" => $each->TechnicalSkill->nama,
-                    "skor" => $each->technical_skill_skor
-                ];
-                $user_technical_skill_skor [] = $each->technical_skill_skor;
-            }
-            $user_technical_skill_average = array_sum($user_technical_skill_skor)/count($user_technical_skill_skor);
+        foreach ($user_art_skill_u as $each) {
+            $user_art_skill_u_e[] = [
+                "nama" => $each->ArtSkill->nama,
+                "total" => $each->art_skill_skor
+            ];
+            $user_art_skill_skor[] = $each->art_skill_skor;
+        }
+        $mentalmap = json_decode($user_detail->mental);
+        $physicalmap = json_decode($user_detail->physical);
+        $speedmap = json_decode($user_detail->speed);
+        $managementmap = json_decode($user_detail->management);
+        $mentalmapH = json_decode($user_detail_history->mental);
+        $physicalmapH = json_decode($user_detail_history->physical);
+        $speedmapH = json_decode($user_detail_history->speed);
+        $managementmapH = json_decode($user_detail_history->management);
+        $user_art_skill_average = array_sum($user_art_skill_skor) / count($user_art_skill_skor);
 
-            foreach ($user_speciality_u as $each) {
-                $user_speciality_u_each[] = [
-                    "nama" => $each->speciality->nama,
-                ];
-            }
-            foreach ($user_art_skill_u as $each) {
-                $user_art_skill_u_e[] = [
-                    "nama" => $each->ArtSkill->nama,
-                    "skor" => $each->art_skill_skor
-                ];
-                $user_art_skill_skor [] = $each->art_skill_skor;
-            }
-            $user_art_skill_average = array_sum($user_art_skill_skor)/count($user_art_skill_skor);  
-            
-            // dd($user_technical_skill);
-            $user_mental = $user_detail->mental->toArray();
-            $user_mental_average = array_sum(array_values($user_mental))/count($user_mental);
-            
-            $user_speed = $user_detail->speed->toArray();
-            $user_speed_average = array_sum(array_values($user_speed))/count($user_speed);
+        // dd($user_technical_skill);
+        $user_mental = $user_detail->mental->toArray();
+        $user_mental_average = array_sum(array_values($user_mental)) / count($user_mental);
+        $user_speed = $user_detail->speed->toArray();
+        $user_speed_average = array_sum(array_values($user_speed)) / count($user_speed);
+        $user_physical = $user_detail->physical->toArray();
+        $user_physical_average = array_sum(array_values($user_physical)) / count($user_physical);
+        $user_management = $user_detail->management->toArray();
+        $user_management_average = array_sum(array_values($user_management)) / count($user_management);
+        //history
+        $user_mental_h = $user_detail_history->mental->toArray();
+        $user_mental_average_h = array_sum(array_values($user_mental_h)) / count($user_mental_h);
+        $user_speed_h = $user_detail_history->speed->toArray();
+        $user_speed_average_h = array_sum(array_values($user_speed_h)) / count($user_speed_h);
+        $user_physical_h = $user_detail_history->physical->toArray();
+        $user_physical_average_h = array_sum(array_values($user_physical_h)) / count($user_physical_h);
+        $user_management_h = $user_detail_history->management->toArray();
+        $user_management_average_h = array_sum(array_values($user_management_h)) / count($user_management_h);
+        $user_all = array_merge($user_technical_skill_skor, $user_art_skill_skor, array_values($user_mental), array_values($user_speed), array_values($user_physical), array_values($user_management));
+        $user_average = array_sum($user_all) / count($user_all);
+        if ($user_detail_history) {
 
-            
-            $user_physical = $user_detail->physical->toArray();
-            $user_physical_average = array_sum(array_values($user_physical))/count($user_physical);
-
-            
-            $user_management = $user_detail->management->toArray();
-            $user_management_average = array_sum(array_values($user_management))/count($user_management);
-
-            $user_all = array_merge($user_technical_skill_skor,$user_art_skill_skor,array_values($user_mental),array_values($user_speed),array_values($user_physical),array_values($user_management));
-            $user_average = array_sum($user_all)/count($user_all);
-            if ($user_detail_history){
-
-                return response()->json([
-                    "Message" => "Success",
-                    "nama" => $user->nama,
-                    "Age" => date_diff(date_create($user->tanggal_lahir), date_create(date("Y-m-d")))->y,
-                    "Email" => $user->email,
-                    "Devision" => $user->divisi->nama,
-                    "Overall" => round($user_average, 1),
-                    "Speciality" => $user_speciality_u_each,
-                    "user_detail" => [
-                        "Mental" => $user_detail->mental,
-                        "Physical" => $user_detail->physical,
-                        "Speed" => $user_detail->speed,
-                        "Management" => $user_detail->management,
-                        "Technical_skill" => $user_technical_skill_u_each,
-                        "Art_skill" => $user_art_skill_u_e
-                    ],
-                    "user_detail_history" => [
-                        "Mental" => $user_detail_history->mental,
-                        "Physical" => $user_detail_history->physical,
-                        "Speed" => $user_detail_history->speed,
-                        "Management" => $user_detail_history->management,
-                        "Technical_skill" => $user_technical_skill_history_u_each,
-                        "Art_skill" => $user_art_skill_history_u_each
-                    ],
-                    "radar_chart" => [
-                        "Technical_skill_average" => round($user_technical_skill_average, 1),
-                        "Art_skill_average" => round($user_art_skill_average, 1),
-                        "Mental_average" => round($user_mental_average, 1),
-                        "Physical_average" => round($user_physical_average, 1),
-                        "Management_average" => round($user_management_average, 1),
-                        "Speed_average" => round($user_speed_average, 1)
-                    ]
-                ], 200);
-        }else{
             return response()->json([
                 "Message" => "Success",
+                "id" => $user->id,
                 "nama" => $user->nama,
                 "Age" => date_diff(date_create($user->tanggal_lahir), date_create(date("Y-m-d")))->y,
                 "Email" => $user->email,
                 "Devision" => $user->divisi->nama,
-                "Overall" => $user_average,
+                "Overall" => round($user_average, 1),
                 "Speciality" => $user_speciality_u_each,
-            "user_detail" => [
-                "Mental" => $user_detail->mental,
-                "Physical" => $user_detail->physical,
-                "Speed" => $user_detail->speed,
-                "Management" => $user_detail->management,
-                "Technical_skill" => $user_technical_skill_u_each,
-                "Art_skill" => $user_art_skill_u_e
-            ],
-            "user_detail_history" => [
-                "Mental" => null,
-                "Physical" => null,
-                "Speed" => null,
-                "Management" => null,
-                "Technical_skill" => null,
-                "Art_skill" => null
-            ],
-            "radar_chart" => [
-                "Technical_skill_average" => round($user_technical_skill_average, 1),
-                "Art_skill_average" => round($user_art_skill_average, 1),
-                "Mental_average" => round($user_mental_average, 1),
-                "Physical_average" => round($user_physical_average, 1),
-                "Management_average" => round($user_management_average, 1),
-                "Speed_average" => round($user_speed_average, 1)
-            ]
-        ], 200);
-
+                "user_detail" => [
+                    "Mental" => dataAttribute($mentalmap, 'nama', 'total'),
+                    "Physical" => dataAttribute($physicalmap, 'nama', 'total'),
+                    "Speed" => dataAttribute($speedmap, 'nama', 'total'),
+                    "Management" => dataAttribute($managementmap, 'nama', 'total'),
+                    "Technical_Skill" => $user_technical_skill_u_each,
+                    "Art_Skill" => $user_art_skill_u_e
+                ],
+                "user_detail_history" => [
+                    "Mental" => dataAttribute($mentalmapH, 'nama', 'total'),
+                    "Physical" => dataAttribute($physicalmapH, 'nama', 'total'),
+                    "Speed" => dataAttribute($speedmapH, 'nama', 'total'),
+                    "Management" => dataAttribute($managementmapH, 'nama', 'total'),
+                    "Technical_Skill" => $user_technical_skill_history_u_each,
+                    "Art_Skill" => $user_art_skill_history_u_each
+                ],
+                "radar_chart" => [
+                    "Technical_Skill_Average" => round($user_technical_skill_average, 1),
+                    "Art_Skill_Average" => round($user_art_skill_average, 1),
+                    "Mental_Average" => round($user_mental_average, 1),
+                    "Physical_Average" => round($user_physical_average, 1),
+                    "Management_Average" => round($user_management_average, 1),
+                    "Speed_Average" => round($user_speed_average, 1)
+                ],
+                "radar_chart_history" => [
+                    "Technical_Skill_Average" => round($user_technical_skill_h_average, 1),
+                    "Art_Skill_Average" => round($user_art_skill_h_average, 1),
+                    "Mental_Average" => round($user_mental_average_h, 1),
+                    "Physical_Average" => round($user_physical_average_h, 1),
+                    "Management_Average" => round($user_management_average_h, 1),
+                    "Speed_Average" => round($user_speed_average_h, 1)
+                ]
+            ], 200);
+        } else {
+            return response()->json([
+                "Message" => "Success",
+                "id" => $user->id,
+                "nama" => $user->nama,
+                "Age" => date_diff(date_create($user->tanggal_lahir), date_create(date("Y-m-d")))->y,
+                "Email" => $user->email,
+                "Devision" => $user->divisi->nama,
+                "Overall" => round($user_average, 1),
+                "Speciality" => $user_speciality_u_each,
+                "user_detail" => [
+                    "Mental" => dataAttribute($mentalmap, 'nama', 'total'),
+                    "Physical" => dataAttribute($physicalmap, 'nama', 'total'),
+                    "Speed" => dataAttribute($speedmap, 'nama', 'total'),
+                    "Management" => dataAttribute($managementmap, 'nama', 'total'),
+                    "Technical_Skill" => $user_technical_skill_u_each,
+                    "Art_Skill" => $user_art_skill_u_e
+                ],
+                "user_detail_history" => [
+                    "Mental" => null,
+                    "Physical" => null,
+                    "Speed" => null,
+                    "Management" => null,
+                    "Technical_Skill" => null,
+                    "Art_Skill" => null
+                ],
+                "radar_chart" => [
+                    "Technical_Skill_Average" => round($user_technical_skill_average, 1),
+                    "Art_Skill_Average" => round($user_art_skill_average, 1),
+                    "Mental_Average" => round($user_mental_average, 1),
+                    "Physical_Average" => round($user_physical_average, 1),
+                    "Management_Average" => round($user_management_average, 1),
+                    "Speed_Average" => round($user_speed_average, 1)
+                ],
+                "radar_chart_history" => [
+                    "Technical_Skill_Average" => 0,
+                    "Art_Skill_Average" => 0,
+                    "Mental_Average" => 0,
+                    "Physical_Average" => 0,
+                    "Management_Average" => 0,
+                    "Speed_Average" => 0
+                ]
+            ], 200);
         }
     }
 
@@ -226,5 +262,11 @@ class SiswaController extends Controller
     public function destroy($id)
     {
         //
+    }
+
+    public function getUser()
+    {
+        $res = Auth::user();
+        return response()->json($res);
     }
 }
