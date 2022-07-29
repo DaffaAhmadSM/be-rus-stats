@@ -129,7 +129,7 @@ class SiswaController extends Controller
                     "Age" => date_diff(date_create($user->tanggal_lahir), date_create(date("Y-m-d")))->y,
                     "Email" => $user->email,
                     "Devision" => $user->divisi->nama,
-                    "Overall" => $user_average,
+                    "Overall" => round($user_average, 1),
                     "Speciality" => $user_speciality_u_each,
                     "user_detail" => [
                         "Mental" => $user_detail->mental,
@@ -148,12 +148,12 @@ class SiswaController extends Controller
                         "Art_skill" => $user_art_skill_history_u_each
                     ],
                     "radar_chart" => [
-                        "Technical_skill_average" => $user_technical_skill_average,
-                        "Art_skill_average" => $user_art_skill_average,
-                        "Mental_average" => $user_mental_average,
-                        "Physical_average" => $user_physical_average,
-                        "Management_average" => $user_management_average,
-                        "Speed_average" => $user_speed_average
+                        "Technical_skill_average" => round($user_technical_skill_average, 1),
+                        "Art_skill_average" => round($user_art_skill_average, 1),
+                        "Mental_average" => round($user_mental_average, 1),
+                        "Physical_average" => round($user_physical_average, 1),
+                        "Management_average" => round($user_management_average, 1),
+                        "Speed_average" => round($user_speed_average, 1)
                     ]
                 ], 200);
         }else{
@@ -182,12 +182,12 @@ class SiswaController extends Controller
                 "Art_skill" => null
             ],
             "radar_chart" => [
-                "Technical_skill_average" => $user_technical_skill_average,
-                "Art_skill_average" => $user_art_skill_average,
-                "Mental_average" => $user_mental_average,
-                "Physical_average" => $user_physical_average,
-                "Management_average" => $user_management_average,
-                "Speed_average" => $user_speed_average
+                "Technical_skill_average" => round($user_technical_skill_average, 1),
+                "Art_skill_average" => round($user_art_skill_average, 1),
+                "Mental_average" => round($user_mental_average, 1),
+                "Physical_average" => round($user_physical_average, 1),
+                "Management_average" => round($user_management_average, 1),
+                "Speed_average" => round($user_speed_average, 1)
             ]
         ], 200);
 
