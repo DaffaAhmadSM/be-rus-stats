@@ -5,17 +5,22 @@ use Illuminate\Support\Arr;
 
 use function PHPUnit\Framework\returnSelf;
 
-function dataAttribute($data, $attribute1, $attribute2)
+function dataAttribute($name, $data, $attribute1, $attribute2)
 {
     foreach ($data as $key => $value) {
         $str = explode('_', $key);
         $key = ucwords(join(" ", $str));
         $arrayData[] = [
             $attribute1 => $key,
-            $attribute2 => $value
+            $attribute2 => $value,
+            "nilai_history" => 0
         ];
     }
-    return $arrayData;
+    $res = [
+        "name" => $name,
+        "data" => $arrayData
+    ];
+    return $res;
 }
 
 function dataAttributeH($name, $data, $dataH, $attribute1, $attribute2, $attribute3)

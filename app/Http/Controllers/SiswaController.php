@@ -112,7 +112,7 @@ class SiswaController extends Controller
         $user_average = array_sum($user_all) / count($user_all);
 
         // dd($mentalmap);
-        if ($user_detail_history) {
+        if (!$user_detail_history) {
             $techhistory = Technical_Skill_u_history::where('user_id', Auth::id())->get();
             $arthistory = Art_Skill_u_history::where('user_id', Auth::id())->get();
             foreach ($techhistory as $each) {
@@ -163,10 +163,10 @@ class SiswaController extends Controller
                 "radar_chart" => [
                     "Technical_Skill_Average" => round($user_technical_skill_average, 1),
                     "Art_Skill_Average" => round($user_art_skill_average, 1),
-                    "Mental_Average" => round($user_mental_average, 1),
-                    "Physical_Average" => round($user_physical_average, 1),
-                    "Management_Average" => round($user_management_average, 1),
-                    "Speed_Average" => round($user_speed_average, 1)
+                    ["name" => "Mental", "nilai" => round($user_mental_average, 1), "nilai_history" => round($user_mental_average_h, 1)],
+                    ["name" => "Physical", "nilai" =>round($user_physical_average, 1), "nilai_history" => round($user_physical_average_h, 1)],
+                    ["name" => "Management", "nilai" => round($user_management_average, 1), "nilai_history" => round($user_management_average_h)],
+                    ["name" => "Speed", "nilai" => round($user_speed_average, 1), "nilai_history" => round($user_speed_average_h)]
                 ],
             ], 200);
         } else {
@@ -180,6 +180,10 @@ class SiswaController extends Controller
                 "Overall" => round($user_average, 1),
                 "Speciality" => $user_speciality_u_each,
                 "user_detail" => [
+                    dataAttribute("Mental",$user_mental, 'nama', 'total'),
+                    dataAttribute("Physical", $user_physical, 'nama', 'total'),
+                    dataAttribute("Speed", $user_speed, 'nama', 'total'),
+                    dataAttribute("Management",$user_management, 'nama', 'total'),
                 ],
                 
                 "radar_chart" => [
