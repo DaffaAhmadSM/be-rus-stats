@@ -140,6 +140,8 @@ class SiswaController extends Controller
         $user_management_average_h = array_sum(array_values($user_management_h)) / count($user_management_h);
         $user_all = array_merge($user_technical_skill_skor, $user_art_skill_skor, array_values($user_mental), array_values($user_speed), array_values($user_physical), array_values($user_management));
         $user_average = array_sum($user_all) / count($user_all);
+        return dataAttribute($mentalmap, 'nama', 'total', $mentalmapH);
+        dd('a');
         if ($user_detail_history) {
 
             return response()->json([

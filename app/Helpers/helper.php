@@ -5,8 +5,14 @@ use Illuminate\Support\Arr;
 
 use function PHPUnit\Framework\returnSelf;
 
-function dataAttribute($data, $attribute1, $attribute2)
+function dataAttribute($data, $attribute1, $attribute2, $dataH)
 {
+    foreach ($dataH as $key => $value) {
+        $arrayDataH[] = [
+            $attribute1 => $key,
+            $attribute2 => $value
+        ];
+    }
     foreach ($data as $key => $value) {
         $str = explode('_', $key);
         $key = ucwords(join(" ", $str));
