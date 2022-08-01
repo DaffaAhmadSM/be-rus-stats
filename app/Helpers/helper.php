@@ -14,7 +14,34 @@ function dataAttribute($data, $attribute1, $attribute2)
             $attribute1 => $key,
             $attribute2 => $value
         ];
-        $array =  json_encode($arrayData);
     }
     return $arrayData;
+}
+
+function dataAttributeH($name, $data, $dataH, $attribute1, $attribute2, $attribute3)
+{
+    foreach ($dataH as $keyh => $valueH) {
+        $arrayH[] = [$attribute3 => $valueH];
+        // foreach ($dataH as $key => $valueH)
+        // }
+    }
+
+    foreach ($data as $key => $value) {
+        $str = explode('_', $key);
+        $key = ucwords(join(" ", $str));
+        $arrayData[] = [
+            $attribute1 => $key,
+            $attribute2 => $value
+        ];
+    }
+
+    for ($x = 0; $x < count($arrayData); $x++) {
+        $final[] = array_merge($arrayData[$x], $arrayH[$x]);
+      }
+    $res = [
+        "name" => $name,
+        "data" => $final
+    ];
+      
+    return $res;
 }
