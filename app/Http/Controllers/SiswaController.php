@@ -6,8 +6,10 @@ use App\Models\Art_Skill_u_history;
 use App\Models\User;
 use App\Models\mental;
 use App\Models\ArtSkillU;
+use App\Models\DivisionSkill;
 use App\Models\management;
 use App\Models\physical;
+use App\Models\Skill;
 use App\Models\speciality;
 use App\Models\Speciality_u_history;
 use App\Models\UserDetail;
@@ -18,6 +20,7 @@ use Illuminate\Http\Request;
 use App\Models\TechnicalSkill;
 use App\Models\TechnicalSkillUs;
 use App\Models\UserDetailHistory;
+use App\Models\UserSkill;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
@@ -62,6 +65,18 @@ class SiswaController extends Controller
      */
     public function show()
     {
+        $divisi_skill = DivisionSkill::where('division_id', Auth::user()->divisi_id)->get();
+        foreach ($divisi_skill as $div_skill){
+            $category[] = $div_skill->skill_category_id;
+        }
+
+        for ($i=0; $i < count($category) ; $i++) {
+            
+            $skills[] = Skill::where("skill_category_id", $category[$i])->get('id');
+        }
+        
+        return $skills;
+
         $user = Auth::user();
         $user_detail = UserDetail::where('user_id', Auth::id())->first();
         $user_detail_history = UserDetailHistory::where('user_id', Auth::id())->first();
