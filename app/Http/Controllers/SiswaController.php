@@ -158,7 +158,7 @@ class SiswaController extends Controller
         // }
         // return $r;
         // dd('$mentalmap');
-        if (!$user_detail_history) {
+        if ($user_detail_history) {
             return response()->json([
                 "Message" => "Success",
                 "id" => $user->id,
