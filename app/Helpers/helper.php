@@ -26,7 +26,6 @@ function dataAttributeH($name, $data, $dataH, $attribute1, $attribute2, $attribu
         // foreach ($dataH as $key => $valueH)
         // }
     }
-
     foreach ($data as $key => $value) {
         $str = explode('_', $key);
         $key = ucwords(join(" ", $str));
