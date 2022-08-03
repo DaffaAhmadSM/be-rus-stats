@@ -13,7 +13,7 @@ function dataAttribute($data, $attribute1, $attribute2)
         $arrayData[] = [
             $attribute1 => $key,
             $attribute2 => $value,
-            // "nilai_history" => 0
+            "nilai_history" => 0
         ];
     }
     return $arrayData;
@@ -40,7 +40,9 @@ function dataAttributeH($name, $data, $dataH, $attribute1, $attribute2, $attribu
     }
     $res = [
         "name" => $name,
-        "data" => $final
+        "data" => [
+            'nilai' => $final
+        ]
     ];
 
     return $res;

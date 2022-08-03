@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class UserSkill extends Model
 {
     use HasFactory;
-
+    protected $hidden = ["id", "created_at", "updated_at"];
     public function User()
     {
         return $this->belongsTo(User::class);

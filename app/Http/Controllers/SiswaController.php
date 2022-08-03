@@ -65,17 +65,19 @@ class SiswaController extends Controller
      */
     public function show()
     {
-        $divisi_skill = DivisionSkill::where('division_id', Auth::user()->divisi_id)->get();
-        foreach ($divisi_skill as $div_skill){
-            $category[] = $div_skill->skill_category_id;
+        $divisi_skill = DivisionSkill::where('division_id', Auth::user()->divisi_id);
+        $data = [];
+        $divisi_skill->with(['SkillCategory' => function ($q) {
+            $q->with(['Data' => function ($q) {
+                $q->with(['Nilai' => function ($q) {
+                    $q->where('user_id', Auth::id());
+                }]);
+            }]);
+        }]);
+        foreach ($divisi_skill->get() as $key => $value) {
+            $data[] = $value->SkillCategory;
         }
-
-        for ($i=0; $i < count($category) ; $i++) {
-            
-            $skills[] = Skill::where("skill_category_id", $category[$i])->get('id');
-        }
-        
-        return $skills;
+        // return $data;
 
         $user = Auth::user();
         $user_detail = UserDetail::where('user_id', Auth::id())->first();
@@ -184,10 +186,11 @@ class SiswaController extends Controller
                 "Overall" => round($user_average, 1),
                 "Speciality" => $user_speciality_u_each,
                 "user_detail" => [
-                    dataAttribute($user_mental, 'nama', 'total'),
-                    dataAttribute($user_physical, 'nama', 'total'),
-                    dataAttribute($user_speed, 'nama', 'total'),
-                    dataAttribute($user_management, 'nama', 'total'),
+                    dataAttributeH("Mental", $user_mental, $user_mental_h, "nama", "nilai", "nilai_history"),
+                    dataAttributeH("Physical", $user_physical, $user_physical_h, "nama", "nilai", "nilai_history"),
+                    dataAttributeH("Speed", $user_speed, $user_speed_h, "nama", "nilai", "nilai_history"),
+                    dataAttributeH("Management", $user_management, $user_management_h, "nama", "nilai", "nilai_history"),
+                    $data
                 ],
                 "radar_chart" => [
                     "Technical_Skill_Average" => round($user_technical_skill_average, 1),
@@ -257,7 +260,5 @@ class SiswaController extends Controller
 
     public function getUser()
     {
-        $res = Auth::user();
-        return response()->json($res);
     }
 }

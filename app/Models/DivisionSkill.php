@@ -10,7 +10,7 @@ class DivisionSkill extends Model
     use HasFactory;
     public function divisi()
     {
-        return $this->belongsTo(divisi::class);
+        return $this->belongsTo(divisi::class, 'division_id', 'id');
     }
 
     public function SkillCategory()

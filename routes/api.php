@@ -20,13 +20,13 @@ use Illuminate\Auth\Events\Login;
 |
 */
 
-// Route::get('/set', function () {
-//     // Role::create(['name' => 'supervisor']);
-//     // Role::create(['name' => 'mentor']);
-//     // Role::create(['name' => 'student']);
+Route::get('/set', function () {
+    // Role::create(['name' => 'supervisor']);
+    // Role::create(['name' => 'mentor']);
+    // Role::create(['name' => 'student']);
 
-//     User::find(6)->assignRole('student');
-// });
+    User::find(4)->assignRole('student');
+});
 
 Route::post('/login', [LoginController::class, 'login']);
 

@@ -8,8 +8,8 @@ use Illuminate\Database\Eloquent\Model;
 class SkillCategory extends Model
 {
     use HasFactory;
-
-    public function Skill()
+    protected $hidden = ["id", "created_at", "updated_at"];
+    public function Data()
     {
         return $this->hasMany(Skill::class, "skill_category_id", "id");
     }
