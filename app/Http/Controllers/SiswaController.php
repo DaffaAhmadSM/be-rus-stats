@@ -1,26 +1,8 @@
 <?php
 
 namespace App\Http\Controllers;
-
-use App\Models\Art_Skill_u_history;
-use App\Models\User;
-use App\Models\mental;
-use App\Models\ArtSkillU;
 use App\Models\DivisionSkill;
-use App\Models\management;
-use App\Models\physical;
-use App\Models\Skill;
-use App\Models\speciality;
-use App\Models\Speciality_u_history;
-use App\Models\UserDetail;
-use App\Models\SpecialityU;
-use App\Models\speed;
-use App\Models\Technical_Skill_u_history;
 use Illuminate\Http\Request;
-use App\Models\TechnicalSkill;
-use App\Models\TechnicalSkillUs;
-use App\Models\UserDetailHistory;
-use App\Models\UserSkill;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
@@ -69,70 +51,55 @@ class SiswaController extends Controller
         $data = [];
         $divisi_skill->with(['SkillCategory' => function ($q) {
             $q->with(['Data' => function ($q) {
-                $q->with(['Nilai' => function ($q) {
+                $q->with(['Skor' => function ($q) {
                     $q->where('user_id', Auth::id());
                 }]);
             }]);
         }]);
-        $skor = [];
-        foreach ($divisi_skill->get() as $key => $value) {
-            $data[] = $value->SkillCategory;
-            foreach ($data as $key => $value) {
-                $skor[] = [$value->name];
-                foreach ($value->Data as $ke => $val) {
-                    $skor[] = [$val->name];
-                }
-            }
-        }
-        // return $data;
-        // return $skor;
 
-        $user = Auth::user();
-        $user_detail = UserDetail::where('user_id', Auth::id())->first();
-        $user_detail_history = UserDetailHistory::where('user_id', Auth::id())->first();
-        if ($user_detail_history) {
-            return response()->json([
-                "Message" => "Success",
-                "id" => $user->id,
-                "nama" => $user->nama,
-                "Age" => date_diff(date_create($user->tanggal_lahir), date_create(date("Y-m-d")))->y,
-                "Email" => $user->email,
-                "Devision" => $user->divisi->nama,
-                // "Overall" => round($user_average, 1),
-                // "Speciality" => $user_speciality_u_each,
-                "user_detail" => [
-                    $data
-                ],
-                // "radar_chart" => [
-                //     "Technical_Skill_Average" => round($user_technical_skill_average, 1),
-                //     "Art_Skill_Average" => round($user_art_skill_average, 1),
-                //     ["name" => "Mental", "nilai" => round($user_mental_average, 1), "nilai_history" => round($user_mental_average_h, 1)],
-                //     ["name" => "Physical", "nilai" => round($user_physical_average, 1), "nilai_history" => round($user_physical_average_h, 1)],
-                //     ["name" => "Management", "nilai" => round($user_management_average, 1), "nilai_history" => round($user_management_average_h)],
-                //     ["name" => "Speed", "nilai" => round($user_speed_average, 1), "nilai_history" => round($user_speed_average_h)]
-                // ],
-            ], 200);
-        } else {
-            return response()->json([
-                "Message" => "Success",
-                "id" => $user->id,
-                "nama" => $user->nama,
-                "Age" => date_diff(date_create($user->tanggal_lahir), date_create(date("Y-m-d")))->y,
-                "Email" => $user->email,
-                "Devision" => $user->divisi->nama,
-                // "Overall" => round($user_average, 1),
-                // "Speciality" => $user_speciality_u_each,
-                // "user_detail" => [
-                //     dataAttributeH("Mental", $user_mental, $user_mental_h, "nama", "nilai", "nilai_history"),
-                //     dataAttributeH("Physical", $user_physical, $user_physical_h, "nama", "nilai", "nilai_history"),
-                //     dataAttributeH("Speed", $user_speed, $user_speed_h, "nama", "nilai", "nilai_history"),
-                //     dataAttributeH("Management", $user_management, $user_management_h, "nama", "nilai", "nilai_history"),
-                //     ["name" => "Technical Skill", "data" => $user_technical_skill_u_each],
-                //     ["name" => "Art Skill", "data" => $user_art_skill_u_e]
-                // ],
-                // "radar_chart" => dataAttribute($radar, 'nama', 'total'),
-            ], 200);
+        foreach ($divisi_skill->get() as $key => $value) {
+            $data[] = $value->SkillCategory->toArray();
         }
+        foreach($data as $key_dat => $value)
+        {
+            $data_dat[] = $value["data"];
+            $name []=$value["name"];
+        }
+        for ($i=0; $i < count($data_dat) ; $i++) { 
+            $data_each = $data_dat[$i];
+            for ($e=0; $e < count($data_each) ; $e++) { 
+                $data_e[] = $data_each[$e]["skor"][0]["nilai"];
+                $data_e_h[] = $data_each[$e]["skor"][0]["nilai_history"];
+            }
+            
+            $data_each_skill[] = [
+                "name" => $name[$i],
+                "average" => array_sum($data_e)/count($data_e),
+                "average_history" => array_sum($data_e_h)/count($data_e_h),
+            ];
+            unset($data_e);
+            unset($data_e_h);
+        }
+        foreach (array_merge(...$data_dat) as $key_skor => $value_skor){
+            $data_skor[] = $value_skor["skor"];
+        }
+        foreach (array_merge(...$data_skor) as $key_nilai => $value_nilai) {
+            $all_nilai[] = $value_nilai["nilai"];
+        }
+        $overall = array_sum($all_nilai) / count($all_nilai);
+        $user = Auth::user();
+            return response()->json([
+                "Message" => "Success",
+                "id" => $user->id,
+                "nama" => $user->nama,
+                "Age" => date_diff(date_create($user->tanggal_lahir), date_create(date("Y-m-d")))->y,
+                "Email" => $user->email,
+                "Devision" => $user->divisi->nama,
+                "Overall" => round($overall, 1),
+                // "Speciality" => $user_speciality_u_each,
+                "user_detail" => $data,
+                "radar_chart" => $data_each_skill
+            ], 200);
     }
 
     /**
