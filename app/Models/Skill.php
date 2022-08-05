@@ -14,7 +14,7 @@ class Skill extends Model
         return $this->belongsTo(SkillCategory::class);
     }
 
-    public function Nilai()
+    public function Skor()
     {
         return $this->hasMany(UserSkill::class, 'skill_id', 'id');
     }
