@@ -38,14 +38,14 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
 
     Route::group(['middleware' => ['role:student|supervisor|mentor'], "prefix" => "/student"], function () {
         Route::get('user', [SiswaController::class, 'show']);
-        Route::get('auth', [SiswaController::class, 'getUser']);
+        Route::get('user/detail', [SiswaController::class, 'getUserDetail']);
     });
-    Route::group(['middleware' => ['role:supervisor|mentor'], "prefix" => "/mentor"], function () {
-        Route::get('user', [MentorController::class, 'mentorData']);
-        Route::get('users/students', [MentorController::class, 'getStudents']);
-        Route::get('user/student/detail/{id}', [MentorController::class, 'getDetailUser']);
-    });
-    Route::group(['middleware' => ['role:supervisor'], "prefix" => "/supervisor"], function () {
-        Route::get('user', [MentorController::class, 'MentorData']);
-    });
+    // Route::group(['middleware' => ['role:supervisor|mentor'], "prefix" => "/mentor"], function () {
+    //     Route::get('user', [MentorController::class, 'mentorData']);
+    //     Route::get('users/students', [MentorController::class, 'getStudents']);
+    //     Route::get('user/student/detail/{id}', [MentorController::class, 'getDetail']);
+    // });
+    // Route::group(['middleware' => ['role:supervisor'], "prefix" => "/supervisor"], function () {
+    //     Route::get('user', [MentorController::class, 'MentorData']);
+    // });
 });
