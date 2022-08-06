@@ -128,7 +128,6 @@ class SiswaController extends Controller
             unset($data_e);
             unset($data_e_h);
         }
-        return $data_dat;
         foreach (array_merge(...$data_dat) as $key_skor => $value_skor){
             $data_skor[] = $value_skor["skor"];
         }
