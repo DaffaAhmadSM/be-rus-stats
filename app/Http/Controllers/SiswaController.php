@@ -1,7 +1,12 @@
 <?php
 
 namespace App\Http\Controllers;
+
 use App\Models\DivisionSkill;
+use App\Models\Skill;
+use App\Models\UserSkill;
+use Illuminate\Auth\Events\Validated;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -47,16 +52,16 @@ class SiswaController extends Controller
      */
     public function show()
     {
-        
+
         $user = Auth::user();
-            return response()->json([
-                "Message" => "Success",
-                "id" => $user->id,
-                "nama" => $user->nama,
-                "Age" => date_diff(date_create($user->tanggal_lahir), date_create(date("Y-m-d")))->y,
-                "Email" => $user->email,
-                "Devision" => $user->divisi->nama,
-            ], 200);
+        return response()->json([
+            "Message" => "Success",
+            "id" => $user->id,
+            "nama" => $user->nama,
+            "Age" => date_diff(date_create($user->tanggal_lahir), date_create(date("Y-m-d")))->y,
+            "Email" => $user->email,
+            "Devision" => $user->divisi->nama,
+        ], 200);
     }
 
     /**
@@ -108,27 +113,26 @@ class SiswaController extends Controller
         foreach ($divisi_skill->get() as $key => $value) {
             $data[] = $value->SkillCategory->toArray();
         }
-        foreach($data as $key_dat => $value)
-        {
+        foreach ($data as $key_dat => $value) {
             $data_dat[] = $value["data"];
-            $name []=$value["name"];
+            $name[] = $value["name"];
         }
-        for ($i=0; $i < count($data_dat) ; $i++) { 
+        for ($i = 0; $i < count($data_dat); $i++) {
             $data_each = $data_dat[$i];
-            for ($e=0; $e < count($data_each) ; $e++) { 
-                $data_e[] = $data_each[$e]["skor"][0]["nilai"]; 
+            for ($e = 0; $e < count($data_each); $e++) {
+                $data_e[] = $data_each[$e]["skor"][0]["nilai"];
                 $data_e_h[] = $data_each[$e]["skor"][0]["nilai_history"];
             }
-            
+
             $data_each_skill[] = [
                 "name" => $name[$i],
-                "average" => array_sum($data_e)/count($data_e),
-                "average_history" => array_sum($data_e_h)/count($data_e_h),
+                "average" => array_sum($data_e) / count($data_e),
+                "average_history" => array_sum($data_e_h) / count($data_e_h),
             ];
             unset($data_e);
             unset($data_e_h);
         }
-        foreach (array_merge(...$data_dat) as $key_skor => $value_skor){
+        foreach (array_merge(...$data_dat) as $key_skor => $value_skor) {
             $data_skor[] = $value_skor["skor"];
         }
         foreach (array_merge(...$data_skor) as $key_nilai => $value_nilai) {
@@ -136,9 +140,47 @@ class SiswaController extends Controller
         }
         $overall = array_sum($all_nilai) / count($all_nilai);
         return response()->json([
-        "Overall" => round($overall, 1),
-        // "Speciality" => $user_speciality_u_each,
-        "user_detail" => $data,
-        "radar_chart" => $data_each_skill], 200);
+            "Overall" => round($overall, 1),
+            // "Speciality" => $user_speciality_u_each,
+            "user_detail" => $data,
+            "radar_chart" => $data_each_skill
+        ], 200);
+    }
+    public function updateSkill(Request $request, $userId)
+    {
+        $validator = Validator::make($request->all(), [
+            'data' => 'required|array',
+            'data.*.id' => 'required',
+            'data.*.nilai' => 'required|integer',
+        ]);
+        if ($validator->fails()) {
+            return response()->json(["Error" => $validator->errors()->first()]);
+        }
+        $user = $request->json()->all();
+        // foreach ($request->data as $key => $value) {
+        //     $data = UserSkill::where('id', $value['id'])->get();
+        //     foreach ($data as $ke => $valu) {
+        //         // return $valu['nilai'];
+        //         if ($valu['nilai_history'] == 0) {
+        //             $valu->update([
+        //                 'nilai' =>  $value['nilai'],
+        //                 'nilai_history' => $valu->nilai
+        //             ]);
+        //         }
+        //         return response()->json([
+        //             'message' => 'Data Berhasil Diupdate!',
+        //             'data' => $data
+        //         ]);
+        //     }
+        // }
+        for ($i = 0; $i < count($user['data']); $i++) {
+            // var_dump($user['data'][$i]['id']);
+            $data = UserSkill::find($user['data'][$i]['id']);
+            $newHistory = $data->nilai;
+            $data->update([
+                'nilai' => $user['data'][$i]['nilai'],
+                'nilai_history' => $newHistory
+            ]);
+        }
     }
 }

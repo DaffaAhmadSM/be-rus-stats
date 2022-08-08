@@ -39,6 +39,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::group(['middleware' => ['role:student|supervisor|mentor'], "prefix" => "/student"], function () {
         Route::get('user', [SiswaController::class, 'show']);
         Route::get('user/detail', [SiswaController::class, 'getUserDetail']);
+        Route::post('user/update', [SiswaController::class, 'updateSkill']);
     });
     // Route::group(['middleware' => ['role:supervisor|mentor'], "prefix" => "/mentor"], function () {
     //     Route::get('user', [MentorController::class, 'mentorData']);
