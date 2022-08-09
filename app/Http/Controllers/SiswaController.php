@@ -109,7 +109,6 @@ class SiswaController extends Controller
                 }]);
             }]);
         }]);
-
         foreach ($divisi_skill->get() as $key => $value) {
             $data[] = $value->SkillCategory->toArray();
         }
@@ -123,7 +122,6 @@ class SiswaController extends Controller
                 $data_e[] = $data_each[$e]["skor"][0]["nilai"];
                 $data_e_h[] = $data_each[$e]["skor"][0]["nilai_history"];
             }
-
             $data_each_skill[] = [
                 "name" => $name[$i],
                 "average" => array_sum($data_e) / count($data_e),
@@ -182,5 +180,9 @@ class SiswaController extends Controller
                 'nilai_history' => $newHistory
             ]);
         }
+    }
+    public function test()
+    {
+        return UserSkill::all();
     }
 }
