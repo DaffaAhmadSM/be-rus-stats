@@ -38,6 +38,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
 
     Route::group(['middleware' => ['role:student|supervisor|mentor'], "prefix" => "/student"], function () {
         Route::get('user', [SiswaController::class, 'show']);
+        Route::post('user/create', [SiswaController::class, 'store']);
         Route::get('user/detail', [SiswaController::class, 'getUserDetail']);
         Route::post('user/update', [SiswaController::class, 'updateSkill']);
         Route::get('test', [SiswaController::class, 'test']);
