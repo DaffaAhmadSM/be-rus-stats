@@ -10,7 +10,7 @@ class UserSkill extends Model
     use HasFactory;
     protected $guarded = ['id'];
     protected $hidden = ["created_at", "updated_at"];
-    protected $appends = ['status'];
+    protected $appends = ['status' , 'difference'];
     public function User()
     {
         return $this->belongsTo(User::class);
@@ -19,6 +19,12 @@ class UserSkill extends Model
     public function Skill()
     {
         return $this->belongsTo(Skill::class);
+    }
+
+    public function getDifferenceAttribute(){
+        $nilai_now = $this->nilai;
+        $nilai_history = $this->nilai_history;
+        return $nilai_now - $nilai_history;
     }
     public function getStatusAttribute()
     {
