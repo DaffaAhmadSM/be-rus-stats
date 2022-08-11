@@ -2,14 +2,19 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\department;
+use App\Models\divisi;
 use App\Models\DivisionSkill;
 use App\Models\Skill;
+use App\Models\User;
+use App\Models\UserDetail;
 use App\Models\UserSkill;
 use Illuminate\Auth\Events\Validated;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 
 class SiswaController extends Controller
 {
@@ -41,7 +46,54 @@ class SiswaController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        // return 'h';
+        $validator = Validator::make($request->all(), [
+            'email' => 'required|email|unique:users',
+            'nama' => 'required|string',
+            'tanggal_lahir' => 'required|date',
+            'nickname' => 'string',
+            'bio' => 'text',
+            'notelp' => 'string',
+            'divisi' => 'required',
+            'department' => 'required'
+        ]);
+        if ($validator->fails()) {
+            return response()->json(["Error" => $validator->errors()->first()]);
+        }
+        // return '$department';
+        // dd(department::all());
+        $department = department::where('nama', 'like', '%' . $request->department . '%')->first();
+        $divisi = divisi::where('nama', 'like', '%' . $request->divisi . '%')->with('divisiSkill')->first();
+        // $a = [];
+
+        // return [$department->id, $divisi->divisiSkill];
+        if ($divisi->department_id == $department->id) {
+            $user = User::create([
+                'email' => $request->email,
+                'nama' => $request->nama,
+                'tanggal_lahir' => $request->tanggal_lahir,
+                'password' => Hash::make($request->password),
+                'divisi_id' => $divisi->id
+            ]);
+            $userDetail = UserDetail::create([
+                'user_id' => $user->id,
+                'nickname' => $request->nickname != null ? $request : '',
+                'bio' => $request->bio != null ? $request : '',
+                'notelp' => $request->notelp != null ? $request : ''
+            ]);
+            $user->assignRole('student');
+            foreach ($divisi->divisiSkill as $key => $value) {
+                $skill = Skill::where('skill_category_id', $value->skill_category_id)->get();
+                foreach ($skill as $sk) {
+                    UserSkill::create([
+                        'user_id' => $user->id,
+                        'skill_id' => $sk->id,
+                        'nilai' => 30,
+                        'nilai_history' => 0
+                    ]);
+                }
+            }
+        }
     }
 
     /**
