@@ -2,12 +2,13 @@
 
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Auth\Events\Login;
 use Spatie\Permission\Models\Role;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\ExcelController;
 use App\Http\Controllers\LoginController;
-use App\Http\Controllers\MentorController;
 use App\Http\Controllers\SiswaController;
-use Illuminate\Auth\Events\Login;
+use App\Http\Controllers\MentorController;
 
 /*
 |--------------------------------------------------------------------------
@@ -20,13 +21,13 @@ use Illuminate\Auth\Events\Login;
 |
 */
 
-Route::get('/set', function () {
+// Route::get('/set', function () {
     // Role::create(['name' => 'supervisor']);
     // Role::create(['name' => 'mentor']);
     // Role::create(['name' => 'student']);
 
-    User::find(4)->assignRole('student');
-});
+//     User::find(4)->assignRole('student');
+// });
 
 Route::post('/login', [LoginController::class, 'login']);
 
@@ -42,12 +43,5 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
         Route::post('user/update', [SiswaController::class, 'updateSkill']);
         Route::get('test', [SiswaController::class, 'test']);
     });
-    // Route::group(['middleware' => ['role:supervisor|mentor'], "prefix" => "/mentor"], function () {
-    //     Route::get('user', [MentorController::class, 'mentorData']);
-    //     Route::get('users/students', [MentorController::class, 'getStudents']);
-    //     Route::get('user/student/detail/{id}', [MentorController::class, 'getDetail']);
-    // });
-    // Route::group(['middleware' => ['role:supervisor'], "prefix" => "/supervisor"], function () {
-    //     Route::get('user', [MentorController::class, 'MentorData']);
-    // });
+    Route::post('import/excel', [ExcelController::class, "ImportSiswa"]);
 });

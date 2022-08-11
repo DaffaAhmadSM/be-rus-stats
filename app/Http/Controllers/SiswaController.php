@@ -139,7 +139,6 @@ class SiswaController extends Controller
         $overall = array_sum($all_nilai) / count($all_nilai);
         return response()->json([
             "Overall" => round($overall, 1),
-            // "Speciality" => $user_speciality_u_each,
             "user_detail" => $data,
             "radar_chart" => $data_each_skill
         ], 200);
@@ -155,24 +154,7 @@ class SiswaController extends Controller
             return response()->json(["Error" => $validator->errors()->first()]);
         }
         $user = $request->json()->all();
-        // foreach ($request->data as $key => $value) {
-        //     $data = UserSkill::where('id', $value['id'])->get();
-        //     foreach ($data as $ke => $valu) {
-        //         // return $valu['nilai'];
-        //         if ($valu['nilai_history'] == 0) {
-        //             $valu->update([
-        //                 'nilai' =>  $value['nilai'],
-        //                 'nilai_history' => $valu->nilai
-        //             ]);
-        //         }
-        //         return response()->json([
-        //             'message' => 'Data Berhasil Diupdate!',
-        //             'data' => $data
-        //         ]);
-        //     }
-        // }
         for ($i = 0; $i < count($user['data']); $i++) {
-            // var_dump($user['data'][$i]['id']);
             $data = UserSkill::find($user['data'][$i]['id']);
             $newHistory = $data->nilai;
             $data->update([
