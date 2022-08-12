@@ -16,7 +16,7 @@ class CreateSkillsTable extends Migration
         Schema::create('skills', function (Blueprint $table) {
             $table->id();
             $table->string("name");
-            $table->foreignId("skill_category_id")->constrained("skill_categories");
+            $table->foreignId("skill_category_id")->constrained("skill_categories")->onDelete('cascade');
             $table->timestamps();
         });
     }
