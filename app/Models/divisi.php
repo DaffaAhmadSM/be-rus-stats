@@ -9,6 +9,7 @@ class divisi extends Model
 {
     use HasFactory;
     protected $hidden = ["id", "created_at", "updated_at"];
+    protected $fillable = ["nama","department_id"];
     // protected $appends = ['by'];
     public function technical_skill()
     {

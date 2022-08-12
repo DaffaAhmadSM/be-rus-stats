@@ -37,7 +37,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
 
     Route::post('/logout', [LoginController::class, 'logout']);
 
-    Route::group(['middleware' => ['role:student|supervisor|mentor'], "prefix" => "/student"], function () {
+    Route::group(['middleware' => ['role:siswa_pkl|supervisor|mentor'], "prefix" => "/student"], function () {
         Route::get('user', [SiswaController::class, 'show']);
         Route::post('user/create', [SiswaController::class, 'store']);
         Route::get('user/detail', [SiswaController::class, 'getUserDetail']);

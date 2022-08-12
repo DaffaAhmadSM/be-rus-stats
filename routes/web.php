@@ -18,5 +18,5 @@ Route::get('/', function () {
         ->json([
             'message' => 'Authentication Failed',
             'status'  => 'error'
-        ], 403);
+        ], 401);
 })->name("login");
