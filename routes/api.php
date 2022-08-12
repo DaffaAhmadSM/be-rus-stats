@@ -21,11 +21,11 @@ use Illuminate\Auth\Events\Login;
 */
 
 Route::get('/set', function () {
-    // Role::create(['name' => 'supervisor']);
-    // Role::create(['name' => 'mentor']);
-    // Role::create(['name' => 'student']);
-
-    User::find(4)->assignRole('student');
+    // Role::create(['name' => 'pekerja']);
+    // Role::create(['name' => 'guru']);
+    // Role::create(['name' => 'ceo']);
+    Role::deleted(['name' => 'mentor']);
+    // User::find(4)->assignRole('student');
 });
 
 Route::post('/login', [LoginController::class, 'login']);
@@ -35,19 +35,21 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     });
 
     Route::post('/logout', [LoginController::class, 'logout']);
-
-    Route::group(['middleware' => ['role:student|supervisor|mentor'], "prefix" => "/student"], function () {
+    // Route::group(['middleware' => ['']])
+    Route::group(['middleware' => ['role:student|supervisor|pekerja'], "prefix" => "/student"], function () {
         Route::get('user', [SiswaController::class, 'show']);
         Route::post('user/create', [SiswaController::class, 'store']);
         Route::get('user/detail', [SiswaController::class, 'getUserDetail']);
         Route::post('user/update', [SiswaController::class, 'updateSkill']);
         Route::get('test', [SiswaController::class, 'test']);
     });
-    // Route::group(['middleware' => ['role:supervisor|mentor'], "prefix" => "/mentor"], function () {
-    //     Route::get('user', [MentorController::class, 'mentorData']);
-    //     Route::get('users/students', [MentorController::class, 'getStudents']);
-    //     Route::get('user/student/detail/{id}', [MentorController::class, 'getDetail']);
-    // });
+    Route::group(['middleware' => ['role:pekerja|guru|supervisor|ceo'], "prefix" => "/home"], function () {
+        Route::get('/user', [MentorController::class, 'getUser']);
+        Route::get('/students', [MentorController::class, 'getByRole']);
+        Route::get('/student/detail/{id}', [MentorController::class, 'studentDetail']);
+        Route::get('/student/delete/{id}', [MentorController::class, 'deleteStudent']);
+        Route::get('/data', [MentorController::class, 'listDataDepartmentDivisi']);
+    });
     // Route::group(['middleware' => ['role:supervisor'], "prefix" => "/supervisor"], function () {
     //     Route::get('user', [MentorController::class, 'MentorData']);
     // });

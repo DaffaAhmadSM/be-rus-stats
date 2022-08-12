@@ -57,18 +57,6 @@ class User extends Authenticatable
             return  '/student/user/' . $this->id;
         }
     }
-    public function technical_skill()
-    {
-        return $this->belongsToMany(technical_skill::class);
-    }
-    public function art_skill()
-    {
-        return $this->belongsToMany(art_skill::class);
-    }
-    // public function userDetail()
-    // {
-    //     return $this->hasMany(user_detail::class);
-    // }
     public function userHistory()
     {
         return $this->hasMany(user_detail_history::class);
@@ -77,33 +65,12 @@ class User extends Authenticatable
     {
         return $this->belongsTo(divisi::class);
     }
-    public function techskilu()
-    {
-        return $this->hasMany(TechnicalSkillUs::class);
-    }
-    public function artskilu()
-    {
-        return $this->hasMany(ArtSkillU::class);
-    }
-    public function specskilu()
-    {
-        return $this->hasMany(SpecialityU::class);
-    }
-    public function TechHistory()
-    {
-        return $this->hasMany(Technical_Skill_u_history::class);
-    }
-    public function ArtHistory()
-    {
-        return $this->hasMany(Art_Skill_u_history::class);
-    }
-    public function SpesialyHistory()
-    {
-        return $this->hasMany(Speciality_u_history::class);
-    }
-
     public function userDetail()
     {
         return $this->hasOne(UserDetail::class);
+    }
+    public function userSkill()
+    {
+        return $this->hasMany(UserSkill::class);
     }
 }
