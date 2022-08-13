@@ -109,6 +109,7 @@ class SiswaController extends Controller
 
         $user = Auth::user();
         $specialities = SpecialityUser::where("user_id", $user->id)->get();
+        $speciality_each =[];
         foreach ($specialities as $speciality) {
             $speciality_each[] = ["name"=>$speciality->Speciality->nama];
         }
