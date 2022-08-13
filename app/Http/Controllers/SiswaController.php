@@ -2,19 +2,21 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\department;
-use App\Models\divisi;
-use App\Models\DivisionSkill;
-use App\Models\Skill;
 use App\Models\User;
-use App\Models\UserDetail;
+use App\Models\Skill;
+use App\Models\divisi;
 use App\Models\UserSkill;
+use App\Models\department;
+use App\Models\Speciality;
+use App\Models\UserDetail;
+use Illuminate\Http\Request;
+use App\Models\DivisionSkill;
+use App\Models\SpecialityUser;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Auth\Events\Validated;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Hash;
 
 class SiswaController extends Controller
 {
@@ -106,6 +108,10 @@ class SiswaController extends Controller
     {
 
         $user = Auth::user();
+        $specialities = SpecialityUser::where("user_id", $user->id)->get();
+        foreach ($specialities as $speciality) {
+            $speciality_each[] = ["name"=>$speciality->Speciality->nama];
+        }
         return response()->json([
             "Message" => "Success",
             "id" => $user->id,
@@ -113,6 +119,7 @@ class SiswaController extends Controller
             "Age" => date_diff(date_create($user->tanggal_lahir), date_create(date("Y-m-d")))->y,
             "Email" => $user->email,
             "Devision" => $user->divisi->nama,
+            "Speciality" => $speciality_each
         ], 200);
     }
 
@@ -195,6 +202,7 @@ class SiswaController extends Controller
             "radar_chart" => $data_each_skill
         ], 200);
     }
+    
     public function updateSkill(Request $request, $userId)
     {
         $validator = Validator::make($request->all(), [
