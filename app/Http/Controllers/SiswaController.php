@@ -48,54 +48,6 @@ class SiswaController extends Controller
      */
     public function store(Request $request)
     {
-        // return 'h';
-        $validator = Validator::make($request->all(), [
-            'email' => 'required|email|unique:users',
-            'nama' => 'required|string',
-            'tanggal_lahir' => 'required|date',
-            'nickname' => 'string',
-            'bio' => 'text',
-            'notelp' => 'string',
-            'divisi' => 'required',
-            'department' => 'required'
-        ]);
-        if ($validator->fails()) {
-            return response()->json(["Error" => $validator->errors()->first()]);
-        }
-        // return '$department';
-        // dd(department::all());
-        $department = department::where('nama', 'like', '%' . $request->department . '%')->first();
-        $divisi = divisi::where('nama', 'like', '%' . $request->divisi . '%')->with('divisiSkill')->first();
-        // $a = [];
-
-        // return [$department->id, $divisi->divisiSkill];
-        if ($divisi->department_id == $department->id) {
-            $user = User::create([
-                'email' => $request->email,
-                'nama' => $request->nama,
-                'tanggal_lahir' => $request->tanggal_lahir,
-                'password' => Hash::make($request->password),
-                'divisi_id' => $divisi->id
-            ]);
-            $userDetail = UserDetail::create([
-                'user_id' => $user->id,
-                'nickname' => $request->nickname != null ? $request : '',
-                'bio' => $request->bio != null ? $request : '',
-                'notelp' => $request->notelp != null ? $request : ''
-            ]);
-            $user->assignRole('student');
-            foreach ($divisi->divisiSkill as $key => $value) {
-                $skill = Skill::where('skill_category_id', $value->skill_category_id)->get();
-                foreach ($skill as $sk) {
-                    UserSkill::create([
-                        'user_id' => $user->id,
-                        'skill_id' => $sk->id,
-                        'nilai' => 30,
-                        'nilai_history' => 0
-                    ]);
-                }
-            }
-        }
     }
 
     /**
@@ -204,26 +156,7 @@ class SiswaController extends Controller
         ], 200);
     }
     
-    public function updateSkill(Request $request, $userId)
-    {
-        $validator = Validator::make($request->all(), [
-            'data' => 'required|array',
-            'data.*.id' => 'required',
-            'data.*.nilai' => 'required|integer',
-        ]);
-        if ($validator->fails()) {
-            return response()->json(["Error" => $validator->errors()->first()]);
-        }
-        $user = $request->json()->all();
-        for ($i = 0; $i < count($user['data']); $i++) {
-            $data = UserSkill::find($user['data'][$i]['id']);
-            $newHistory = $data->nilai;
-            $data->update([
-                'nilai' => $user['data'][$i]['nilai'],
-                'nilai_history' => $newHistory
-            ]);
-        }
-    }
+    
     public function test()
     {
         return UserSkill::all();

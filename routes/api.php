@@ -9,6 +9,9 @@ use App\Http\Controllers\ExcelController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\SiswaController;
 use App\Http\Controllers\MentorController;
+use App\Imports\UsersImport;
+use Illuminate\Support\Facades\Hash;
+use Maatwebsite\Excel\Facades\Excel;
 
 /*
 |--------------------------------------------------------------------------
@@ -21,13 +24,29 @@ use App\Http\Controllers\MentorController;
 |
 */
 
-// Route::get('/set', function () {
+Route::get('/set', function () {
+    // Role::create(['name' => 'ceo']);
     // Role::create(['name' => 'supervisor']);
-    // Role::create(['name' => 'mentor']);
+    // Role::create(['name' => 'guru']);
+    // Role::create(['name' => 'pekerja']);
     // Role::create(['name' => 'student']);
-
-//     User::find(4)->assignRole('student');
-// });
+    // User::find(10)->assignRole('guru');
+    // User::find(11)->assignRole('guru');
+    // User::find(12)->assignRole('guru');
+    // User::find(13)->assignRole('guru');
+    // User::find(16)->assignRole('pekerja');
+    // User::find(6)->assignRole('supervisor');
+    // User::find(7)->assignRole('supervisor');
+    // User::find(8)->assignRole('supervisor');
+    // User::create([
+    //     'email' => 'suwarno@mail.com',
+    //     'nama' => 'Suwarno',
+    //     'password' => Hash::make('abcde'),
+    //     'divisi_id' => 1,
+    // ]);
+    // return public_path('data.xlsx');
+    // Excel::import(new UsersImport, public_path('data.xlsx'));
+});
 
 Route::post('/login', [LoginController::class, 'login']);
 
@@ -37,12 +56,23 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
 
     Route::post('/logout', [LoginController::class, 'logout']);
 
-    Route::group(['middleware' => ['role:siswa_pkl|supervisor|mentor'], "prefix" => "/student"], function () {
+    Route::group(['middleware' => ['role:student'], "prefix" => "/student"], function () {
         Route::get('user', [SiswaController::class, 'show']);
         Route::post('user/create', [SiswaController::class, 'store']);
         Route::get('user/detail', [SiswaController::class, 'getUserDetail']);
         Route::post('user/update', [SiswaController::class, 'updateSkill']);
         Route::get('test', [SiswaController::class, 'test']);
     });
-    Route::post('import/excel', [ExcelController::class, "ImportSiswa"]);
+    Route::group(['middleware' => ['role:ceo|supervisor|pekerja|guru'], "prefix" => "/home"], function () {
+        Route::get('/user', [MentorController::class, 'getUser']);
+        Route::get('/data', [MentorController::class, 'listDataDepartmentDivisi']);
+        Route::get('/user/students', [MentorController::class, 'getByRole']);
+        Route::post('/user/student/create', [MentorController::class, 'studentCreate']);
+        Route::get('/user/student/detail/{id}', [MentorController::class, 'studentDetail']);
+        Route::post('/user/student/update/{id}', [MentorController::class, 'updateSkill']);
+        Route::get('/user/student/delete/{id}', [MentorController::class, 'deleteStudent']);
+    });
+    // Route::group(['middleware' => ['role:supervisor'], "prefix" => "/supervisor"], function () {
+    //     Route::get('user', [MentorController::class, 'MentorData']);
+    // });
 });
