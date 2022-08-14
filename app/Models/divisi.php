@@ -11,6 +11,9 @@ class divisi extends Model
     protected $hidden = ["id", "created_at", "updated_at"];
     protected $fillable = ["nama","department_id"];
     // protected $appends = ['by'];
+    public function division_skills() {
+ return $this->belongsToMany(SkillCategory::class, 'division_skills', 'division_id', 'id');
+    }
     public function technical_skill()
     {
         return $this->hasMany(technical_skill::class, 'divisi_id', 'id');

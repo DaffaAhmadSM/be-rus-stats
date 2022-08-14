@@ -61,9 +61,13 @@ class User extends Authenticatable
     {
         return $this->hasMany(user_detail_history::class);
     }
-    public function divisi()
-    {
-        return $this->belongsTo(divisi::class);
+    // public function divisi()
+    // {
+    //     return $this->belongsTo(divisi::class);
+    // }
+
+    public function divisi() {
+        return $this->hasOne(divisi::class, 'id', 'divisi_id');
     }
     public function userDetail()
     {

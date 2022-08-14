@@ -112,6 +112,52 @@ class SiswaController extends Controller
 
     public function getUserDetail()
     {
+        // $datas = User::with(['divisi' => function ($query){
+        //     $query->with(['division_skills' => function ($query2) {
+        //         $query2->with(['skills' => function ($q) {
+        //             $q->join('user_skills', 'user_skills.skill_id', 'skills.id')
+        //                 ->where('user_skills.user_id', Auth::id())
+        //                 ->select('skills.*', 'user_skills.nilai', 'user_skills.nilai_history');
+        //         }]);
+        //     }]);
+        // }])
+        //     ->where('id',Auth::id())
+        //     ->get();
+
+        //     foreach ($datas->divisi->division_skills as $key => $data) {
+        //     $average_history_score_length = 0;
+        //     # code...  
+        //     foreach ($data->skills as $key2 => $value) {
+        //         # code...
+        //         $data->average_current_score_sum += $value->nilai;
+        //         $data->average_history_score_sum += $value->nilai_history;
+
+        //         if ($value->nilai_history != 0) {
+        //             $average_history_score_length++;
+        //         }
+        //     }
+        //     $data->average_current_score_sum /= sizeof($data->skills);
+
+        //     if ($average_history_score_length > 0) {
+        //         $data->average_history_score_sum /=  $average_history_score_length;
+        //     } else {
+        //         $data->average_history_score_sum;
+        //     }
+        // }
+
+        // (int) $overall = 0;
+        // $overall_length = 0;
+        // foreach ($datas->divisi->division_skills as $key => $average_data) {
+        //     # code...
+        //     $overall += $average_data->average_current_score_sum;
+        //     $overall_length++;
+        // }
+        // $datas->overall = $overall / $overall_length;
+
+        // return response()->json($datas);
+ 
+        
+        
         $divisi_skill = DivisionSkill::where('division_id', Auth::user()->divisi_id);
         $data = [];
         $divisi_skill->with(['SkillCategory' => function ($q) {
@@ -121,6 +167,8 @@ class SiswaController extends Controller
                 }]);
             }]);
         }]);
+        
+
         foreach ($divisi_skill->get() as $key => $value) {
             $data[] = $value->SkillCategory->toArray();
         }
@@ -131,13 +179,15 @@ class SiswaController extends Controller
         for ($i = 0; $i < count($data_dat); $i++) {
             $data_each = $data_dat[$i];
             for ($e = 0; $e < count($data_each); $e++) {
-                $data_e[] = $data_each[$e]["skor"][0]["nilai"];
-                $data_e_h[] = $data_each[$e]["skor"][0]["nilai_history"];
+                if($data_each[$e]["skor"]){
+                    $data_e[] = $data_each[$e]["skor"]["nilai"];
+                    $data_e_h[] = $data_each[$e]["skor"]["nilai_history"];
+                }
             }
             $data_each_skill[] = [
                 "name" => $name[$i],
-                "average" => array_sum($data_e) / count($data_e),
-                "average_history" => array_sum($data_e_h) / count($data_e_h),
+                "average" => round(array_sum($data_e) / count($data_e),1),
+                "average_history" => round(array_sum($data_e_h) / count($data_e_h),1)
             ];
             unset($data_e);
             unset($data_e_h);
@@ -145,8 +195,10 @@ class SiswaController extends Controller
         foreach (array_merge(...$data_dat) as $key_skor => $value_skor) {
             $data_skor[] = $value_skor["skor"];
         }
-        foreach (array_merge(...$data_skor) as $key_nilai => $value_nilai) {
-            $all_nilai[] = $value_nilai["nilai"];
+        foreach ($data_skor as $key_nilai => $value_nilai) {
+            if($value_nilai){
+                $all_nilai[] = $value_nilai["nilai"];
+            }
         }
         $overall = array_sum($all_nilai) / count($all_nilai);
         return response()->json([

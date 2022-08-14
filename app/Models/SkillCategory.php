@@ -13,4 +13,8 @@ class SkillCategory extends Model
     {
         return $this->hasMany(Skill::class, "skill_category_id", "id");
     }
+
+    public function skills() {
+        return $this->hasMany(Skill::class);
+    }
 }
