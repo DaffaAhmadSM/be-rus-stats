@@ -20,7 +20,7 @@ class LoginController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json(["Error" => $validator->errors()->first()]);
+            return response()->json(["Error" => $validator->errors()->first()], 401);
         }
 
         $user = User::where('email', $request['email'])->first();

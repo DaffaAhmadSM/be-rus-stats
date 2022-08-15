@@ -89,6 +89,12 @@ class MentorController extends Controller
     public function studentDetail($id)
     {
         $user = User::where('id', $id)->first();
+        if (!$user) {
+            return response()->json([
+                'status' => 'Error',
+                'message' => 'Data User Tidak Ditemukan!'
+            ]);
+        }
         if ($user->hasRole('student')) {
             $divisi_skill = DivisionSkill::where('division_id', $user->divisi_id);
             $data = [];

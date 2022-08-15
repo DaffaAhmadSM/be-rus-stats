@@ -113,6 +113,7 @@ class SiswaController extends Controller
                 }]);
             }]);
         }]);
+        // return $divisi_skill->get();
         foreach ($divisi_skill->get() as $key => $value) {
             $data[] = $value->SkillCategory->toArray();
         }
