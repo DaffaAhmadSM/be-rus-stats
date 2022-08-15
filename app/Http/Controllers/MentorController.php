@@ -86,8 +86,8 @@ class MentorController extends Controller
             for ($i = 0; $i < count($data_dat); $i++) {
                 $data_each = $data_dat[$i];
                 for ($e = 0; $e < count($data_each); $e++) {
-                    $data_e[] = $data_each[$e]["skor"][0]["nilai"];
-                    $data_e_h[] = $data_each[$e]["skor"][0]["nilai_history"];
+                    $data_e[] = $data_each[$e]["skor"]["nilai"];
+                    $data_e_h[] = $data_each[$e]["skor"]["nilai_history"];
                 }
                 $data_each_skill[] = [
                     "name" => $name[$i],
@@ -100,15 +100,15 @@ class MentorController extends Controller
             foreach (array_merge(...$data_dat) as $key_skor => $value_skor) {
                 $data_skor[] = $value_skor["skor"];
             }
-            foreach (array_merge(...$data_skor) as $key_nilai => $value_nilai) {
+            foreach ($data_skor as $key_nilai => $value_nilai) {
                 $all_nilai[] = $value_nilai["nilai"];
             }
             $overall = array_sum($all_nilai) / count($all_nilai);
             return response()->json([
                 "Overall" => round($overall, 1),
-                // "Speciality" => $user_speciality_u_each,
                 "user_detail" => $data,
-                "radar_chart" => $data_each_skill
+                "radar_chart" => $data_each_skill,
+                "user" => $user
             ], 200);
         }
     }

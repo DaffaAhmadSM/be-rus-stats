@@ -111,53 +111,7 @@ class SiswaController extends Controller
     }
 
     public function getUserDetail()
-    {
-        // $datas = User::with(['divisi' => function ($query){
-        //     $query->with(['division_skills' => function ($query2) {
-        //         $query2->with(['skills' => function ($q) {
-        //             $q->join('user_skills', 'user_skills.skill_id', 'skills.id')
-        //                 ->where('user_skills.user_id', Auth::id())
-        //                 ->select('skills.*', 'user_skills.nilai', 'user_skills.nilai_history');
-        //         }]);
-        //     }]);
-        // }])
-        //     ->where('id',Auth::id())
-        //     ->get();
-
-        //     foreach ($datas->divisi->division_skills as $key => $data) {
-        //     $average_history_score_length = 0;
-        //     # code...  
-        //     foreach ($data->skills as $key2 => $value) {
-        //         # code...
-        //         $data->average_current_score_sum += $value->nilai;
-        //         $data->average_history_score_sum += $value->nilai_history;
-
-        //         if ($value->nilai_history != 0) {
-        //             $average_history_score_length++;
-        //         }
-        //     }
-        //     $data->average_current_score_sum /= sizeof($data->skills);
-
-        //     if ($average_history_score_length > 0) {
-        //         $data->average_history_score_sum /=  $average_history_score_length;
-        //     } else {
-        //         $data->average_history_score_sum;
-        //     }
-        // }
-
-        // (int) $overall = 0;
-        // $overall_length = 0;
-        // foreach ($datas->divisi->division_skills as $key => $average_data) {
-        //     # code...
-        //     $overall += $average_data->average_current_score_sum;
-        //     $overall_length++;
-        // }
-        // $datas->overall = $overall / $overall_length;
-
-        // return response()->json($datas);
- 
-        
-        
+    {    
         $divisi_skill = DivisionSkill::where('division_id', Auth::user()->divisi_id);
         $data = [];
         $divisi_skill->with(['SkillCategory' => function ($q) {
