@@ -63,10 +63,11 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
         Route::post('user/update', [SiswaController::class, 'updateSkill']);
         Route::get('test', [SiswaController::class, 'test']);
     });
-    Route::group(['middleware' => ['role:ceo|supervisor|pekerja|guru'], "prefix" => "/home"], function () {
+    Route::group(['middleware' => ['role:ceo|supervisor|pekerja|guru'], "prefix" => "/mentor"], function () {
         Route::get('/user', [MentorController::class, 'getUser']);
         Route::get('/data', [MentorController::class, 'listDataDepartmentDivisi']);
-        Route::get('/user/students', [MentorController::class, 'getByRole']);
+        Route::get('/users/students', [MentorController::class, 'getStudents']);
+        // Route::get('/user/students', [MentorController::class, 'getByRole']);
         Route::post('/user/student/create', [MentorController::class, 'studentCreate']);
         Route::get('/user/student/detail/{id}', [MentorController::class, 'studentDetail']);
         Route::post('/user/student/update/{id}', [MentorController::class, 'updateSkill']);

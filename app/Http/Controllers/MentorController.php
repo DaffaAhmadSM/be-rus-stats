@@ -22,43 +22,19 @@ class MentorController extends Controller
         $res = Auth::user();
         return response()->json($res);
     }
+    public function getStudents() {
+        $res = User::role('student')->paginate(6);
+        return response()->json($res);
+    }
     public function getByRole()
     {
         $user = User::find(Auth::id());
         $login = Auth::user();
         if ($user) {
-            if ($login->hasRole('ceo')) {
+            if ($login->hasRole('ceo')||$login->hasRole('supervisor')||$login->hasRole('guru')||$login->hasRole('pekerja')) {
                 $response = [
                     'user' => $login,
-                    'guru' => User::role('guru')->get(),
-                    'pekerja' => User::role('pekerja')->get(),
-                    'student' => User::role('student')->get()
-                ];
-                return response()->json($response);
-            }
-            if ($login->hasRole('supervisor')) {
-                $allData = User::all();
-                $response = [
-                    'user' => $login,
-                    'pekerja' => User::role('pekerja')->get(),
-                    'student' => User::role('student')->get()
-                ];
-                return response()->json($response);
-            }
-            if ($login->hasRole('guru')) {
-                $allData = User::all();
-                $response = [
-                    'user' => $user,
-                    'pekerja' => User::role('pekerja')->get(),
-                    'student' => User::role('student')->get()
-                ];
-                return response()->json($response);
-            }
-            if ($login->hasRole('pekerja')) {
-                $dataStudent = User::role('student');
-                $response = [
-                    'user' => $user,
-                    'students' => $dataStudent->get()
+                    'student' => User::role('student')->paginate(5)
                 ];
                 return response()->json($response);
             }

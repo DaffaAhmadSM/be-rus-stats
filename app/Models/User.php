@@ -2,12 +2,13 @@
 
 namespace App\Models;
 
+use App\Models\divisi;
+use Laravel\Sanctum\HasApiTokens;
+use Spatie\Permission\Traits\HasRoles;
+use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
-use Laravel\Sanctum\HasApiTokens;
-use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
 {
@@ -19,7 +20,7 @@ class User extends Authenticatable
      * @var array<int, string>
      */
     protected $guarded = ['id'];
-    /**
+        /**
      * The attributes that should be hidden for serialization.
      *
      * @var array<int, string>
@@ -41,7 +42,7 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
     // protected $appends = ['link'];
-    protected $appends = ['skill'];
+    protected $appends = ['skill', 'division'];
     // public function getLinkAttribute()
     // {
     //     // $this->roles();
@@ -56,6 +57,10 @@ class User extends Authenticatable
         if ($this->hasRole('student')) {
             return  '/student/user/' . $this->id;
         }
+    }
+    public function getDivisionAttribute(){
+        $divisi = divisi::where('id', $this->divisi_id)->first();
+        return $divisi->nama;   
     }
     public function userHistory()
     {
