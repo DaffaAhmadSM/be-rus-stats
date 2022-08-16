@@ -2,18 +2,19 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\department;
-use App\Models\divisi;
-use App\Models\DivisionSkill;
-use App\Models\Skill;
 use App\Models\User;
-use App\Models\UserDetail;
+use App\Models\Skill;
+use App\Models\divisi;
+use App\Models\Average;
 use App\Models\UserSkill;
+use App\Models\department;
+use App\Models\UserDetail;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Facades\Hash;
+use App\Models\DivisionSkill;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Validator;
 
 class MentorController extends Controller
 {
@@ -23,22 +24,27 @@ class MentorController extends Controller
         return response()->json($res);
     }
     public function getStudents() {
-        $res = User::role('student')->paginate(6);
+        $res = User::role('student')->paginate(3);
+        return response()->json($res);
+    }
+    public function searchUsers(Request $request) {
+        $res = User::with('divisi')->role('student')
+        ->where('nama', 'like', '%' . $request->name . '%')
+        ->paginate(6);
+
         return response()->json($res);
     }
     public function getByRole()
     {
         $user = User::find(Auth::id());
         $login = Auth::user();
-        if ($user) {
             if ($login->hasRole('ceo')||$login->hasRole('supervisor')||$login->hasRole('guru')||$login->hasRole('pekerja')) {
                 $response = [
                     'user' => $login,
-                    'student' => User::role('student')->paginate(5)
+                    'student' => User::role('student')->paginate(3)
                 ];
                 return response()->json($response);
             }
-        }
     }
     public function listDataDepartmentDivisi()
     {
@@ -64,7 +70,7 @@ class MentorController extends Controller
     }
     public function studentDetail($id)
     {
-        $user = User::where('id', $id)->first();
+        $user = User::where('id', $id)->with('divisi')->first();
         if ($user->hasRole('student')) {
             $divisi_skill = DivisionSkill::where('division_id', $user->divisi_id);
             $data = [];
@@ -118,18 +124,18 @@ class MentorController extends Controller
             'email' => 'required|email|unique:users',
             'nama' => 'required|string',
             'tanggal_lahir' => 'required|date',
+            'password' => 'required',
             'nickname' => 'string',
             'bio' => 'text',
             'notelp' => 'string',
-            'divisi' => 'required',
-            'department' => 'required'
+            'divisi' => 'required|integer',
+            'department' => 'required|integer'
         ]);
         if ($validator->fails()) {
-            return response()->json(["Error" => $validator->errors()->first()]);
+            return response()->json(["Error" => $validator->errors()->first()], 400);
         }
-        $department = department::where('nama', 'like', '%' . $request->department . '%')->first();
-        $divisi = divisi::where('nama', 'like', '%' . $request->divisi . '%')->with('divisiSkill')->first();
-        if ($divisi->department_id == $department->id) {
+        $department = department::where('id', $request->department)->first();
+        $divisi = divisi::where('id', $request->divisi)->with('divisiSkill')->first();
             $user = User::create([
                 'email' => $request->email,
                 'nama' => $request->nama,
@@ -155,26 +161,50 @@ class MentorController extends Controller
                     ]);
                 }
             }
-        }
-    }
-    public function updateSkill(Request $request, $userId)
-    {
-        $validator = Validator::make($request->all(), [
-            'data' => 'required|array',
-            'data.*.id' => 'required',
-            'data.*.nilai' => 'required|integer',
-        ]);
-        if ($validator->fails()) {
-            return response()->json(["Error" => $validator->errors()->first()]);
-        }
-        $user = $request->json()->all();
-        for ($i = 0; $i < count($user['data']); $i++) {
-            $data = UserSkill::find($user['data'][$i]['id']);
-            $newHistory = $data->nilai;
-            $data->update([
-                'nilai' => $user['data'][$i]['nilai'],
-                'nilai_history' => $newHistory
+
+            Average::create([
+                'user_id' => $user->id,
+                'average' => 30,
             ]);
-        }
+
+            return response()->json(["message" => "data created"], 201);
+    }
+    public function updateSkill(Request $request)
+    {
+
+        $request->validate([
+            'user_skills' => 'required'
+        ]);
+        return response()->json($request->all());
+
+        foreach ($request->user_skills as $key => $user_skill) {
+            # code...
+            $res = UserSkill::findOrFail($user_skill->id);
+            // $res->update([
+            // 'nilai' => $user_skill->nilai,
+            // 'nilai_history' => $res['nilai']
+            // ]);
+            return response()->json($res);
+        } 
+
+        // $res = U
+
+        // $validator = Validator::make($request->all(), [
+        //     'data' => 'required|array',
+        //     'data.*.id' => 'required',
+        //     'data.*.nilai' => 'required|integer',
+        // ]);
+        // if ($validator->fails()) {
+        //     return response()->json(["Error" => $validator->errors()->first()], 400);
+        // }
+        // $user = $request->json()->all();
+        // for ($i = 0; $i < count($user['data']); $i++) {
+        //     $data = UserSkill::find($user['data'][$i]['id']);
+        //     $newHistory = $data->nilai;
+        //     $data->update([
+        //         'nilai' => $user['data'][$i]['nilai'],
+        //         'nilai_history' => $newHistory
+        //     ]);
+        // }
     }
 }

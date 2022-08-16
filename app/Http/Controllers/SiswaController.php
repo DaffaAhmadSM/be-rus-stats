@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use App\Models\Skill;
 use App\Models\divisi;
+use App\Models\Average;
 use App\Models\UserSkill;
 use App\Models\department;
 use App\Models\Speciality;
@@ -58,7 +59,7 @@ class SiswaController extends Controller
      */
     public function show()
     {
-
+        $overall = Average::where('user_id', Auth::id())->first();
         $user = Auth::user();
         $specialities = SpecialityUser::where("user_id", $user->id)->get();
         $speciality_each =[];
@@ -69,6 +70,7 @@ class SiswaController extends Controller
             "Message" => "Success",
             "id" => $user->id,
             "nama" => $user->nama,
+            "Overall" => round($overall->average, 1),
             "Age" => date_diff(date_create($user->tanggal_lahir), date_create(date("Y-m-d")))->y,
             "Email" => $user->email,
             "Devision" => $user->divisi->nama,
@@ -146,17 +148,17 @@ class SiswaController extends Controller
             unset($data_e);
             unset($data_e_h);
         }
-        foreach (array_merge(...$data_dat) as $key_skor => $value_skor) {
-            $data_skor[] = $value_skor["skor"];
-        }
-        foreach ($data_skor as $key_nilai => $value_nilai) {
-            if($value_nilai){
-                $all_nilai[] = $value_nilai["nilai"];
-            }
-        }
-        $overall = array_sum($all_nilai) / count($all_nilai);
+        // foreach (array_merge(...$data_dat) as $key_skor => $value_skor) {
+        //     $data_skor[] = $value_skor["skor"];
+        // }
+        // foreach ($data_skor as $key_nilai => $value_nilai) {
+        //     if($value_nilai){
+        //         $all_nilai[] = $value_nilai["nilai"];
+        //     }
+        // }
+        // $overall = array_sum($all_nilai) / count($all_nilai);
         return response()->json([
-            "Overall" => round($overall, 1),
+            
             "user_detail" => $data,
             "radar_chart" => $data_each_skill
         ], 200);

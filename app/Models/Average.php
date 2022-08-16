@@ -8,4 +8,6 @@ use Illuminate\Database\Eloquent\Model;
 class Average extends Model
 {
     use HasFactory;
+
+    protected $fillable = ['user_id', 'average'];
 }

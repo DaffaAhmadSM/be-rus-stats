@@ -20,22 +20,15 @@ class LoginController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json(["Error" => $validator->errors()->first()]);
+            return response()->json(["Error" => $validator->errors()->first()], 401);
         }
 
         $user = User::where('email', $request['email'])->first();
-        if (!$user) {
-            return response()
-                ->json([
-                    'message' => 'Invalid Your Email!',
-                    'status'  => 'error'
-                ], 401);
-        }
         $passwordUser = Hash::check($request->password, $user->password);
-        if (!$passwordUser) {
+        if (!$user || !$passwordUser) {
             return response()
                 ->json([
-                    'message' => 'Invalid Your Password!',
+                    'message' => 'Email or Password not correct',
                     'status'  => 'error'
                 ], 401);
         }
@@ -44,7 +37,7 @@ class LoginController extends Controller
             "message" => 'Login Success',
             "token" => $token,
             "role" => $user->getRoleNames()->first()
-        ]);
+        ],200);
     }
 
     public function logout()
