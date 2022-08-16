@@ -11,6 +11,7 @@ use App\Models\department;
 use App\Models\UserDetail;
 use Illuminate\Http\Request;
 use App\Models\DivisionSkill;
+use App\Models\Profile;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Http;
@@ -147,11 +148,13 @@ class MentorController extends Controller
             'password' => Hash::make($request->password),
             'divisi_id' => $divisi->id
         ]);
-        $userDetail = UserDetail::create([
+        $userDetail = Profile::create([
             'user_id' => $user->id,
             'nickname' => $request->nickname != null ? $request : '',
             'bio' => $request->bio != null ? $request : '',
-            'notelp' => $request->notelp != null ? $request : ''
+            'notelp' => $request->notelp != null ? $request : '',
+            'negara_id' => 60,
+            'kota_id' => $request->kota_id
         ]);
         $user->assignRole('student');
         foreach ($divisi->divisiSkill as $key => $value) {
