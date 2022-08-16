@@ -63,15 +63,21 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
         Route::get('test', [SiswaController::class, 'test']);
     });
     Route::group(['middleware' => ['role:ceo|supervisor|pekerja|guru'], "prefix" => "/mentor"], function () {
-        Route::post('user/update', [MentorController::class, 'updateSkill']);
-        Route::get('/user', [MentorController::class, 'getUser']);
         Route::get('/data', [MentorController::class, 'listDataDepartmentDivisi']);
-        Route::get('/users/students', [MentorController::class, 'getStudents']); 
-        Route::post('/users/search', [MentorController::class, 'searchUsers']);
-        Route::post('/users/updateskills', [MentorController::class, 'updateSkill']);
-        Route::post('/user/student/create', [MentorController::class, 'studentCreate']);
-        Route::get('/user/student/detail/{id}', [MentorController::class, 'studentDetail']); 
-        Route::get('/user/student/delete/{id}', [MentorController::class, 'deleteStudent']);
+        
+        Route::group(["prefix" => "/user"], function() {
+            Route::get('/', [MentorController::class, 'getUser']);
+            Route::post('/search', [MentorController::class, 'searchUsers']);
+            
+            Route::group(["prefix" => "/student"], function() {
+                Route::get('/', [MentorController::class, 'getStudents']);
+                Route::post('/create', [MentorController::class, 'studentCreate']);
+                Route::post('/updateskills', [MentorController::class, 'updateSkill']);
+                Route::get('/detail/{id}', [MentorController::class, 'studentDetail']); 
+                Route::get('/delete/{id}', [MentorController::class, 'deleteStudent']);
+            });
+        });
+        
     });
     // Route::group(['middleware' => ['role:supervisor'], "prefix" => "/supervisor"], function () {
     //     Route::get('user', [MentorController::class, 'MentorData']);

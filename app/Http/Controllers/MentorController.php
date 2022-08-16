@@ -88,7 +88,6 @@ class MentorController extends Controller
                 $data_dat[] = $value["data"];
                 $name[] = $value["name"];
             }
-            // return $divisi_skill->get();
             for ($i = 0; $i < count($data_dat); $i++) {
                 $data_each = $data_dat[$i];
                 for ($e = 0; $e < count($data_each); $e++) {
@@ -102,12 +101,6 @@ class MentorController extends Controller
                 ];
                 unset($data_e);
                 unset($data_e_h);
-            }
-            foreach (array_merge(...$data_dat) as $key_skor => $value_skor) {
-                $data_skor[] = $value_skor["skor"];
-            }
-            foreach ($data_skor as $key_nilai => $value_nilai) {
-                $all_nilai[] = $value_nilai["nilai"];
             }
             $overall = array_sum($all_nilai) / count($all_nilai);
             return response()->json([

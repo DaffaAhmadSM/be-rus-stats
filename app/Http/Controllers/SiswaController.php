@@ -66,6 +66,13 @@ class SiswaController extends Controller
         foreach ($specialities as $speciality) {
             $speciality_each[] = ["name"=>$speciality->Speciality->nama];
         }
+        if ($overall->average >= 90){
+            $rank = "Gold";
+        }elseif($overall->average >= 70){
+            $rank = "Silver";
+        }else{
+            $rank = "Bronze";
+        }
         return response()->json([
             "Message" => "Success",
             "id" => $user->id,
@@ -73,6 +80,7 @@ class SiswaController extends Controller
             "Overall" => round($overall->average, 1),
             "Age" => date_diff(date_create($user->tanggal_lahir), date_create(date("Y-m-d")))->y,
             "Email" => $user->email,
+            "rank" => $rank,
             "Devision" => $user->divisi->nama,
             "Speciality" => $speciality_each
         ], 200);
