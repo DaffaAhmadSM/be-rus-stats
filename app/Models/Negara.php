@@ -5,9 +5,13 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Average extends Model
+class Negara extends Model
 {
     use HasFactory;
+    protected $guarded = ['id'];
 
-    protected $fillable = ['user_id', 'average'];
+    public function cities()
+    {
+        return $this->hasMany(Kota::class);
+    }
 }

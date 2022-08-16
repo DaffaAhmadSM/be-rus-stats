@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use App\Models\Skill;
 use App\Models\divisi;
+use App\Models\Average;
 use App\Models\UserSkill;
 use App\Models\department;
 use App\Models\Speciality;
@@ -58,7 +59,7 @@ class SiswaController extends Controller
      */
     public function show()
     {
-
+        $overall = Average::where('user_id', Auth::id())->first();
         $user = Auth::user();
         $specialities = SpecialityUser::where("user_id", $user->id)->get();
         $speciality_each = [];
@@ -69,6 +70,7 @@ class SiswaController extends Controller
             "Message" => "Success",
             "id" => $user->id,
             "nama" => $user->nama,
+            "Overall" => round($overall->average, 1),
             "Age" => date_diff(date_create($user->tanggal_lahir), date_create(date("Y-m-d")))->y,
             "Email" => $user->email,
             "Devision" => $user->divisi->nama,

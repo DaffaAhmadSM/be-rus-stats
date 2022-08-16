@@ -8,11 +8,12 @@ use Illuminate\Database\Eloquent\Model;
 class divisi extends Model
 {
     use HasFactory;
-    protected $hidden = ["id", "created_at", "updated_at"];
-    protected $fillable = ["nama","department_id"];
+    protected $hidden = ["created_at", "updated_at"];
+    protected $fillable = ["nama", "department_id"];
     // protected $appends = ['by'];
-    public function division_skills() {
- return $this->belongsToMany(SkillCategory::class, 'division_skills', 'division_id', 'id');
+    public function division_skills()
+    {
+        return $this->belongsToMany(SkillCategory::class, 'division_skills', 'division_id', 'id');
     }
     public function technical_skill()
     {

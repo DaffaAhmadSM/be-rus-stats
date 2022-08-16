@@ -2,6 +2,8 @@
 
 namespace App\Imports;
 
+use App\Models\Kota;
+use App\Models\Negara;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Maatwebsite\Excel\Concerns\ToModel;
@@ -24,6 +26,10 @@ class UsersImport implements ToModel, WithHeadingRow
         //     "email" => $row['email'],
         //     "password" => Hash::make('abcde'),
         //     'divisi_id' => $row['divisi']
+        // ]);
+        // return new Kota([
+        //     'nama' => $row['kota'],
+        //     'negara_id' => $row['id']
         // ]);
     }
 }
