@@ -16,6 +16,6 @@ class Skill extends Model
 
     public function Skor()
     {
-        return $this->hasMany(UserSkill::class, 'skill_id', 'id');
+        return $this->hasOne(UserSkill::class, 'skill_id', 'id');
     }
 }

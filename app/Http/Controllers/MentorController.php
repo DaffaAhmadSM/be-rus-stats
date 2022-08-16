@@ -22,43 +22,19 @@ class MentorController extends Controller
         $res = Auth::user();
         return response()->json($res);
     }
+    public function getStudents() {
+        $res = User::role('student')->paginate(6);
+        return response()->json($res);
+    }
     public function getByRole()
     {
         $user = User::find(Auth::id());
         $login = Auth::user();
         if ($user) {
-            if ($login->hasRole('ceo')) {
+            if ($login->hasRole('ceo')||$login->hasRole('supervisor')||$login->hasRole('guru')||$login->hasRole('pekerja')) {
                 $response = [
                     'user' => $login,
-                    'guru' => User::role('guru')->get(),
-                    'pekerja' => User::role('pekerja')->get(),
-                    'student' => User::role('student')->get()
-                ];
-                return response()->json($response);
-            }
-            if ($login->hasRole('supervisor')) {
-                $allData = User::all();
-                $response = [
-                    'user' => $login,
-                    'pekerja' => User::role('pekerja')->get(),
-                    'student' => User::role('student')->get()
-                ];
-                return response()->json($response);
-            }
-            if ($login->hasRole('guru')) {
-                $allData = User::all();
-                $response = [
-                    'user' => $user,
-                    'pekerja' => User::role('pekerja')->get(),
-                    'student' => User::role('student')->get()
-                ];
-                return response()->json($response);
-            }
-            if ($login->hasRole('pekerja')) {
-                $dataStudent = User::role('student');
-                $response = [
-                    'user' => $user,
-                    'students' => $dataStudent->get()
+                    'student' => User::role('student')->paginate(5)
                 ];
                 return response()->json($response);
             }
@@ -116,8 +92,8 @@ class MentorController extends Controller
             for ($i = 0; $i < count($data_dat); $i++) {
                 $data_each = $data_dat[$i];
                 for ($e = 0; $e < count($data_each); $e++) {
-                    $data_e[] = $data_each[$e]["skor"][0]["nilai"];
-                    $data_e_h[] = $data_each[$e]["skor"][0]["nilai_history"];
+                    $data_e[] = $data_each[$e]["skor"]["nilai"];
+                    $data_e_h[] = $data_each[$e]["skor"]["nilai_history"];
                 }
                 $data_each_skill[] = [
                     "name" => $name[$i],
@@ -130,15 +106,15 @@ class MentorController extends Controller
             foreach (array_merge(...$data_dat) as $key_skor => $value_skor) {
                 $data_skor[] = $value_skor["skor"];
             }
-            foreach (array_merge(...$data_skor) as $key_nilai => $value_nilai) {
+            foreach ($data_skor as $key_nilai => $value_nilai) {
                 $all_nilai[] = $value_nilai["nilai"];
             }
             $overall = array_sum($all_nilai) / count($all_nilai);
             return response()->json([
                 "Overall" => round($overall, 1),
-                // "Speciality" => $user_speciality_u_each,
                 "user_detail" => $data,
-                "radar_chart" => $data_each_skill
+                "radar_chart" => $data_each_skill,
+                "user" => $user
             ], 200);
         }
     }

@@ -2,19 +2,21 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\department;
-use App\Models\divisi;
-use App\Models\DivisionSkill;
-use App\Models\Skill;
 use App\Models\User;
-use App\Models\UserDetail;
+use App\Models\Skill;
+use App\Models\divisi;
 use App\Models\UserSkill;
+use App\Models\department;
+use App\Models\Speciality;
+use App\Models\UserDetail;
+use Illuminate\Http\Request;
+use App\Models\DivisionSkill;
+use App\Models\SpecialityUser;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Auth\Events\Validated;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Hash;
 
 class SiswaController extends Controller
 {
@@ -58,6 +60,11 @@ class SiswaController extends Controller
     {
 
         $user = Auth::user();
+        $specialities = SpecialityUser::where("user_id", $user->id)->get();
+        $speciality_each = [];
+        foreach ($specialities as $speciality) {
+            $speciality_each[] = ["name" => $speciality->Speciality->nama];
+        }
         return response()->json([
             "Message" => "Success",
             "id" => $user->id,
@@ -65,6 +72,7 @@ class SiswaController extends Controller
             "Age" => date_diff(date_create($user->tanggal_lahir), date_create(date("Y-m-d")))->y,
             "Email" => $user->email,
             "Devision" => $user->divisi->nama,
+            "Speciality" => $speciality_each
         ], 200);
     }
 
@@ -113,7 +121,6 @@ class SiswaController extends Controller
                 }]);
             }]);
         }]);
-        // return $divisi_skill->get();
         foreach ($divisi_skill->get() as $key => $value) {
             $data[] = $value->SkillCategory->toArray();
         }
@@ -124,13 +131,15 @@ class SiswaController extends Controller
         for ($i = 0; $i < count($data_dat); $i++) {
             $data_each = $data_dat[$i];
             for ($e = 0; $e < count($data_each); $e++) {
-                $data_e[] = $data_each[$e]["skor"][0]["nilai"];
-                $data_e_h[] = $data_each[$e]["skor"][0]["nilai_history"];
+                if ($data_each[$e]["skor"]) {
+                    $data_e[] = $data_each[$e]["skor"]["nilai"];
+                    $data_e_h[] = $data_each[$e]["skor"]["nilai_history"];
+                }
             }
             $data_each_skill[] = [
                 "name" => $name[$i],
-                "average" => array_sum($data_e) / count($data_e),
-                "average_history" => array_sum($data_e_h) / count($data_e_h),
+                "average" => round(array_sum($data_e) / count($data_e), 1),
+                "average_history" => round(array_sum($data_e_h) / count($data_e_h), 1)
             ];
             unset($data_e);
             unset($data_e_h);
@@ -138,8 +147,10 @@ class SiswaController extends Controller
         foreach (array_merge(...$data_dat) as $key_skor => $value_skor) {
             $data_skor[] = $value_skor["skor"];
         }
-        foreach (array_merge(...$data_skor) as $key_nilai => $value_nilai) {
-            $all_nilai[] = $value_nilai["nilai"];
+        foreach ($data_skor as $key_nilai => $value_nilai) {
+            if ($value_nilai) {
+                $all_nilai[] = $value_nilai["nilai"];
+            }
         }
         $overall = array_sum($all_nilai) / count($all_nilai);
         return response()->json([
@@ -148,6 +159,7 @@ class SiswaController extends Controller
             "radar_chart" => $data_each_skill
         ], 200);
     }
+
 
     public function test()
     {
