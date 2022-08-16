@@ -62,9 +62,9 @@ class SiswaController extends Controller
         $overall = Average::where('user_id', Auth::id())->first();
         $user = Auth::user();
         $specialities = SpecialityUser::where("user_id", $user->id)->get();
-        $speciality_each =[];
+        $speciality_each = [];
         foreach ($specialities as $speciality) {
-            $speciality_each[] = ["name"=>$speciality->Speciality->nama];
+            $speciality_each[] = ["name" => $speciality->Speciality->nama];
         }
         if ($overall->average >= 90){
             $rank = "Gold";
@@ -121,7 +121,7 @@ class SiswaController extends Controller
     }
 
     public function getUserDetail()
-    {    
+    {
         $divisi_skill = DivisionSkill::where('division_id', Auth::user()->divisi_id);
         $data = [];
         $divisi_skill->with(['SkillCategory' => function ($q) {
@@ -131,8 +131,6 @@ class SiswaController extends Controller
                 }]);
             }]);
         }]);
-        
-
         foreach ($divisi_skill->get() as $key => $value) {
             $data[] = $value->SkillCategory->toArray();
         }
@@ -143,36 +141,36 @@ class SiswaController extends Controller
         for ($i = 0; $i < count($data_dat); $i++) {
             $data_each = $data_dat[$i];
             for ($e = 0; $e < count($data_each); $e++) {
-                if($data_each[$e]["skor"]){
+                if ($data_each[$e]["skor"]) {
                     $data_e[] = $data_each[$e]["skor"]["nilai"];
                     $data_e_h[] = $data_each[$e]["skor"]["nilai_history"];
                 }
             }
             $data_each_skill[] = [
                 "name" => $name[$i],
-                "average" => round(array_sum($data_e) / count($data_e),1),
-                "average_history" => round(array_sum($data_e_h) / count($data_e_h),1)
+                "average" => round(array_sum($data_e) / count($data_e), 1),
+                "average_history" => round(array_sum($data_e_h) / count($data_e_h), 1)
             ];
             unset($data_e);
             unset($data_e_h);
         }
-        // foreach (array_merge(...$data_dat) as $key_skor => $value_skor) {
-        //     $data_skor[] = $value_skor["skor"];
-        // }
-        // foreach ($data_skor as $key_nilai => $value_nilai) {
-        //     if($value_nilai){
-        //         $all_nilai[] = $value_nilai["nilai"];
-        //     }
-        // }
-        // $overall = array_sum($all_nilai) / count($all_nilai);
+        foreach (array_merge(...$data_dat) as $key_skor => $value_skor) {
+            $data_skor[] = $value_skor["skor"];
+        }
+        foreach ($data_skor as $key_nilai => $value_nilai) {
+            if ($value_nilai) {
+                $all_nilai[] = $value_nilai["nilai"];
+            }
+        }
+        $overall = array_sum($all_nilai) / count($all_nilai);
         return response()->json([
-            
+            "Overall" => round($overall, 1),
             "user_detail" => $data,
             "radar_chart" => $data_each_skill
         ], 200);
     }
-    
-    
+
+
     public function test()
     {
         return UserSkill::all();

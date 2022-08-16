@@ -20,7 +20,7 @@ class User extends Authenticatable
      * @var array<int, string>
      */
     protected $guarded = ['id'];
-        /**
+    /**
      * The attributes that should be hidden for serialization.
      *
      * @var array<int, string>
@@ -29,7 +29,7 @@ class User extends Authenticatable
         'password',
         'remember_token',
         'created_at',
-        'updated_at',
+        // 'updated_at',
         'roles'
     ];
 
@@ -58,9 +58,10 @@ class User extends Authenticatable
             return  '/student/user/' . $this->id;
         }
     }
-    public function getDivisionAttribute(){
+    public function getDivisionAttribute()
+    {
         $divisi = divisi::where('id', $this->divisi_id)->first();
-        return $divisi->nama;   
+        return $divisi->nama;
     }
     public function userHistory()
     {
@@ -71,7 +72,8 @@ class User extends Authenticatable
     //     return $this->belongsTo(divisi::class);
     // }
 
-    public function divisi() {
+    public function divisi()
+    {
         return $this->hasOne(divisi::class, 'id', 'divisi_id');
     }
     public function userDetail()
@@ -81,5 +83,10 @@ class User extends Authenticatable
     public function userSkill()
     {
         return $this->hasMany(UserSkill::class);
+    }
+
+    public function profile()
+    {
+        return $this->hasOne(Profile::class, 'user_id', 'id');
     }
 }
