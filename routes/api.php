@@ -101,7 +101,8 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::get('/countries/{id}/cities', [CityController::class, 'show']);
     Route::get('/departments/{id}/divisions', [DivisionController::class, 'show']);
     Route::post('users/{id}/updateaccount', [UserController::class, 'update']);
-    Route::get('users/{id}/getbyuserid', [UserController::class, 'show']);
+    Route::get('/users/{id}/getbyuserid', [UserController::class, 'show']);
+    Route::get('/users/{id}/roles', [UserController::class, 'getRoleById']);
 
     Route::group(['middleware' => ['role:student'], "prefix" => "/student"], function () {
         Route::get('user', [SiswaController::class, 'show']);

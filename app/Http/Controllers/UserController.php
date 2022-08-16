@@ -89,4 +89,16 @@ class UserController extends Controller
     {
         //
     }
+
+    public function getRoleById($id)
+    {
+        $res = User::with(['divisi', 'profile' => function ($query) {
+            $query->with(['country', 'city']);
+        }])
+            ->findOrFail($id);
+
+        return response()->json(
+            $res->getRoleNames()->first()
+        );
+    }
 }
