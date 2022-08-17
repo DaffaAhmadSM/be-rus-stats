@@ -112,21 +112,21 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     });
     Route::group(['middleware' => ['role:ceo|supervisor|pekerja|guru'], "prefix" => "/mentor"], function () {
         Route::get('/data', [MentorController::class, 'listDataDepartmentDivisi']);
-        
-        Route::group(["prefix" => "/user"], function() {
+
+        Route::group(["prefix" => "/user"], function () {
             Route::get('/', [MentorController::class, 'getUser']);
             Route::post('/search', [MentorController::class, 'searchUsers']);
-            Route::get('/top3', [MentorController::class, 'top3']);
+            Route::get('/top3/gold', [MentorController::class, 'top3gold']);
+            Route::get('/top3/silver', [MentorController::class, 'top3silver']);
             Route::post('/updateskills', [MentorController::class, 'updateSkill']);
-            
-            Route::group(["prefix" => "/student"], function() {
+
+            Route::group(["prefix" => "/student"], function () {
                 Route::get('/', [MentorController::class, 'getStudents']);
                 Route::post('/create', [MentorController::class, 'studentCreate']);
-                Route::get('/detail/{id}', [MentorController::class, 'studentDetail']); 
+                Route::get('/detail/{id}', [MentorController::class, 'studentDetail']);
                 Route::get('/delete/{id}', [MentorController::class, 'deleteStudent']);
             });
         });
-        
     });
     // Route::group(['middleware' => ['role:supervisor'], "prefix" => "/supervisor"], function () {
     //     Route::get('user', [MentorController::class, 'MentorData']);

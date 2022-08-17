@@ -28,7 +28,7 @@ class MentorController extends Controller
     }
     public function getStudents()
     {
-        $res = User::with('divisi')->role('student')->paginate(3); 
+        $res = User::with('divisi')->role('student')->paginate(3);
         return response()->json($res, 200);
     }
     public function searchUsers(Request $request)
@@ -209,14 +209,19 @@ class MentorController extends Controller
         // }
     }
 
-    public function top3 () {
-        
+    public function top3gold()
+    {
+
         $top3gold = Average::where('average', '>=', 90)->orderBy('average', 'desc')->take(3)->get();
+
+        return response()->json($top3gold);
+    }
+
+    public function top3silver()
+    {
+
         $top3silver = Average::where('average', '>=', 70)->where('average', '<', 90)->orderBy('average', 'desc')->take(3)->get();
 
-        return response()->json([
-            "gold" => $top3gold,
-            "silver" => $top3silver
-        ], 200);
+        return response()->json($top3silver);
     }
 }
