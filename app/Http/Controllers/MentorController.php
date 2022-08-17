@@ -21,15 +21,15 @@ class MentorController extends Controller
 {
     public function getUser()
     {
-        $res = User::with(['divisi', 'profile' => function ($query) {
+        $res = User::with(['profile' => function ($query) {
             $query->with(['country', 'city']);
         }])->findOrFail(Auth::id());
         return response()->json($res);
     }
     public function getStudents()
     {
-        $res = User::with('divisi')->role('student')->paginate(6);
-        return response()->json($res);
+        $res = User::with('divisi')->role('student')->paginate(3); 
+        return response()->json($res, 200);
     }
     public function searchUsers(Request $request)
     {
@@ -107,12 +107,12 @@ class MentorController extends Controller
                 unset($data_e);
                 unset($data_e_h);
             }
-            $overall = array_sum($all_nilai) / count($all_nilai);
+            $overall = Average::where('user_id', $id)->first();
             return response()->json([
-                "Overall" => round($overall, 1),
+                "user" => $user,
+                "Overall" => round($overall->average, 1),
                 "user_detail" => $data,
                 "radar_chart" => $data_each_skill,
-                "user" => $user
             ], 200);
         }
     }
@@ -207,5 +207,16 @@ class MentorController extends Controller
         //         'nilai_history' => $newHistory
         //     ]);
         // }
+    }
+
+    public function top3 () {
+        
+        $top3gold = Average::where('average', '>=', 90)->orderBy('average', 'desc')->take(3)->get();
+        $top3silver = Average::where('average', '>=', 70)->where('average', '<', 90)->orderBy('average', 'desc')->take(3)->get();
+
+        return response()->json([
+            "gold" => $top3gold,
+            "silver" => $top3silver
+        ], 200);
     }
 }

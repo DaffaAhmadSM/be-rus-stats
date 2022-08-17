@@ -154,17 +154,16 @@ class SiswaController extends Controller
             unset($data_e);
             unset($data_e_h);
         }
-        foreach (array_merge(...$data_dat) as $key_skor => $value_skor) {
-            $data_skor[] = $value_skor["skor"];
-        }
-        foreach ($data_skor as $key_nilai => $value_nilai) {
-            if ($value_nilai) {
-                $all_nilai[] = $value_nilai["nilai"];
-            }
-        }
-        $overall = array_sum($all_nilai) / count($all_nilai);
+        // foreach (array_merge(...$data_dat) as $key_skor => $value_skor) {
+        //     $data_skor[] = $value_skor["skor"];
+        // }
+        // foreach ($data_skor as $key_nilai => $value_nilai) {
+        //     if ($value_nilai) {
+        //         $all_nilai[] = $value_nilai["nilai"];
+        //     }
+        // }
+        // $overall = array_sum($all_nilai) / count($all_nilai);
         return response()->json([
-            "Overall" => round($overall, 1),
             "user_detail" => $data,
             "radar_chart" => $data_each_skill
         ], 200);

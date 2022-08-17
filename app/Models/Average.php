@@ -10,4 +10,11 @@ class Average extends Model
     use HasFactory;
 
     protected $fillable = ['user_id', 'average'];
+    protected $appends = ['user'];
+
+    public function getUserAttribute()
+    {
+       $user = User::where('id', $this->user_id)->first();
+       return $user;
+    }
 }
