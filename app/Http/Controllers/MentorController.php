@@ -169,13 +169,16 @@ class MentorController extends Controller
 
         return response()->json(["message" => "data created"], 201);
     }
-    public function updateSkill(Request $request)
+    public function updateSkill(Request $request, $id)
     {
-
-        $request->validate([
+        $validator = Validator::make($request->all(), [
             'user_skills' => 'required'
         ]);
-
+        if ($validator->fails()) {
+            return response()->json(["Error" => $validator->errors()->first()], 400);
+        }
+        $nilai = [];
+        // $id = [];
         foreach ($request->user_skills as $key => $user_skill) {
             # code...
             $res = UserSkill::findOrFail($user_skill['id']);
@@ -186,6 +189,15 @@ class MentorController extends Controller
                 ]);
             }
         }
+        $dataSkill = UserSkill::where('user_id', $id)->get();
+        $averageData = Average::where('user_id', $id);
+        foreach ($dataSkill as $key => $value) {
+            $nilai[] = $value->nilai;
+        }
+        $averageData->update([
+            'average' => array_sum($nilai) / count($nilai)
+        ]);
+        // return $nilai;
         return response()->json(['Message' => 'Berhasil']);
 
         // $res = U

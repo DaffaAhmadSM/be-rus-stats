@@ -14,6 +14,7 @@ use App\Http\Controllers\SiswaController;
 use App\Http\Controllers\MentorController;
 use App\Http\Controllers\UserController;
 use App\Imports\UsersImport;
+use App\Models\Average;
 use App\Models\divisi;
 use App\Models\Profile;
 use App\Models\Skill;
@@ -57,35 +58,63 @@ Route::get('/set', function () {
     // return public_path('data.xlsx');
     // Excel::import(new UsersImport, public_path('data.xlsx'));
     // $dataUser = User::all();
+    $q = User::where('id', 18)->first();
+    // return $q->id;
+    $a = UserSkill::where('user_id', $q->id)->get();
+    $aa = [];
+    foreach ($a as $key => $value) {
+        // return $value->nilai;
+        $aa[] = $value->nilai;
+        // print_r($value);
+    }
+    Average::where('user_id', $q->id)->update([
+        'average' => array_sum($aa) / count($aa)
+    ]);
+    // return;
+    $dataUser = User::role('student');
     // // $a = [];
-    // foreach ($dataUser as $d) {
-    // $divisi = divisi::where('id', $d->divisi_id)->with('divisiSkill')->first();
-    // // return $d->id;
-    // foreach ($divisi->divisiSkill as $dd) {
-    //     $skill = Skill::where('skill_category_id', $dd->skill_category_id)->get();
-    //     $a[] = $skill;
-    //     foreach ($skill as $sk) {
-    //         UserSkill::create([
-    //             'user_id' => $d->id,
-    //             'skill_id' => $sk->id,
-    //             'nilai' => 30,
-    //             'nilai_history' => 0
-    //         ]);
-    //     }
-    // }
+    // return $dataUser->get();
+    foreach ($dataUser->get() as $d) {
+        // $divisi = divisi::where('id', $d->divisi_id)->with('divisiSkill')->first();
+        // // return $d->id;
+        // foreach ($divisi->divisiSkill as $dd) {
+        //     $skill = Skill::where('skill_category_id', $dd->skill_category_id)->get();
+        //     $a[] = $skill;
+        //     foreach ($skill as $sk) {
+        //         UserSkill::create([
+        //             'user_id' => $d->id,
+        //             'skill_id' => $sk->id,
+        //             'nilai' => 30,
+        //             'nilai_history' => 0
+        //         ]);
+        //     }
+        // }
+        // return $d;
+        // $userSkill = UserSkill::where('user_id', $d->id);
+        // // return $userSkill->get();
+        // $nilai = [];
+        // foreach ($userSkill->get() as $s) {
+        //     // dd($s);
+        //     // return $s->nilai;
+        //     $nilai[] = $s->nilai;
+        // }
+        // Average::create([
+        //     'user_id' => $d->id,
+        //     'average' => array_sum($nilai) / count($nilai)
+        // ]);
 
-    // $nick = explode(" ", $d->nama);
-    // // return $nick[0];
-    // $faker = Faker\Factory::create();
-    // Profile::create([
-    //     'user_id' => $d->id,
-    //     'nickname' => $nick[0],
-    //     'bio' => "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged",
-    //     'negara_id' => 60,
-    //     'kota_id' => random_int(1, 59),
-    //     'notelp' => '08' . (string)$faker->randomNumber(5, true) . (string)$faker->randomNumber(5, true)
-    // ]);
-    // }
+        // $nick = explode(" ", $d->nama);
+        // // return $nick[0];
+        // $faker = Faker\Factory::create();
+        // Profile::create([
+        //     'user_id' => $d->id,
+        //     'nickname' => $nick[0],
+        //     'bio' => "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged",
+        //     'negara_id' => 60,
+        //     'kota_id' => 60,
+        //     'notelp' => '08' . (string)$faker->randomNumber(5, true) . (string)$faker->randomNumber(5, true)
+        // ]);
+    }
     // return $a;
     // return $dataUser->doesntHave('userSkill')->get();
 });
@@ -104,10 +133,10 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::get('/users/{id}/getbyuserid', [UserController::class, 'show']);
     Route::get('/users/{id}/roles', [UserController::class, 'getRoleById']);
 
-    Route::group(['middleware' => ['role:student'], "prefix" => "/student"], function () {
-        Route::get('user', [SiswaController::class, 'show']);
-        Route::post('user/create', [SiswaController::class, 'store']);
-        Route::get('user/detail', [SiswaController::class, 'getUserDetail']);
+    Route::group(['middleware' => ['role:student|ceo|supervisor|pekerja|guru'], "prefix" => "/user"], function () {
+        Route::get('/', [SiswaController::class, 'show']);
+        Route::post('/create', [SiswaController::class, 'store']);
+        Route::get('/detail', [SiswaController::class, 'getUserDetail']);
         Route::get('test', [SiswaController::class, 'test']);
     });
     Route::group(['middleware' => ['role:ceo|supervisor|pekerja|guru'], "prefix" => "/mentor"], function () {
@@ -118,7 +147,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
             Route::post('/search', [MentorController::class, 'searchUsers']);
             Route::get('/top3/gold', [MentorController::class, 'top3gold']);
             Route::get('/top3/silver', [MentorController::class, 'top3silver']);
-            Route::post('/updateskills', [MentorController::class, 'updateSkill']);
+            Route::post('/updateskills/{id}', [MentorController::class, 'updateSkill']);
 
             Route::group(["prefix" => "/student"], function () {
                 Route::get('/', [MentorController::class, 'getStudents']);
