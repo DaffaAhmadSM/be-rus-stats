@@ -27,30 +27,15 @@ class MentorController extends Controller
         }])->findOrFail(Auth::id());
         $overall = Average::where('user_id', Auth::id())->first();
         $user = Auth::user();
-        $specialities = SpecialityUser::where("user_id", $user->id)->get();
-        $speciality_each = [];
-        foreach ($specialities as $speciality) {
-            $speciality_each[] = ["name" => $speciality->Speciality->nama];
-        }
         if($overall){
-            if ($overall->average >= 90){
-                $rank = "Gold";
-            }elseif($overall->average >= 70){
-                $rank = "Silver";
-            }else{
-                $rank = "Bronze";
-            }
             $average = round($overall->average, 1);
         }else{
-            $rank = "Bronze";
             $average = 0;
         }
 
         $addon = [
             "Overall" => $average,
             "Age" => date_diff(date_create($user->tanggal_lahir), date_create(date("Y-m-d")))->y,
-            "rank" => $rank,
-            "Speciality" => $speciality_each
         ];
 
         $merge = array_merge($res->toArray(), $addon);

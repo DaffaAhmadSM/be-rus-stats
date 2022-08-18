@@ -42,7 +42,7 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
     // protected $appends = ['link'];
-    protected $appends = ['skill', 'division', 'rank'];
+    protected $appends = ['skill', 'division', 'rank', 'speciality'];
     // public function getLinkAttribute()
     // {
     //     // $this->roles();
@@ -106,5 +106,16 @@ class User extends Authenticatable
             $rank = "bronze";
             return $rank;
         }
+    }
+
+    public function getSpecialityAttribute()
+    {
+        $specialities = SpecialityUser::where("user_id", $this->id)->get();
+        $speciality_each = [];
+        foreach ($specialities as $speciality) {
+            $speciality_each[] = ["name" => $speciality->Speciality->nama];
+        }
+
+        return $speciality_each;
     }
 }
