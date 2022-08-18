@@ -21,7 +21,7 @@ class MentorController extends Controller
 {
     public function getUser()
     {
-        $res = User::with(['profile' => function ($query) {
+        $res = User::with(['divisi','profile' => function ($query) {
             $query->with(['country', 'city']);
         }])->findOrFail(Auth::id());
         return response()->json($res);
