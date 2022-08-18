@@ -42,7 +42,7 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
     // protected $appends = ['link'];
-    protected $appends = ['skill', 'division'];
+    protected $appends = ['skill', 'division', 'rank'];
     // public function getLinkAttribute()
     // {
     //     // $this->roles();
@@ -88,5 +88,23 @@ class User extends Authenticatable
     public function profile()
     {
         return $this->hasOne(Profile::class, 'user_id', 'id');
+    }
+
+    public function getRankAttribute(){
+        $overall = Average::where('user_id', $this->id)->first();
+
+        if($overall){
+            if ($overall->average >= 90){
+                $rank = "Gold";
+            }elseif($overall->average >= 70){
+                $rank = "Silver";
+            }else{
+                $rank = "Bronze";
+            }
+            return $rank;
+        }else{
+            $rank = "bronze";
+            return $rank;
+        }
     }
 }
