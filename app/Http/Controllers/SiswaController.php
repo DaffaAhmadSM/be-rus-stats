@@ -59,6 +59,9 @@ class SiswaController extends Controller
      */
     public function show()
     {
+        $res = User::with(['divisi','profile' => function ($query) {
+            $query->with(['country', 'city']);
+        }])->findOrFail(Auth::id());
         $overall = Average::where('user_id', Auth::id())->first();
         $user = Auth::user();
         $specialities = SpecialityUser::where("user_id", $user->id)->get();
@@ -66,24 +69,34 @@ class SiswaController extends Controller
         foreach ($specialities as $speciality) {
             $speciality_each[] = ["name" => $speciality->Speciality->nama];
         }
-        if ($overall->average >= 90){
-            $rank = "Gold";
-        }elseif($overall->average >= 70){
-            $rank = "Silver";
+        if($overall){
+            if ($overall->average >= 90){
+                $rank = "Gold";
+            }elseif($overall->average >= 70){
+                $rank = "Silver";
+            }else{
+                $rank = "Bronze";
+            }
+            $average = round($overall->average, 1);
         }else{
             $rank = "Bronze";
+            $average = 0;
         }
+
+        $addon = [
+            "Overall" => $average,
+            "Age" => date_diff(date_create($user->tanggal_lahir), date_create(date("Y-m-d")))->y,
+            "rank" => $rank,
+            "Speciality" => $speciality_each
+        ];
+
+        $merge = array_merge($res->toArray(), $addon);
+        return $merge;
         return response()->json([
             "Message" => "Success",
-            "id" => $user->id,
-            "nama" => $user->nama,
-            "Overall" => round($overall->average, 1),
-            "Age" => date_diff(date_create($user->tanggal_lahir), date_create(date("Y-m-d")))->y,
-            "Email" => $user->email,
-            "rank" => $rank,
-            "Devision" => $user->divisi->nama,
-            "Speciality" => $speciality_each
-        ], 200);
+            "data" => $merge,
+            
+    ]);
     }
 
     /**
