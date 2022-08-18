@@ -104,7 +104,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::get('/users/{id}/getbyuserid', [UserController::class, 'show']);
     Route::get('/users/{id}/roles', [UserController::class, 'getRoleById']);
 
-    Route::group(['middleware' => ['role:studentceo|supervisor|pekerja|guru'], "prefix" => "/student"], function () {
+    Route::group(['middleware' => ['role:student|ceo|supervisor|pekerja|guru'], "prefix" => "/student"], function () {
         Route::get('user', [SiswaController::class, 'show']);
         Route::post('user/create', [SiswaController::class, 'store']);
         Route::get('user/detail', [SiswaController::class, 'getUserDetail']);
