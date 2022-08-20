@@ -21,6 +21,7 @@ class CreateUsersTable extends Migration
             $table->foreignId('divisi_id')->constrained('divisis');
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
+            $table->float('average', 11,1);
             $table->rememberToken();
             $table->timestamps();
         });

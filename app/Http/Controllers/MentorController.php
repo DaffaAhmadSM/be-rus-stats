@@ -119,8 +119,8 @@ class MentorController extends Controller
                 }
                 $data_each_skill[] = [
                     "name" => $name[$i],
-                    "average" => array_sum($data_e) / count($data_e),
-                    "average_history" => array_sum($data_e_h) / count($data_e_h),
+                    "average" => round(array_sum($data_e) / count($data_e),1),
+                    "average_history" => round(array_sum($data_e_h) / count($data_e_h),1)
                 ];
                 unset($data_e);
                 unset($data_e_h);
@@ -184,11 +184,13 @@ class MentorController extends Controller
                 ]);
             }
         }
-
-        Average::create([
-            'user_id' => $user->id,
-            'average' => 30,
+        $user->updated([
+            'average' => 30
         ]);
+        // Average::create([
+        //     'user_id' => $user->id,
+        //     'average' => 30,
+        // ]);
 
         return response()->json(["message" => "data created"], 201);
     }
@@ -213,11 +215,15 @@ class MentorController extends Controller
             }
         }
         $dataSkill = UserSkill::where('user_id', $id)->get();
-        $averageData = Average::where('user_id', $id);
+        // $averageData = Average::where('user_id', $id);
         foreach ($dataSkill as $key => $value) {
             $nilai[] = $value->nilai;
         }
-        $averageData->update([
+        // $averageData->update([
+        //     'average' => array_sum($nilai) / count($nilai)
+        // ]);
+        $user = User::where('id', $id);
+        $user->update([
             'average' => array_sum($nilai) / count($nilai)
         ]);
         // return $nilai;
@@ -247,30 +253,32 @@ class MentorController extends Controller
     public function top3gold()
     {
 
-        $user = Average::where('average', '>=', 90)->orderBy('average', 'desc')->get();
-        $user_map = $user->map(function($item, $key) {
-            if($item->user->hasRole('student')){
-                return $item;
-            }
-        });
-        $filteredUsers = $user_map->filter(function ($user, $key) {
-            return $user != null;
-        });
-        return response()->json($filteredUsers->take(3));
+        $user = User::role('student')->where('average', '>=', 90)->orderBy('average', 'desc')->get();
+        // $user_map = $user->map(function($item, $key) {
+        //     if($item->user->hasRole('student')){
+        //         return $item;
+        //     }
+        // });
+        // $filteredUsers = $user_map->filter(function ($user, $key) {
+        //     return $user != null;
+        // });
+        return response()->json($user);
     }
 
     public function top3silver()
     {
 
-        $user = Average::where('average', '>=', 70)->where('average', '<', 90)->orderBy('average', 'desc')->get();
-        $user_map = $user->map(function($item, $key) {
-            if($item->user->hasRole('student')){
-                return $item;
-            }
-        });
-        $filteredUsers = $user_map->filter(function ($user, $key) {
-            return $user != null;
-        });
-        return response()->json($filteredUsers->take(3));
+        $user = User::role('student')->where('average', '>=', 70)->where('average', '<', 90)->orderBy('average', 'desc')->get();
+
+        
+        // $user_map = $user->map(function($item, $key) {
+        //     if($item->user->hasRole('student')){
+        //         return $item;
+        //     }
+        // });
+        // $filteredUsers = $user_map->filter(function ($user, $key) {
+        //     return $user != null;
+        // });
+        return response()->json($user);
     }
 }
