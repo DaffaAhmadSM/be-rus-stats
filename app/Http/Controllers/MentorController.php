@@ -83,9 +83,7 @@ class MentorController extends Controller
     {
         $user = User::where('id', $id);
         $dataUser = $user->first();
-        $detail = UserDetail::where('user_id', $dataUser->id);
         $userSkill = UserSkill::where('user_id', $dataUser->id);
-        $detail->delete();
         $userSkill->delete();
         $user->delete();
         return response()->json([
@@ -146,14 +144,19 @@ class MentorController extends Controller
             'nickname' => 'string',
             'bio' => 'text',
             'notelp' => 'string',
-            'divisi' => 'required|integer',
-            'department' => 'required|integer'
+            'divisi_id' => 'required|integer',
+            'department_id' => 'required|integer'
         ]);
         if ($validator->fails()) {
             return response()->json(["Error" => $validator->errors()->first()], 400);
         }
-        $department = department::where('id', $request->department)->first();
-        $divisi = divisi::where('id', $request->divisi)->with('divisiSkill')->first();
+            
+        $divisi_skill = DivisionSkill::where('division_id', $request->divisi_id)->first();
+        if (!$divisi_skill) {
+            return response()->json(['Message' => "division not available 'cause division skill not set yet"], 400);
+        }
+        $department = department::where('id', $request->department_id)->first();
+        $divisi = divisi::where('id', $request->divisi_id)->with('divisiSkill')->first();
         $user = User::create([
             'email' => $request->email,
             'nama' => $request->nama,
@@ -166,7 +169,7 @@ class MentorController extends Controller
             'nickname' => $request->nickname != null ? $request : '',
             'bio' => $request->bio != null ? $request : '',
             'notelp' => $request->notelp != null ? $request : '',
-            'negara_id' => 60,
+            'negara_id' => $request->negara_id,
             'kota_id' => $request->kota_id
         ]);
         $user->assignRole('student');
@@ -244,16 +247,24 @@ class MentorController extends Controller
     public function top3gold()
     {
 
-        $top3gold = Average::where('average', '>=', 90)->orderBy('average', 'desc')->take(3)->get();
-
-        return response()->json($top3gold);
+        $user = Average::where('average', '>=', 90)->orderBy('average', 'desc')->get();
+        foreach ($user as $key => $value) {
+            if($value->user->getRoleNames()->first() == 'student'){
+                $user_each = collect([$value]);
+            }
+        }
+        return response()->json($user->take(3));
     }
 
     public function top3silver()
     {
 
-        $top3silver = Average::where('average', '>=', 70)->where('average', '<', 90)->orderBy('average', 'desc')->take(3)->get();
-
-        return response()->json($top3silver);
+        $user = Average::where('average', '>=', 70)->where('average', '<', 90)->orderBy('average', 'desc')->get();
+        foreach ($user as $key => $value) {
+            if($value->user->getRoleNames()->first() == 'student'){
+                $user_each = collect([$value]);
+            }
+        }
+        return response()->json($user->take(3));
     }
 }

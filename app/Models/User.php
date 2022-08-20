@@ -55,7 +55,7 @@ class User extends Authenticatable
         // $this->roles();
         // return $this->artskilu;
         if ($this->hasRole('student')) {
-            return  '/student/user/' . $this->id;
+            return  'mentor/user/student/detail/' . $this->id;
         }
     }
     public function getDivisionAttribute()
@@ -83,6 +83,9 @@ class User extends Authenticatable
     public function userSkill()
     {
         return $this->hasMany(UserSkill::class);
+    }
+    public function Average() {
+        return $this->hasOne(Average::class, 'user_id', 'id');
     }
 
     public function profile()
