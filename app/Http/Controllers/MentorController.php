@@ -25,10 +25,10 @@ class MentorController extends Controller
         $res = User::with(['divisi','profile' => function ($query) {
             $query->with(['country', 'city']);
         }])->findOrFail(Auth::id());
-        $overall = Average::where('user_id', Auth::id())->first();
         $user = Auth::user();
+        $overall = $user->average;
         if($overall){
-            $average = round($overall->average, 1);
+            $average = round($overall, 1);
         }else{
             $average = 0;
         }
@@ -125,10 +125,10 @@ class MentorController extends Controller
                 unset($data_e);
                 unset($data_e_h);
             }
-            $overall = Average::where('user_id', $id)->first();
+            $overall = $user->average;
             return response()->json([
                 "user" => $user,
-                "Overall" => round($overall->average, 1),
+                "Overall" => round($overall, 1),
                 "user_detail" => $data,
                 "radar_chart" => $data_each_skill,
             ], 200);

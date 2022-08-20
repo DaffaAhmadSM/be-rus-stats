@@ -62,16 +62,9 @@ class SiswaController extends Controller
         $res = User::with(['divisi','profile' => function ($query) {
             $query->with(['country', 'city']);
         }])->findOrFail(Auth::id());
-        $overall = Average::where('user_id', Auth::id())->first();
         $user = Auth::user();
-        if($overall){
-            $average = round($overall->average, 1);
-        }else{
-            $average = 0;
-        }
-
         $addon = [
-            "Overall" => $average,
+            "Overall" => $user->average,
             "Age" => date_diff(date_create($user->tanggal_lahir), date_create(date("Y-m-d")))->y,
         ];
 

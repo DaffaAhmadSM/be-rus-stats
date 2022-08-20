@@ -94,12 +94,11 @@ class User extends Authenticatable
     }
 
     public function getRankAttribute(){
-        $overall = Average::where('user_id', $this->id)->first();
-
+        $overall = $this->average;
         if($overall){
-            if ($overall->average >= 90){
+            if ($overall >= 90.00){
                 $rank = "Gold";
-            }elseif($overall->average >= 70){
+            }elseif($overall >= 70.00){
                 $rank = "Silver";
             }else{
                 $rank = "Bronze";
