@@ -248,23 +248,29 @@ class MentorController extends Controller
     {
 
         $user = Average::where('average', '>=', 90)->orderBy('average', 'desc')->get();
-        foreach ($user as $key => $value) {
-            if($value->user->getRoleNames()->first() == 'student'){
-                $user_each = collect([$value]);
+        $user_map = $user->map(function($item, $key) {
+            if($item->user->hasRole('student')){
+                return $item;
             }
-        }
-        return response()->json($user->take(3));
+        });
+        $filteredUsers = $user_map->filter(function ($user, $key) {
+            return $user != null;
+        });
+        return response()->json($filteredUsers->take(3));
     }
 
     public function top3silver()
     {
 
         $user = Average::where('average', '>=', 70)->where('average', '<', 90)->orderBy('average', 'desc')->get();
-        foreach ($user as $key => $value) {
-            if($value->user->getRoleNames()->first() == 'student'){
-                $user_each = collect([$value]);
+        $user_map = $user->map(function($item, $key) {
+            if($item->user->hasRole('student')){
+                return $item;
             }
-        }
-        return response()->json($user->take(3));
+        });
+        $filteredUsers = $user_map->filter(function ($user, $key) {
+            return $user != null;
+        });
+        return response()->json($filteredUsers->take(3));
     }
 }
