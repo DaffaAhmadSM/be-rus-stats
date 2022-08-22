@@ -42,7 +42,7 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
     // protected $appends = ['link'];
-    protected $appends = ['skill', 'division', 'rank'];
+    protected $appends = ['skill', 'division', 'rank', 'speciality'];
     // public function getLinkAttribute()
     // {
     //     // $this->roles();
@@ -55,7 +55,7 @@ class User extends Authenticatable
         // $this->roles();
         // return $this->artskilu;
         if ($this->hasRole('student')) {
-            return  '/student/user/' . $this->id;
+            return  'mentor/user/student/detail/' . $this->id;
         }
     }
     public function getDivisionAttribute()
@@ -84,6 +84,9 @@ class User extends Authenticatable
     {
         return $this->hasMany(UserSkill::class);
     }
+    public function Average() {
+        return $this->hasOne(Average::class, 'user_id', 'id');
+    }
 
     public function profile()
     {
@@ -91,12 +94,11 @@ class User extends Authenticatable
     }
 
     public function getRankAttribute(){
-        $overall = Average::where('user_id', $this->id)->first();
-
+        $overall = $this->average;
         if($overall){
-            if ($overall->average >= 90){
+            if ($overall >= 90.00){
                 $rank = "Gold";
-            }elseif($overall->average >= 70){
+            }elseif($overall >= 70.00){
                 $rank = "Silver";
             }else{
                 $rank = "Bronze";
@@ -106,5 +108,16 @@ class User extends Authenticatable
             $rank = "bronze";
             return $rank;
         }
+    }
+
+    public function getSpecialityAttribute()
+    {
+        $specialities = SpecialityUser::where("user_id", $this->id)->get();
+        $speciality_each = [];
+        foreach ($specialities as $speciality) {
+            $speciality_each[] = ["name" => $speciality->Speciality->nama];
+        }
+
+        return $speciality_each;
     }
 }
