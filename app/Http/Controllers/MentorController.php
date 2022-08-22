@@ -150,8 +150,8 @@ class MentorController extends Controller
                 }
                 $data_each_skill[] = [
                     "name" => $skillcategoryname[$i],
-                    "average" => round(array_sum($data_e) / count($data_e),1),
-                    "average_history" => round(array_sum($data_e_h) / count($data_e_h),1)
+                    "average" => round(array_sum($data_e) / count($data_e),0),
+                    "average_history" => round(array_sum($data_e_h) / count($data_e_h),0)
                 ];
                 unset($data_e);
                 unset($data_e_h);
