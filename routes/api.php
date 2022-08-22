@@ -123,7 +123,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
             Route::group(["prefix" => "/student"], function () {
                 Route::get('/', [MentorController::class, 'getStudents']);
                 Route::post('/create', [MentorController::class, 'studentCreate']);
-                Route::get('/detail/{id}', [MentorController::class, 'studentDetail']);
+                Route::get('/detail/{uuid}', [MentorController::class, 'studentDetail']);
                 Route::get('/delete/{id}', [MentorController::class, 'deleteStudent']);
             });
         });

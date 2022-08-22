@@ -91,36 +91,67 @@ class MentorController extends Controller
             'message' => 'Data Murid Berhasil Dihapus'
         ]);
     }
-    public function studentDetail($id)
+
+    
+    public function studentDetail($uuid)
     {
-        $user = User::where('id', $id)->with('divisi')->first();
+        $user = User::where('UUID', $uuid)->with('divisi')->first();
         if ($user->hasRole('student')) {
-            $divisi_skill = DivisionSkill::where('division_id', $user->divisi_id);
-            $data = [];
-            $divisi_skill->with(['SkillCategory' => function ($q) use ($user) {
+            $divisi_skill = DivisionSkill::where('division_id', $user->divisi_id)->with(['SkillCategory' => function ($q) use ($user) {
                 $q->with(['Data' => function ($q) use ($user) {
                     $q->with(['Skor' => function ($q) use ($user) {
                         $q->where('user_id', $user->id);
                     }]);
                 }]);
-            }]);
+            }]);;
+            $data = [];
+
             foreach ($divisi_skill->get() as $key => $value) {
                 $data[] = $value->SkillCategory->toArray();
             }
             foreach ($data as $key_dat => $value) {
                 $data_dat[] = $value["data"];
-                $name[] = $value["name"];
+                $skillcategoryname[] = $value["name"];
+                $skillcategoryid[] = $value["id"];
             }
             for ($i = 0; $i < count($data_dat); $i++) {
                 $data_each = $data_dat[$i];
                 for ($e = 0; $e < count($data_each); $e++) {
-                    $data_e[] = $data_each[$e]["skor"]["nilai"];
+                    //* jika user tidak memiliki nilai skill per skill category maka akan membuat skill baru dengan nilai default 30 */
+                    if(!$data_each[$e]["skor"]){
+                        $skill = Skill::where('skill_category_id', $skillcategoryid[$i])->get();
+                        foreach ($skill as $sk) {
+                            UserSkill::create([
+                                'user_id' => $user->id,
+                                'skill_id' => $sk->id,
+                                'nilai' => 30,
+                                'nilai_history' => 0
+                            ]);
+                        }
+                            $divisi_skill = DivisionSkill::where('division_id', $user->divisi_id)->with(['SkillCategory' => function ($q) use ($user) {
+                                $q->with(['Data' => function ($q) use ($user) {
+                                    $q->with(['Skor' => function ($q) use ($user) {
+                                        $q->where('user_id', $user->id);
+                                    }]);
+                                }]);
+                            }]);;
+                            unset($data);
+                            unset($data_dat);
+                            foreach ($divisi_skill->get() as $key => $value) {
+                                $data[] = $value->SkillCategory->toArray();
+                            }
+                            foreach ($data as $key_dat => $value) {
+                                $data_dat[] = $value["data"];
+                            }
+                            $data_each = $data_dat[$i];
+                    }
+                    $data_e[] = $data_each[$e]["skor"]["nilai"];    
                     $data_e_h[] = $data_each[$e]["skor"]["nilai_history"];
                 }
                 $data_each_skill[] = [
-                    "name" => $name[$i],
-                    "average" => round(array_sum($data_e) / count($data_e),1),
-                    "average_history" => round(array_sum($data_e_h) / count($data_e_h),1)
+                    "name" => $skillcategoryname[$i],
+                    "average" => round(array_sum($data_e) / count($data_e),0),
+                    "average_history" => round(array_sum($data_e_h) / count($data_e_h),0)
                 ];
                 unset($data_e);
                 unset($data_e_h);
@@ -134,6 +165,7 @@ class MentorController extends Controller
             ], 200);
         }
     }
+
     public function studentCreate(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -194,6 +226,7 @@ class MentorController extends Controller
 
         return response()->json(["message" => "data created"], 201);
     }
+
     public function updateSkill(Request $request, $id)
     {
         $validator = Validator::make($request->all(), [
@@ -254,14 +287,6 @@ class MentorController extends Controller
     {
 
         $user = User::role('student')->where('average', '>=', 90)->orderBy('average', 'desc')->get();
-        // $user_map = $user->map(function($item, $key) {
-        //     if($item->user->hasRole('student')){
-        //         return $item;
-        //     }
-        // });
-        // $filteredUsers = $user_map->filter(function ($user, $key) {
-        //     return $user != null;
-        // });
         return response()->json($user);
     }
 
@@ -269,16 +294,6 @@ class MentorController extends Controller
     {
 
         $user = User::role('student')->where('average', '>=', 70)->where('average', '<', 90)->orderBy('average', 'desc')->get();
-
-        
-        // $user_map = $user->map(function($item, $key) {
-        //     if($item->user->hasRole('student')){
-        //         return $item;
-        //     }
-        // });
-        // $filteredUsers = $user_map->filter(function ($user, $key) {
-        //     return $user != null;
-        // });
         return response()->json($user);
     }
 }
