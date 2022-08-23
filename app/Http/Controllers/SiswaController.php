@@ -128,7 +128,7 @@ class SiswaController extends Controller
         }
         foreach ($data as $key_dat => $value) {
             $data_dat[] = $value["data"];
-            $name[] = $value["name"];
+            $skillcategoryname[] = $value["name"];
             $skillcategoryid[] = $value["id"];
         }
         for ($i = 0; $i < count($data_dat); $i++) {
