@@ -113,7 +113,8 @@ class SiswaController extends Controller
 
     public function getUserDetail()
     {
-        $divisi_skill = DivisionSkill::where('division_id', Auth::user()->divisi_id);
+        $user = Auth::user();
+        $divisi_skill = DivisionSkill::where('division_id', $user->divisi_id);
         $data = [];
         $divisi_skill->with(['SkillCategory' => function ($q) {
             $q->with(['Data' => function ($q) {
