@@ -120,7 +120,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
             Route::post('/search', [MentorController::class, 'searchUsers']);
             Route::get('/top3/gold', [MentorController::class, 'top3gold']);
             Route::get('/top3/silver', [MentorController::class, 'top3silver']);
-            Route::post('/updateskills', [MentorController::class, 'updateSkill']);
+            Route::post('/updateskills/{id}', [MentorController::class, 'updateSkill']);
             Route::group(["prefix" => "/student"], function () {
                 Route::get('/', [MentorController::class, 'getStudents']);
                 Route::post('/create', [MentorController::class, 'studentCreate']);
