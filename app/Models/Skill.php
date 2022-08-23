@@ -9,6 +9,7 @@ class Skill extends Model
 {
     use HasFactory;
     protected $hidden = ["id", "created_at", "updated_at", "skill_category_id"];
+    protected $guarded = ['id'];
     public function SkillCategory()
     {
         return $this->belongsTo(SkillCategory::class);
