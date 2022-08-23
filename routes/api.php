@@ -139,6 +139,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
             Route::get('/skillcategory/{id}', [SkillCategoryCrud::class, 'skillCategoryReadById']);
             // Delete Data Skill
             Route::get('/delete/{id}', [SkillCrud::class, 'skillDelete']);
+
             // Update Data Skill
             Route::post('/update/{id}', [SkillCrud::class, 'skillUpdate']);
             // Delete Data Skill Category
