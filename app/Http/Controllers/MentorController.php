@@ -194,7 +194,8 @@ class MentorController extends Controller
             'nama' => $request->nama,
             'tanggal_lahir' => $request->tanggal_lahir,
             'password' => Hash::make($request->password),
-            'divisi_id' => $divisi->id
+            'divisi_id' => $divisi->id,
+            'uuid' => Str::orderedUuid(),
         ]);
         $userDetail = Profile::create([
             'user_id' => $user->id,
@@ -245,6 +246,10 @@ class MentorController extends Controller
                     'nilai' => $user_skill['nilai'],
                     'nilai_history' => $res['nilai']
                 ]);
+            }else{
+                $res->update([
+                    'nilai_history' => $user_skill['nilai']
+                ]);
             }
         }
         $dataSkill = UserSkill::where('user_id', $id)->get();
@@ -286,14 +291,14 @@ class MentorController extends Controller
     public function top3gold()
     {
 
-        $user = User::role('student')->where('average', '>=', 90)->orderBy('average', 'desc')->get();
+        $user = User::role('student')->where('average', '>=', 90)->orderBy('average', 'desc')->take(3)->get();
         return response()->json($user);
     }
 
     public function top3silver()
     {
 
-        $user = User::role('student')->where('average', '>=', 70)->where('average', '<', 90)->orderBy('average', 'desc')->get();
+        $user = User::role('student')->where('average', '>=', 70)->where('average', '<', 90)->orderBy('average', 'desc')->take(3)->get();
         return response()->json($user);
     }
 }

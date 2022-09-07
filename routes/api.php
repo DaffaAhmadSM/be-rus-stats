@@ -12,6 +12,8 @@ use App\Http\Controllers\ExcelController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\SiswaController;
 use App\Http\Controllers\MentorController;
+use App\Http\Controllers\SkillCategoryCrud;
+use App\Http\Controllers\SkillCrud;
 use App\Http\Controllers\UserController;
 use App\Imports\UsersImport;
 use App\Models\divisi;
@@ -119,13 +121,31 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
             Route::get('/top3/gold', [MentorController::class, 'top3gold']);
             Route::get('/top3/silver', [MentorController::class, 'top3silver']);
             Route::post('/updateskills/{id}', [MentorController::class, 'updateSkill']);
-
             Route::group(["prefix" => "/student"], function () {
                 Route::get('/', [MentorController::class, 'getStudents']);
                 Route::post('/create', [MentorController::class, 'studentCreate']);
                 Route::get('/detail/{uuid}', [MentorController::class, 'studentDetail']);
                 Route::get('/delete/{id}', [MentorController::class, 'deleteStudent']);
             });
+        });
+        Route::group(["prefix" => "/skill"], function () {
+            // Create Data
+            Route::post('/skillcategory/create', [SkillCategoryCrud::class, 'skillCategoryCreate']);
+            // Read Data Skill
+            Route::get('/', [SkillCrud::class, 'skillReadAll']);
+            Route::get('/skill/category/{id}', [SkillCrud::class, 'skillReadBySkillCategory']);
+            // Read Data Skill Category
+            Route::get('/skillcategory', [SkillCategoryCrud::class, 'skillCategoryReadAll']);
+            Route::get('/skillcategory/{id}', [SkillCategoryCrud::class, 'skillCategoryReadById']);
+            // Delete Data Skill
+            Route::get('/delete/{id}', [SkillCrud::class, 'skillDelete']);
+
+            // Update Data Skill
+            Route::post('/update/{id}', [SkillCrud::class, 'skillUpdate']);
+            // Delete Data Skill Category
+            Route::get('/skillcategory/delete/{id}', [SkillCategoryCrud::class, 'skillCategoryDelete']);
+            // Update Data Skill Category
+            Route::post('/skillcategory/update/{id}', [SkillCategoryCrud::class, 'skillCategoryUpdate']);
         });
     });
     // Route::group(['middleware' => ['role:supervisor'], "prefix" => "/supervisor"], function () {
