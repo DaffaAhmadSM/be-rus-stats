@@ -17,6 +17,7 @@ class CreateSkillCategoriesTable extends Migration
             $table->id();
             $table->string("name");
             $table->text("description");
+            $table->foreignId('divisi_id')->constrained('divisis')->onDelete('cascade');
             $table->timestamps();
         });
     }

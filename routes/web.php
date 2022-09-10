@@ -1,5 +1,7 @@
 <?php
 
+use App\Models\Profile;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -14,9 +16,11 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-    return response()
-        ->json([
-            'message' => 'Authentication Failed',
-            'status'  => 'error'
-        ], 401);
+    return view('welcome');
+})->name("login");
+Route::post('/', function (Request $request) {
+    $gambar = $request->file('mm')->store('profile-image');
+    Profile::where('id', 7)->update([
+        'gambar' => '/storage/' . $gambar
+    ]);
 })->name("login");

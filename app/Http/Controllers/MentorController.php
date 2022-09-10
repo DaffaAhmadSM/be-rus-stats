@@ -43,7 +43,7 @@ class MentorController extends Controller
         return response()->json([
             "Message" => "Success",
             "data" => $merge,
-            
+
     ]);
     }
     public function getStudents()
@@ -92,7 +92,7 @@ class MentorController extends Controller
         ]);
     }
 
-    
+
     public function studentDetail($uuid)
     {
         $user = User::where('UUID', $uuid)->with('divisi')->first();
@@ -145,7 +145,7 @@ class MentorController extends Controller
                             }
                             $data_each = $data_dat[$i];
                     }
-                    $data_e[] = $data_each[$e]["skor"]["nilai"];    
+                    $data_e[] = $data_each[$e]["skor"]["nilai"];
                     $data_e_h[] = $data_each[$e]["skor"]["nilai_history"];
                 }
                 $data_each_skill[] = [
@@ -182,7 +182,7 @@ class MentorController extends Controller
         if ($validator->fails()) {
             return response()->json(["Error" => $validator->errors()->first()], 400);
         }
-            
+
         $divisi_skill = DivisionSkill::where('division_id', $request->divisi_id)->first();
         if (!$divisi_skill) {
             return response()->json(['Message' => "division not available 'cause division skill not set yet"], 400);

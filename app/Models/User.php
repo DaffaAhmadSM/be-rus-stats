@@ -61,7 +61,7 @@ class User extends Authenticatable
     public function getDivisionAttribute()
     {
         $divisi = divisi::where('id', $this->divisi_id)->first();
-        return $divisi->nama;
+        return $divisi;
     }
     public function userHistory()
     {

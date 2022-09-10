@@ -41,15 +41,15 @@ Route::get('/set', function () {
     // Role::create(['name' => 'guru']);
     // Role::create(['name' => 'pekerja']);
     // Role::create(['name' => 'student']);
-    // User::find(20)->assignRole('student');
-    // User::find(21)->assignRole('student');
-    // User::find(22)->assignRole('student');
-    // User::find(23)->assignRole('student');
+    // User::find(10)->assignRole('ceo');
+    // User::find(11)->assignRole('supervisor');
+    // User::find(12)->assignRole('supervisor');
+    // User::find(13)->assignRole('supervisor');
+    // User::find(14)->assignRole('supervisor');
+    // User::find(15)->assignRole('guru');
+    // User::find(16)->assignRole('guru');
     // User::find(24)->assignRole('student');
     // User::find(25)->assignRole('student');
-    // User::find(26)->assignRole('student');
-    // User::find(27)->assignRole('student');
-    // User::find(28)->assignRole('student');
     // User::create([
     //     'email' => 'suwarno@mail.com',
     //     'nama' => 'Suwarno',
@@ -58,23 +58,23 @@ Route::get('/set', function () {
     // ]);
     // return public_path('data.xlsx');
     // Excel::import(new UsersImport, public_path('data.xlsx'));
-    // $dataUser = User::all();
-    // // $a = [];
-    // foreach ($dataUser as $d) {
-    // $divisi = divisi::where('id', $d->divisi_id)->with('divisiSkill')->first();
-    // // return $d->id;
-    // foreach ($divisi->divisiSkill as $dd) {
-    //     $skill = Skill::where('skill_category_id', $dd->skill_category_id)->get();
-    //     $a[] = $skill;
-    //     foreach ($skill as $sk) {
-    //         UserSkill::create([
-    //             'user_id' => $d->id,
-    //             'skill_id' => $sk->id,
-    //             'nilai' => 30,
-    //             'nilai_history' => 0
-    //         ]);
-    //     }
-    // }
+    $dataUser = User::role('ceo')->get();
+    foreach ($dataUser as $d) {
+    $divisi = divisi::where('id', $d->divisi_id)->with('divisiSkill')->first();
+    foreach ($divisi->divisiSkill as $dd) {
+        $skill = Skill::where('skill_category_id', $dd->skill_category_id)->get();
+        $a[] = $skill;
+        // var_dump($a);
+        foreach ($skill as $sk) {
+            UserSkill::create([
+                'user_id' => $d->id,
+                'skill_id' => $sk->id,
+                'nilai' => 30,
+                'nilai_history' => 0
+            ]);
+        }
+    }
+}
 
     // $nick = explode(" ", $d->nama);
     // // return $nick[0];

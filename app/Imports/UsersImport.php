@@ -2,8 +2,13 @@
 
 namespace App\Imports;
 
+use App\Models\department;
+use App\Models\divisi;
+use App\Models\DivisionSkill;
 use App\Models\Kota;
 use App\Models\Negara;
+use App\Models\Profile;
+use App\Models\SkillCategory;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Maatwebsite\Excel\Concerns\ToModel;
@@ -18,18 +23,24 @@ class UsersImport implements ToModel, WithHeadingRow
      */
     public function model(array $row)
     {
-        // $a[] = [$row];
-        // return $a;
-        // dd($row);
-        // return new User([
-        //     "nama" =>  $row['nama'],
+        // dd($row['divi']);
+        // return ['name', 'co'];
+        // return var_dump($row['name']);
+        // User::create([
+        //     "nama" => $row['nama'],
+        //     "tanggal_lahir" => $row['tgl'],
         //     "email" => $row['email'],
-        //     "password" => Hash::make('abcde'),
-        //     'divisi_id' => $row['divisi']
+        //     "divisi_id" => $row['divi'],
+        //     "password" => Hash::make($row['password']),
+        //     "average" => 30
         // ]);
-        // return new Kota([
-        //     'nama' => $row['kota'],
-        //     'negara_id' => $row['id']
+        // Profile::create([
+        //     "user_id" => $row['userid'],
+        //     "nickname" => $row['nickname'],
+        //     "notelp" => $row['nohp'],
+        //     "provinsi_id" => $row['provinsi'],
+        //     "kota_id" => $row['kota'],
+        //     "bio" => "Perkenalkan Namaku ".$row['nickname']
         // ]);
     }
 }
