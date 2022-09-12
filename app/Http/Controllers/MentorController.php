@@ -10,12 +10,14 @@ use App\Models\Profile;
 use App\Models\UserSkill;
 use App\Models\department;
 use App\Models\UserDetail;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Models\DivisionSkill;
 use App\Models\SpecialityUser;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 
 class MentorController extends Controller
@@ -48,7 +50,7 @@ class MentorController extends Controller
     }
     public function getStudents()
     {
-        $res = User::with('divisi')->role('student')->paginate(6);
+        $res = User::with('divisi')->role('student')->with('profile')->paginate(6);
         return response()->json($res, 200);
     }
     public function searchUsers(Request $request)
@@ -95,7 +97,7 @@ class MentorController extends Controller
 
     public function studentDetail($uuid)
     {
-        $user = User::where('UUID', $uuid)->with('divisi')->first();
+        $user = User::where('UUID', $uuid)->with('divisi')->with('profile')->first();
         if ($user->hasRole('student')) {
             $divisi_skill = DivisionSkill::where('division_id', $user->divisi_id)->with(['SkillCategory' => function ($q) use ($user) {
                 $q->with(['Data' => function ($q) use ($user) {
@@ -177,7 +179,9 @@ class MentorController extends Controller
             'bio' => 'text',
             'notelp' => 'string',
             'divisi_id' => 'required|integer',
-            'department_id' => 'required|integer'
+            'image' => 'required|image|max:1024',
+            'provinsi_id' => 'integer',
+            'kota_id' => 'integer',
         ]);
         if ($validator->fails()) {
             return response()->json(["Error" => $validator->errors()->first()], 400);
@@ -195,16 +199,21 @@ class MentorController extends Controller
             'tanggal_lahir' => $request->tanggal_lahir,
             'password' => Hash::make($request->password),
             'divisi_id' => $divisi->id,
-            'uuid' => Str::orderedUuid(),
+            'UUID' => Str::orderedUuid(),
+            'average' => 30.0,
         ]);
+        $path = Storage::disk('public')->put('images/'. $user->UUID . $request->image->getClientOriginalName(), file_get_contents($request->image));
         $userDetail = Profile::create([
             'user_id' => $user->id,
             'nickname' => $request->nickname != null ? $request : '',
             'bio' => $request->bio != null ? $request : '',
             'notelp' => $request->notelp != null ? $request : '',
             'negara_id' => $request->negara_id,
-            'kota_id' => $request->kota_id
+            'gambar' => $user->UUID . $request->image->getClientOriginalName(),
+            'provinsi_id' => $request->provinsi_id != null ? $request : 1,
+            'kota_id' => $request->kota_id != null ? $request : 1,
         ]);
+
         $user->assignRole('student');
         foreach ($divisi->divisiSkill as $key => $value) {
             $skill = Skill::where('skill_category_id', $value->skill_category_id)->get();

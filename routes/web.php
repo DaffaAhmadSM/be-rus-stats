@@ -16,11 +16,8 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-    return view('welcome');
-})->name("login");
-Route::post('/', function (Request $request) {
-    $gambar = $request->file('mm')->store('profile-image');
-    Profile::where('id', 7)->update([
-        'gambar' => '/storage/' . $gambar
-    ]);
+    return response()->json([
+        'error' => '401',
+        'message' => 'authentification failed'
+    ], 401);
 })->name("login");

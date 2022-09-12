@@ -15,7 +15,7 @@ class CreateAllprovinsisTable extends Migration
     {
         Schema::create('allprovinsis', function (Blueprint $table) {
             $table->id();
-            $table->string('nama');
+            $table->string('nama')->nullable();
             $table->timestamps();
         });
     }

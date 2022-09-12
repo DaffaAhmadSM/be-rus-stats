@@ -2,8 +2,9 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Profile extends Model
 {
@@ -20,6 +21,6 @@ class Profile extends Model
         return $this->hasOne(Kota::class, 'id', 'kota_id');
     }
     public function getLinkAttribute(){
-        return 'storage/profile-image/' . $this->gambar;
+        return Storage::disk('public')->url("images/".$this->gambar);
     }
 }
