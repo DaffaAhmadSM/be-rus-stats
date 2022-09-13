@@ -300,14 +300,14 @@ class MentorController extends Controller
     public function top3gold()
     {
 
-        $user = User::role('student')->where('average', '>=', 90)->orderBy('average', 'desc')->take(3)->get();
+        $user = User::role('student')->where('average', '>=', 90)->orderBy('average', 'desc')->take(3)->with('profile')->get();
         return response()->json($user);
     }
 
     public function top3silver()
     {
 
-        $user = User::role('student')->where('average', '>=', 70)->where('average', '<', 90)->orderBy('average', 'desc')->take(3)->get();
+        $user = User::role('student')->where('average', '>=', 70)->where('average', '<', 90)->orderBy('average', 'desc')->take(3)->with('profile')->get();
         return response()->json($user);
     }
 }
