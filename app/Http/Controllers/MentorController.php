@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\allprovinsi;
 use App\Models\User;
 use App\Models\Skill;
 use App\Models\divisi;
@@ -13,6 +14,7 @@ use App\Models\UserDetail;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Models\DivisionSkill;
+use App\Models\Kota;
 use App\Models\SpecialityUser;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -24,7 +26,9 @@ class MentorController extends Controller
 {
     public function getUser()
     {
-        $res = User::with(['divisi','profile' => function ($query) {
+        $res = User::with(['divisi' => function($q) {
+            $q->with('department');
+        },'profile' => function ($query) {
             $query->with(['country', 'city']);
         }])->findOrFail(Auth::id());
         $user = Auth::user();
@@ -75,11 +79,18 @@ class MentorController extends Controller
     }
     public function listDataDepartmentDivisi()
     {
-        return response()->json([
-            'status' => 'Success',
-            'department' => department::all(),
-            'divisi' => divisi::all()
-        ]);
+        $department = department::get();
+        return response()->json($department);
+    }
+    public function divisiByDepartment($id){
+         $division = divisi::where('department_id',$id)->get();
+        return response()->json($division);
+    }
+    public function provinsi(){
+        return response()->json( allprovinsi::all());
+    }
+    public function kota($id){
+        return response()->json(Kota::where('provinsi_id', $id)->get());
     }
     public function deleteStudent($id)
     {
@@ -105,7 +116,7 @@ class MentorController extends Controller
                         $q->where('user_id', $user->id);
                     }]);
                 }]);
-            }]);  
+            }]);;
             $data = [];
 
             foreach ($divisi_skill->get() as $key => $value) {
@@ -174,9 +185,9 @@ class MentorController extends Controller
             'email' => 'required|email|unique:users',
             'nama' => 'required|string',
             'tanggal_lahir' => 'required|date',
-            'password' => 'required',
-            'nickname' => 'string',
-            'bio' => 'text',
+            // 'password' => 'required',
+            // 'nickname' => 'string',
+            // 'bio' => 'text',
             'notelp' => 'string',
             'divisi_id' => 'required|integer',
             'image' => 'required|image|max:1024',

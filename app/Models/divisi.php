@@ -25,6 +25,9 @@ class divisi extends Model
     {
         return $this->hasMany(DivisionSkill::class, 'division_id', 'id');
     }
+    public function department(){
+        return $this->hasOne(department::class, 'id', 'department_id');
+    }
     // public function getByAttribute()
     // {
     //     return $this->divisiSkill;

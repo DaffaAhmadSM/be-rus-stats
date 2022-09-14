@@ -126,4 +126,9 @@ class User extends Authenticatable
         $profile = Profile::where("user_id", $this->id)->first();
         return $profile;
     }
+    // public function getJurusanAttribute(){
+    //     $divisi = divisi::where('id', $this->divisi_id)->first();
+    //     $jurusan = department::where('id', $divisi->department_id)->first();
+    //     return $jurusan;
+    // }
 }

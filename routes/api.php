@@ -113,11 +113,13 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
         Route::get('test', [SiswaController::class, 'test']);
     });
     Route::group(['middleware' => ['role:ceo|supervisor|pekerja|guru '], "prefix" => "/mentor"], function () {
-        
-        Route::get('/data', [MentorController::class, 'listDataDepartmentDivisi']);
 
+        Route::get('/data/department', [MentorController::class, 'listDataDepartmentDivisi']);
+        Route::get('/data/divisi/department/{id}', [MentorController::class, 'divisiByDepartment']);
+        Route::get('/data/provinsi', [MentorController::class, 'provinsi']);
+        Route::get('/data/kota/provinsi/{id}', [MentorController::class, 'kota']);
         Route::group(["prefix" => "/user"], function () {
-            
+
             Route::get('/', [MentorController::class, 'getUser']);
             Route::post('/search', [MentorController::class, 'searchUsers']);
             Route::get('/top3/gold', [MentorController::class, 'top3gold']);
@@ -133,7 +135,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
 
         });
         Route::group(["prefix" => "/skill"], function () {
-            
+
             Route::get('/', [SkillCrud::class, 'skillReadAll']);
             Route::get('show/{id}', [SkillCrud::class, 'skillReadBySkillCategory']);
             Route::get('/delete/{id}', [SkillCrud::class, 'skillDelete']);
