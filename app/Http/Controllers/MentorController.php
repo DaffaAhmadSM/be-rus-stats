@@ -162,7 +162,7 @@ class MentorController extends Controller
             return response()->json([
                 "user" => $user,
                 "Overall" => round($overall, 1),
-                "user_detail" => $data,
+                "user_detail" => $divisi_skill->get(),
                 "radar_chart" => $data_each_skill,
             ], 200);
         }
