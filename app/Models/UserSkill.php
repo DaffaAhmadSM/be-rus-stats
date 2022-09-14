@@ -48,6 +48,6 @@ class UserSkill extends Model
     public function getNilaiintAttribute()
     {
         $nilai_now = $this->nilai;
-        return (int)$nilai_now - 0;
+        return (int)$nilai_now;
     }
 }
