@@ -105,7 +105,7 @@ class MentorController extends Controller
                         $q->where('user_id', $user->id);
                     }]);
                 }]);
-            }]);;
+            }]);  
             $data = [];
 
             foreach ($divisi_skill->get() as $key => $value) {
