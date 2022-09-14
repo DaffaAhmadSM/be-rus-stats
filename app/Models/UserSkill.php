@@ -10,7 +10,7 @@ class UserSkill extends Model
     use HasFactory;
     protected $guarded = ['id'];
     protected $hidden = ["created_at", "updated_at"];
-    protected $appends = ['status' , 'difference' , 'nilai_int'];
+    protected $appends = ['status' , 'difference' , 'nilai_int', 'nilai_history_int'];
     protected $cast = [
         'nilai' => 'integer',
         'nilai_history' => 'integer',
@@ -48,6 +48,11 @@ class UserSkill extends Model
     public function getNilaiintAttribute()
     {
         $nilai_now = $this->nilai;
+        return (int)$nilai_now;
+    }
+    public function getNilaihistoryintAttribute()
+    {
+        $nilai_now = $this->nilai_history;
         return (int)$nilai_now;
     }
 }
