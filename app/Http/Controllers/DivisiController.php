@@ -8,9 +8,8 @@ use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
-class DivisiCrudController extends Controller
+class DivisiController extends Controller
 {
-
     public function divisiCreate(Request $request)
     {
         $validator = Validator::make($request->all(), [

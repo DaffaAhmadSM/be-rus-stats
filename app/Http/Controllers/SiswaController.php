@@ -60,7 +60,7 @@ class SiswaController extends Controller
     public function show()
     {
         $res = User::with(['divisi','profile' => function ($query) {
-            $query->with(['country', 'city']);
+            $query->with(['province', 'city']);
         }])->findOrFail(Auth::id());
         $user = Auth::user();
         $addon = [
@@ -73,7 +73,7 @@ class SiswaController extends Controller
         return response()->json([
             "Message" => "Success",
             "data" => $merge,
-            
+
     ]);
     }
 
@@ -162,7 +162,7 @@ class SiswaController extends Controller
                         }
                         $data_each = $data_dat[$i];
                 }
-                $data_e[] = $data_each[$e]["skor"]["nilai"];    
+                $data_e[] = $data_each[$e]["skor"]["nilai"];
                 $data_e_h[] = $data_each[$e]["skor"]["nilai_history"];
             }
             $data_each_skill[] = [

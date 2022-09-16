@@ -11,7 +11,7 @@ class Profile extends Model
     use HasFactory;
     protected $guarded = ['id'];
     protected $appends = ['link'];
-    public function country()
+    public function province()
     {
         return $this->hasOne(allprovinsi::class,  'id', 'provinsi_id');
     }
@@ -22,5 +22,7 @@ class Profile extends Model
     }
     public function getLinkAttribute(){
         return Storage::disk('public')->url("images/".$this->gambar);
+        // return url('/storage/images/'.$this->gambar);
+        // return url(public_path('/storage/images/').$this->gambar);
     }
 }

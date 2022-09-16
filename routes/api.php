@@ -2,6 +2,9 @@
 
 use App\Http\Controllers\CityController;
 use App\Http\Controllers\CountryController;
+use App\Http\Controllers\DepartmentController;
+use App\Http\Controllers\DepartmentCrudController;
+use App\Http\Controllers\DivisiController;
 use App\Http\Controllers\DivisionController;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -114,12 +117,25 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     });
     Route::group(['middleware' => ['role:ceo|supervisor|pekerja|guru '], "prefix" => "/mentor"], function () {
 
-        Route::get('/data/department', [MentorController::class, 'listDataDepartmentDivisi']);
-        Route::get('/data/divisi/department/{id}', [MentorController::class, 'divisiByDepartment']);
+        // Route::get('/data/department', [MentorController::class, 'listDataDepartmentDivisi']);
+        // Route::get('/data/divisi/department/{id}', [MentorController::class, 'divisiByDepartment']);
         Route::get('/data/provinsi', [MentorController::class, 'provinsi']);
         Route::get('/data/kota/provinsi/{id}', [MentorController::class, 'kota']);
+        Route::group(["prefix" => "/data"], function(){
+            Route::group(["prefix" => "/department"], function(){
+                Route::get('/', [DepartmentController::class, 'listDataDepartment']);
+                Route::get('/create', [DepartmentController::class, 'departmentCreate']);
+                Route::get('/update/{id}', [DepartmentController::class, 'departmentUpdate']);
+                Route::get('/delete/{id}', [DepartmentController::class, 'deleteDepartment']);
+            });
+            Route::group(["prefix" => "/divisi"], function(){
+                Route::get('/department/{id}', [DivisiController::class, 'divisiByDepartment']);
+                Route::get('/create', [DivisiController::class, 'divisiCreate']);
+                Route::get('/update/{id}', [DivisiController::class, 'divisiUpdate']);
+                Route::get('/delete/{id}', [DivisiController::class, 'divisiDelete']);
+            });
+        });
         Route::group(["prefix" => "/user"], function () {
-
             Route::get('/', [MentorController::class, 'getUser']);
             Route::post('/search', [MentorController::class, 'searchUsers']);
             Route::get('/top3/gold', [MentorController::class, 'top3gold']);

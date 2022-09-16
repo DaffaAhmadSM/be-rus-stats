@@ -31,15 +31,9 @@ class DivisionController extends Controller
             'divisi' => 'required',
             'skill_categories' => 'required'
         ]);
-        // $validator = Validator::make($request->all(), [
-        //     'data' => 'required'
-        // ]);
         if ($validator->fails()) {
             return response()->json(["Error" => $validator->errors()->first()], 401);
         }
-        // foreach ($request->data as $v){
-
-        // }
         DivisionSkill::create([
             'division_id' => $request->divisi,
             'skill_category_id' => $request->skill_categories

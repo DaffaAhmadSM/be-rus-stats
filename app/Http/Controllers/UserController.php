@@ -40,7 +40,7 @@ class UserController extends Controller
     {
         //
         $res = User::with(['divisi', 'profile' => function ($query) {
-            $query->with(['country', 'city']);
+            $query->with(['province', 'city']);
         }])
             ->findOrFail($id);
 
@@ -73,10 +73,10 @@ class UserController extends Controller
 
         $user->profile()->update([
             'notelp' => $request->profile['notelp'],
-            'negara_id' => $request->profile['negara_id'],
+            'provinsi_id' => $request->profile['provinsi_id'],
             'kota_id' => $request->profile['kota_id']
         ]);
-        return response()->json($user->load(['profile.country', 'profile.city', 'divisi']));
+        return response()->json($user->load(['profile.province', 'profile.city', 'divisi']));
     }
 
     /**
@@ -93,7 +93,7 @@ class UserController extends Controller
     public function getRoleById($id)
     {
         $res = User::with(['divisi', 'profile' => function ($query) {
-            $query->with(['country', 'city']);
+            $query->with(['province', 'city']);
         }])
             ->findOrFail($id);
 

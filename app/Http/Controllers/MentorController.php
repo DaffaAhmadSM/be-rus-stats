@@ -29,7 +29,7 @@ class MentorController extends Controller
         $res = User::with(['divisi' => function($q) {
             $q->with('department');
         },'profile' => function ($query) {
-            $query->with(['country', 'city']);
+            $query->with(['province', 'city']);
         }])->findOrFail(Auth::id());
         $user = Auth::user();
         $overall = $user->average;
@@ -188,11 +188,11 @@ class MentorController extends Controller
             // 'password' => 'required',
             // 'nickname' => 'string',
             // 'bio' => 'text',
-            'notelp' => 'string',
+            'notelp' => 'required|string',
             'divisi_id' => 'required|integer',
-            'image' => 'required|image|max:1024',
-            'provinsi_id' => 'integer',
-            'kota_id' => 'integer',
+            'image' => 'required|image' ,
+            'provinsi_id' => 'required|integer',
+            'kota_id' => 'required|integer',
         ]);
         if ($validator->fails()) {
             return response()->json(["Error" => $validator->errors()->first()], 400);
@@ -204,25 +204,27 @@ class MentorController extends Controller
         }
         $department = department::where('id', $request->department_id)->first();
         $divisi = divisi::where('id', $request->divisi_id)->with('divisiSkill')->first();
+        // return date("Y-m-d", $request->tanggal_lahir);
         $user = User::create([
             'email' => $request->email,
             'nama' => $request->nama,
             'tanggal_lahir' => $request->tanggal_lahir,
-            'password' => Hash::make($request->password),
+            'password' => $request->password ? Hash::make($request->password) : Hash::make('smkrus'),
             'divisi_id' => $divisi->id,
             'UUID' => Str::orderedUuid(),
             'average' => 30.0,
         ]);
+
         $path = Storage::disk('public')->put('images/'. $user->UUID . $request->image->getClientOriginalName(), file_get_contents($request->image));
         $userDetail = Profile::create([
             'user_id' => $user->id,
             'nickname' => $request->nickname != null ? $request : '',
             'bio' => $request->bio != null ? $request : '',
-            'notelp' => $request->notelp != null ? $request : '',
-            'negara_id' => $request->negara_id,
+            'notelp' => $request->notelp,
+            // 'negara_id' => $request->negara_id,
             'gambar' => $user->UUID . $request->image->getClientOriginalName(),
-            'provinsi_id' => $request->provinsi_id != null ? $request : 1,
-            'kota_id' => $request->kota_id != null ? $request : 1,
+            'provinsi_id' => $request->provinsi_id != null ? $request->provinsi_id : 1,
+            'kota_id' => $request->kota_id != null ? $request->kota_id : 1,
         ]);
 
         $user->assignRole('student');
