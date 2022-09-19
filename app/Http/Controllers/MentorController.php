@@ -197,7 +197,7 @@ class MentorController extends Controller
         if ($validator->fails()) {
             return response()->json(["Error" => $validator->errors()->first()], 400);
         }
-
+        // return $request->all();
         $divisi_skill = DivisionSkill::where('division_id', $request->divisi_id)->first();
         if (!$divisi_skill) {
             return response()->json(['Message' => "division not available 'cause division skill not set yet"], 400);
@@ -267,10 +267,6 @@ class MentorController extends Controller
                 $res->update([
                     'nilai' => $user_skill['nilai'],
                     'nilai_history' => $res['nilai']
-                ]);
-            }else{
-                $res->update([
-                    'nilai_history' => $user_skill['nilai']
                 ]);
             }
         }

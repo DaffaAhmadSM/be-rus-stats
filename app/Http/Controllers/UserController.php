@@ -6,6 +6,7 @@ use App\Models\Profile;
 use App\Models\User;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class UserController extends Controller
 {
@@ -61,21 +62,39 @@ class UserController extends Controller
             'nama' => 'required',
             'email' => 'required',
             'tanggal_lahir' => 'required|date',
-            'profile.notelp' => 'required'
+            'profile.notelp' => 'required',
+            'image' => 'required|mimes:png'
         ]);
 
         if ($validator->fails()) {
-            return response()->json(["Error" => $validator->errors()->first()], 401);
+            return response()->json(["Error" => $validator->errors()->first()], 400);
         }
         $user = User::findOrFail($id);
+        $profileGambar = Profile::where('user_id', $id)->first();
+        // return $request->all();
         $user->fill($request->all());
         $user->update();
-
         $user->profile()->update([
             'notelp' => $request->profile['notelp'],
             'provinsi_id' => $request->profile['provinsi_id'],
-            'kota_id' => $request->profile['kota_id']
+            'kota_id' => $request->profile['kota_id'],
         ]);
+        if (Storage::disk('public')->exists('images/'.$profileGambar->gambar)) {
+            // ...
+            Storage::delete('images/'. $profileGambar->gambar);
+            $user->profile()->update([
+                'gambar' =>  $user->UUID . $request->image->getClientOriginalName()
+            ]);
+            $path = Storage::disk('public')->put('images/'. $user->UUID . $request->image->getClientOriginalName(), file_get_contents($request->image));
+
+        }
+        else {
+            $user->profile()->update([
+                'gambar' =>  $user->UUID . $request->image->getClientOriginalName()
+            ]);
+            $path = Storage::disk('public')->put('images/'. $user->UUID . $request->image->getClientOriginalName(), file_get_contents($request->image));
+
+        }
         return response()->json($user->load(['profile.province', 'profile.city', 'divisi']));
     }
 

@@ -21,8 +21,11 @@ class Profile extends Model
         return $this->hasOne(Kota::class, 'id', 'kota_id');
     }
     public function getLinkAttribute(){
-        return Storage::disk('public')->url("images/".$this->gambar);
-        // return url('/storage/images/'.$this->gambar);
+        // return Storage::disk('public')->url("images/".$this->gambar);
+        if($this->gambar){
+            return url('/storage/images/'.$this->gambar);
+        }
+        return null;
         // return url(public_path('/storage/images/').$this->gambar);
     }
 }

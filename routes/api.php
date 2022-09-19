@@ -15,6 +15,7 @@ use App\Http\Controllers\ExcelController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\SiswaController;
 use App\Http\Controllers\MentorController;
+use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\SkillCategoryCrud;
 use App\Http\Controllers\SkillCrud;
 use App\Http\Controllers\UserController;
@@ -119,8 +120,6 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
 
         // Route::get('/data/department', [MentorController::class, 'listDataDepartmentDivisi']);
         // Route::get('/data/divisi/department/{id}', [MentorController::class, 'divisiByDepartment']);
-        Route::get('/data/provinsi', [MentorController::class, 'provinsi']);
-        Route::get('/data/kota/provinsi/{id}', [MentorController::class, 'kota']);
         Route::group(["prefix" => "/data"], function(){
             Route::group(["prefix" => "/department"], function(){
                 Route::get('/', [DepartmentController::class, 'listDataDepartment']);
@@ -133,6 +132,19 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
                 Route::get('/create', [DivisiController::class, 'divisiCreate']);
                 Route::get('/update/{id}', [DivisiController::class, 'divisiUpdate']);
                 Route::get('/delete/{id}', [DivisiController::class, 'divisiDelete']);
+            });
+            Route::get('/provinsi', [MentorController::class, 'provinsi']);
+            Route::get('/kota/provinsi/{id}', [MentorController::class, 'kota']);
+            Route::group(["prefix" => "/project"], function(){
+                Route::get('/', [ProjectController::class, 'projectAll']);
+                Route::get('/search', [ProjectController::class, 'searchProject']);
+                Route::get('/create', [ProjectController::class, 'createProject']);
+                Route::get('/detail/{code}', [ProjectController::class, 'projectDetail']);
+                Route::get('/update/{code}', [ProjectController::class, 'projectDetail']);
+                Route::get('/invite/{uuid}/{idproject}', [ProjectController::class, 'inviteUserProject']);
+                Route::get('/leave/{uuid}/{idproject}', [ProjectController::class, 'leaveUserProject']);
+                Route::get('/accept/{uuid}/{idproject}', [ProjectController::class, 'terimaUserProject']);
+                Route::get('/reject/{uuid}/{idproject}', [ProjectController::class, 'tolakUserProject']);
             });
         });
         Route::group(["prefix" => "/user"], function () {
