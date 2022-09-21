@@ -11,6 +11,9 @@ class Project extends Model
     protected $guarded = ['id'];
 
     public function projectUser(){
-        return $this->hasMany(ProjectUser::class, 'id', 'project_id');
+        return $this->hasMany(ProjectUser::class, 'project_id','id');
+    }
+    public function projectOwner(){
+        return $this->belongsTo(User::class,  'user_id', 'id');
     }
 }

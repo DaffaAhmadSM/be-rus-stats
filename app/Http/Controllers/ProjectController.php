@@ -6,7 +6,6 @@ use App\Models\Project;
 use App\Models\ProjectUser;
 use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Validator;
 
 
@@ -14,12 +13,13 @@ class ProjectController extends Controller
 {
     public function createProject(Request $request){
         $validator = Validator::make($request->all(), [
-            'nama' => 'required',
+            'name' => 'required',
             'description' => 'required',
+            'user_id' => 'required'
         ]);
 
         if ($validator->fails()) {
-            return response()->json(["Error" => $validator->errors()->first()], 401);
+            return response()->json(["Error" => $validator->errors()->first()], 400);
         }
         try {
             $bytes = random_bytes(3);
@@ -27,7 +27,9 @@ class ProjectController extends Controller
             $project = Project::create([
                 'name' => $request->name,
                 'description' => $request->description,
-                'code' => strtoupper(bin2hex($bytes))
+                'code' => strtoupper(bin2hex($bytes)),
+                'user_id' => $request->user_id
+
             ]);
             return response()->json([
                 'Message' => 'Project Created',
@@ -39,11 +41,14 @@ class ProjectController extends Controller
             ],400);
         }
     }
+
     public function searchProject(Request $request){
-        $project = Project::where('code', 'like', '%' .$request->code. '%')->orWhere('name', 'like', '%' .$request->name. '%');
+        $project = Project::where('code',  $request->code)->orWhere('name',  $request->name);
         if($project->get()){
             return response()->json([
-                'Project' => $project->get()
+                $project->with(['projectUser'=> function($q){
+                    $q->with('user');
+                }])->get()
             ],200);
         }
         return response()->json([
@@ -51,10 +56,15 @@ class ProjectController extends Controller
             'Project' => $project->get()
         ],400);
     }
-    public function inviteUserProject($uuid, $idproject){
+
+    public function deleteinvitedUser($user_id, $project_id) {
+        $project_user = ProjectUser::where('user_id',$user_id)->where('project_id',$project_id)->first();
+    }
+
+    public function inviteUserProject($uuid, $codeProject){
         try {
             $user = User::where('uuid', $uuid)->first();
-            $project = Project::where('id', $idproject)->first();
+            $project = Project::where('code', $codeProject)->first();
             if($user && $project) {
                 ProjectUser::create([
                     'user_id' => $user->id,
@@ -74,10 +84,11 @@ class ProjectController extends Controller
             ],400);
         }
     }
-    public function leaveUserProject($uuid, $idproject){
+
+    public function leaveUserProject($uuid, $codeProject){
         try {
             $user = User::where('uuid', $uuid)->first();
-            $project = Project::where('id', $idproject)->first();
+            $project = Project::where('code', $codeProject)->first();
             $data = ProjectUser::where('user_id', $user->id)->where('project_id', $project->id);
             if($data->get()){
                 $data->delete();
@@ -91,10 +102,11 @@ class ProjectController extends Controller
             ],400);
         }
     }
-    public function terimaUserProject($uuid, $idproject){
+
+    public function terimaUserProject($uuid, $codeProject){
         try {
             $user = User::where('uuid', $uuid)->first();
-            $project = Project::where('id', $idproject)->first();
+            $project = Project::where('code', $codeProject)->first();
             $data = ProjectUser::where('user_id', $user->id)->where('project_id', $project->id);
             if($data->get()){
                 $data->update([
@@ -110,10 +122,11 @@ class ProjectController extends Controller
             ],400);
         }
     }
-    public function tolakUserProject($iduser, $idproject){
+
+    public function tolakUserProject($iduser, $codeProject){
         try {
             $user = User::where('uuid', $iduser)->first();
-            $project = Project::where('uuid', $idproject)->first();
+            $project = Project::where('code', $codeProject)->first();
             $data = ProjectUser::where('user_id', $user->id)->where('project_id', $project->id);
             if($data->get()){
                 $data->update([
@@ -129,26 +142,21 @@ class ProjectController extends Controller
             ],400);
         }
     }
-    public function userAll(){
-        $user = User::all();
-        return response()->json([
-            'data' => $user,
-        ],200);
-    }
-    public function projectAll(){
-        return response()->json([
-            'data' => Project::all(),
 
-        ],200);
+    public function projectAll(){
+        $project = Project::with(['projectUser'=> function($q){
+            $q->with('user');
+        }])->get();
+        return response()->json($project,200);
     }
+
     public function projectDetail($code){
-        $project = Project::where('code', $code)->with(['projectUser'=> function($q){
+        $project = Project::where('code', $code)->with(['projectOwner','projectUser'=> function($q){
             $q->with('user');
         }]);
-        return response()->json([
-            'data' => $project->get(),
-        ],200);
+        return response()->json($project->first());
     }
+
     public function projectDelete($code){
         $project = Project::where('code', $code)->with(['projectUser'=> function($q){
             $q->with('user');
@@ -158,6 +166,7 @@ class ProjectController extends Controller
             'message' => 'Project telah dihapus'
         ],200);
     }
+
     public function projectUpdate(Request $request ,$code){
         try {
             $project = Project::where('code', $code);
@@ -174,5 +183,13 @@ class ProjectController extends Controller
                 'Message' => $th,
             ],400);
         }
+    }
+
+    public function projectUser($id){
+        $project = Project::where('user_id', $id)
+        ->join('users', 'projects.user_id', '=', 'users.id')
+        ->select('projects.*','users.nama as project_owner_name')
+        ->withCount('projectUser');
+        return response()->json($project->get());
     }
 }

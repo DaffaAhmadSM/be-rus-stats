@@ -15,6 +15,7 @@ use App\Http\Controllers\ExcelController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\SiswaController;
 use App\Http\Controllers\MentorController;
+use App\Http\Controllers\PortofolioController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\SkillCategoryCrud;
 use App\Http\Controllers\SkillCrud;
@@ -135,16 +136,27 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
             });
             Route::get('/provinsi', [MentorController::class, 'provinsi']);
             Route::get('/kota/provinsi/{id}', [MentorController::class, 'kota']);
+
             Route::group(["prefix" => "/project"], function(){
                 Route::get('/', [ProjectController::class, 'projectAll']);
+                Route::get('/user/{id}', [ProjectController::class, 'projectUser']);
                 Route::get('/search', [ProjectController::class, 'searchProject']);
-                Route::get('/create', [ProjectController::class, 'createProject']);
+                Route::post('/create', [ProjectController::class, 'createProject']);
                 Route::get('/detail/{code}', [ProjectController::class, 'projectDetail']);
-                Route::get('/update/{code}', [ProjectController::class, 'projectDetail']);
-                Route::get('/invite/{uuid}/{idproject}', [ProjectController::class, 'inviteUserProject']);
-                Route::get('/leave/{uuid}/{idproject}', [ProjectController::class, 'leaveUserProject']);
-                Route::get('/accept/{uuid}/{idproject}', [ProjectController::class, 'terimaUserProject']);
-                Route::get('/reject/{uuid}/{idproject}', [ProjectController::class, 'tolakUserProject']);
+                Route::post('/update/{code}', [ProjectController::class, 'projectUpdate']);
+                Route::get('/invite/{uuid}/{codeProject}', [ProjectController::class, 'inviteUserProject']);
+                Route::get('/leave/{uuid}/{codeProject}', [ProjectController::class, 'leaveUserProject']);
+                Route::get('/accept/{uuid}/{codeProject}', [ProjectController::class, 'terimaUserProject']);
+                Route::get('/reject/{uuid}/{codeProject}', [ProjectController::class, 'tolakUserProject']);
+            });
+            Route::group(["prefix" => "/portofolio"], function(){
+                Route::get('/', [PortofolioController::class, 'allPortofolio']);
+                Route::get('/user/{uuid}', [PortofolioController::class, 'userPortofolio']);
+                Route::post('/create', [PortofolioController::class, 'createPortofolio']);
+                Route::get('/detail/{id}', [PortofolioController::class, 'detailPortofolio']);
+                Route::post('/update/{id}', [PortofolioController::class, 'updatePortofolio']);
+                Route::get('/accept/{id}', [PortofolioController::class, 'diterimaPortofolio']);
+                Route::get('/reject/{id}', [PortofolioController::class, 'ditolakPortofolio']);
             });
         });
         Route::group(["prefix" => "/user"], function () {
