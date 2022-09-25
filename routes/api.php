@@ -63,23 +63,24 @@ Route::get('/set', function () {
     // ]);
     // return public_path('data.xlsx');
     // Excel::import(new UsersImport, public_path('data.xlsx'));
-    $dataUser = User::role('ceo')->get();
-    foreach ($dataUser as $d) {
-    $divisi = divisi::where('id', $d->divisi_id)->with('divisiSkill')->first();
-    foreach ($divisi->divisiSkill as $dd) {
-        $skill = Skill::where('skill_category_id', $dd->skill_category_id)->get();
-        $a[] = $skill;
-        // var_dump($a);
-        foreach ($skill as $sk) {
-            UserSkill::create([
-                'user_id' => $d->id,
-                'skill_id' => $sk->id,
-                'nilai' => 30,
-                'nilai_history' => 0
-            ]);
-        }
-    }
-}
+    $dataUser = User::role('student')->get();
+    return $dataUser;
+//     foreach ($dataUser as $d) {
+//     $divisi = divisi::where('id', $d->divisi_id)->with('divisiSkill')->first();
+//     foreach ($divisi->divisiSkill as $dd) {
+//         $skill = Skill::where('skill_category_id', $dd->skill_category_id)->get();
+//         $a[] = $skill;
+//         // var_dump($a);
+//         foreach ($skill as $sk) {
+//             UserSkill::create([
+//                 'user_id' => $d->id,
+//                 'skill_id' => $sk->id,
+//                 'nilai' => 30,
+//                 'nilai_history' => 0
+//             ]);
+//         }
+//     }
+// }
 
     // $nick = explode(" ", $d->nama);
     // // return $nick[0];
@@ -96,7 +97,6 @@ Route::get('/set', function () {
     // return $a;
     // return $dataUser->doesntHave('userSkill')->get();
 });
-
 Route::post('/login', [LoginController::class, 'login']);
 
 Route::group(['middleware' => ['auth:sanctum']], function () {
@@ -116,11 +116,20 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
         Route::post('user/create', [SiswaController::class, 'store']);
         Route::get('user/detail', [SiswaController::class, 'getUserDetail']);
         Route::get('test', [SiswaController::class, 'test']);
+        Route::group(["prefix" => "/portofolio"], function(){
+            Route::get('/user/{uuid}', [PortofolioController::class, 'userPortofolio']);
+            Route::post('/create', [PortofolioController::class, 'createPortofolio']);
+            Route::get('/detail/{id}', [PortofolioController::class, 'detailPortofolio']);
+            Route::post('/update/{id}', [PortofolioController::class, 'updatePortofolio']);
+            Route::get('/delete/{id}', [PortofolioController::class, 'deletePortofolio']);
+        });
+        Route::group(["prefix" => "/project"], function(){
+            Route::get('/',[ProjectController::class, 'studentHaveProject']);
+            Route::get('/join/{codeProject}', [ProjectController::class, 'joinStudentProject']);
+            Route::get('/find/{codeProject}', [ProjectController::class, 'findProject']);
+        });
     });
     Route::group(['middleware' => ['role:ceo|supervisor|pekerja|guru '], "prefix" => "/mentor"], function () {
-
-        // Route::get('/data/department', [MentorController::class, 'listDataDepartmentDivisi']);
-        // Route::get('/data/divisi/department/{id}', [MentorController::class, 'divisiByDepartment']);
         Route::group(["prefix" => "/data"], function(){
             Route::group(["prefix" => "/department"], function(){
                 Route::get('/', [DepartmentController::class, 'listDataDepartment']);
@@ -140,6 +149,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
             Route::group(["prefix" => "/project"], function(){
                 Route::get('/', [ProjectController::class, 'projectAll']);
                 Route::get('/user/{id}', [ProjectController::class, 'projectUser']);
+                Route::get('/pending/{codeProject}', [ProjectController::class, 'pendingUser']);
                 Route::get('/search', [ProjectController::class, 'searchProject']);
                 Route::post('/create', [ProjectController::class, 'createProject']);
                 Route::get('/detail/{code}', [ProjectController::class, 'projectDetail']);
@@ -151,12 +161,13 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
             });
             Route::group(["prefix" => "/portofolio"], function(){
                 Route::get('/', [PortofolioController::class, 'allPortofolio']);
-                Route::get('/user/{uuid}', [PortofolioController::class, 'userPortofolio']);
-                Route::post('/create', [PortofolioController::class, 'createPortofolio']);
+                Route::get('/pending/user', [PortofolioController::class, 'pendingUserPortofolio']);
+                Route::get('/accepted/user', [PortofolioController::class, 'acceptedUserPortofolio']);
+                Route::get('/rejected/user', [PortofolioController::class, 'rejectedUserPortofolio']);
                 Route::get('/detail/{id}', [PortofolioController::class, 'detailPortofolio']);
                 Route::post('/update/{id}', [PortofolioController::class, 'updatePortofolio']);
-                Route::get('/accept/{id}', [PortofolioController::class, 'diterimaPortofolio']);
-                Route::get('/reject/{id}', [PortofolioController::class, 'ditolakPortofolio']);
+                Route::get('/accept/{id}', [PortofolioController::class, 'acceptPortofolio']);
+                Route::post('/reject/{id}', [PortofolioController::class, 'rejectPortofolio']);
             });
         });
         Route::group(["prefix" => "/user"], function () {

@@ -6,11 +6,22 @@ use App\Models\Project;
 use App\Models\ProjectUser;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
 
 class ProjectController extends Controller
 {
+    public function findProject($code) {
+        $project = Project::where('code', $code)->with(['projectUser'=> function($q){
+            $q->with('user');
+        }])
+        ->join('users','users.id', 'projects.user_id')
+        ->select('projects.*','users.nama as owner_name')
+        ->first();
+        return response()->json($project);
+    }
+
     public function createProject(Request $request){
         $validator = Validator::make($request->all(), [
             'name' => 'required',
@@ -56,11 +67,6 @@ class ProjectController extends Controller
             'Project' => $project->get()
         ],400);
     }
-
-    public function deleteinvitedUser($user_id, $project_id) {
-        $project_user = ProjectUser::where('user_id',$user_id)->where('project_id',$project_id)->first();
-    }
-
     public function inviteUserProject($uuid, $codeProject){
         try {
             $user = User::where('uuid', $uuid)->first();
@@ -69,7 +75,7 @@ class ProjectController extends Controller
                 ProjectUser::create([
                     'user_id' => $user->id,
                     'project_id' => $project->id,
-                    'status' => 'pending'
+                    'status' => 'diterima'
                 ]);
                 return response()->json([
                     'message' => 'siswa telah diundang'
@@ -152,7 +158,7 @@ class ProjectController extends Controller
 
     public function projectDetail($code){
         $project = Project::where('code', $code)->with(['projectOwner','projectUser'=> function($q){
-            $q->with('user');
+            $q->where('status', 'diterima')->with('user');
         }]);
         return response()->json($project->first());
     }
@@ -189,7 +195,59 @@ class ProjectController extends Controller
         $project = Project::where('user_id', $id)
         ->join('users', 'projects.user_id', '=', 'users.id')
         ->select('projects.*','users.nama as project_owner_name')
-        ->withCount('projectUser');
+        ->withCount(['projectUser' => function($q){
+            $q->where('status', 'diterima');
+        }])
+
+        ;
         return response()->json($project->get());
+    }
+    public function pendingUser($codeProject){
+        $project = Project::where('code', $codeProject)->first();
+        $project_user = ProjectUser::where('project_id', $project->id)->where('status', 'pending')->with('user');
+        return response()->json($project_user->get());
+    }
+    public function studentHaveProject(){
+        $user = Auth::user();
+        $projectUser = ProjectUser::where('user_id', $user->id)->with(['project' => function($q){
+            $q->with(['projectOwner','projectUser' => function($q){
+                $q
+                ->where('status', 'diterima')
+                ->with('user')
+                ;
+            }]);
+        }]);
+        if($projectUser->get()){
+            return response()->json($projectUser->get(),200);
+        }
+    }
+    public function joinStudentProject($codeProject){
+        try {
+            $user = Auth::user();
+            $project = Project::where('code', $codeProject)->first();
+            $checkUser = ProjectUser::where('user_id', $user->id)->where('project_id', $project->id);
+            if($checkUser->get()){
+                return response()->json([
+                    'message' => 'maaf siswa sudah ada di dalam project'
+                ],200);
+            }
+            if($user && $project) {
+                ProjectUser::create([
+                    'user_id' => $user->id,
+                    'project_id' => $project->id,
+                    'status' => 'pending'
+                ]);
+                return response()->json([
+                    'message' => 'siswa telah diundang'
+                ],200);
+            }
+            return response()->json([
+                'message' => 'data siswa atau project tidak ada!'
+            ],400);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'Message' => $th,
+            ],400);
+        }
     }
 }

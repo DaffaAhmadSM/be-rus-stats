@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Portofolio;
-use App\Models\PortofolioUser;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -28,7 +27,8 @@ class PortofolioController extends Controller
                 'deskripsi' => $request->deskripsi,
                 'link' => $request->link,
                 'user_id' => $request->user_id,
-                'status' => 'menunggu',
+                'status' => 'pending',
+                'alasan' => null
             ]);
             return response()->json([
                 'Message' => 'Portofolio Created',
@@ -40,23 +40,17 @@ class PortofolioController extends Controller
             ],400);
         }
     }
-    public function diterimaPortofolio(Request $request, $id){
-        $validator = Validator::make($request->all(), [
-            'alasan' => 'required',
-        ]);
-        if ($validator->fails()) {
-            return response()->json(["Error" => $validator->errors()->first()], 400);
-        }
+    public function acceptPortofolio($id){
         try {
             $portofolio = Portofolio::where('id', $id);
             if($portofolio->first()) {
                 $portofolio->update([
                     'status' => 'diterima',
-                    'alasan' => $request->alasan
+                    'alasan' => 'Anda Diterima Selamat'
                 ]);
-                return response()->json([
-                    'message' => 'portofolio telah diterima'
-                ],200);
+                return response()->json(
+                    $portofolio->first()
+                ,200);
             }
             return response()->json([
                 'message' => 'data portofolio tidak ada!'
@@ -67,7 +61,7 @@ class PortofolioController extends Controller
             ],400);
         }
     }
-    public function ditolakPortofolio(Request $request, $id){
+    public function rejectPortofolio(Request $request, $id){
         $validator = Validator::make($request->all(), [
             'alasan' => 'required',
         ]);
@@ -81,9 +75,9 @@ class PortofolioController extends Controller
                     'status' => 'ditolak',
                     'alasan' => $request->alasan
                 ]);
-                return response()->json([
-                    'message' => 'portofolio telah ditolak'
-                ],200);
+                return response()->json(
+                    $portofolio->first()
+                ,200);
             }
             return response()->json([
                 'message' => 'data portofolio tidak ada!'
@@ -115,7 +109,7 @@ class PortofolioController extends Controller
                 ]);
                 return response()->json([
                     'Message' => 'Portofolio Updated',
-                    'Project' => $portofolio
+                    'Portofolio' => $portofolio
                 ],200);
             }
             return response()->json([
@@ -127,7 +121,7 @@ class PortofolioController extends Controller
             ],400);
         }
     }
-    public function deletePortofolio(Request $request, $id){
+    public function deletePortofolio($id){
         try {
             // var_dump();
             $portofolio = Portofolio::where('id', $id);
@@ -153,7 +147,8 @@ class PortofolioController extends Controller
     public function userPortofolio($uuid){
         $user = User::where('uuid', $uuid)->first();
         if($user){
-            $portofolio = Portofolio::where('user_id', $user->id)->first();
+            $portofolio = Portofolio::where('user_id', $user->id)
+            ->get();
             return response()->json($portofolio,200);
         }
         return response()->json([
@@ -163,6 +158,36 @@ class PortofolioController extends Controller
     public function detailPortofolio($id){
         $portofolio = Portofolio::where('id', $id)->first();
         return response()->json($portofolio,200);
+    }
+    public function pendingUserPortofolio(){
+        $portofolio = Portofolio::where('status', 'pending')
+        ->join('users', 'users.id', '=', 'portofolios.user_id')
+        ->join('profiles', 'profiles.user_id', '=', 'users.id')
+        ->select('portofolios.*','users.nama as user_name','profiles.gambar as user_image')
+        ->get();
+        if($portofolio){
+            return response()->json($portofolio,200);
+        }
+    }
+    public function acceptedUserPortofolio(){
+        $portofolio = Portofolio::where('status', 'diterima')
+        ->join('users', 'users.id', '=', 'portofolios.user_id')
+        ->join('profiles', 'profiles.user_id', '=', 'users.id')
+        ->select('portofolios.*','users.nama as user_name','profiles.gambar as user_image')
+        ->get();
+        if($portofolio){
+            return response()->json($portofolio,200);
+        }
+    }
+    public function rejectedUserPortofolio(){
+        $portofolio = Portofolio::where('status', 'ditolak')
+        ->join('users', 'users.id', '=', 'portofolios.user_id')
+        ->join('profiles', 'profiles.user_id', '=', 'users.id')
+        ->select('portofolios.*','users.nama as user_name','profiles.gambar as user_image')
+        ->get();
+        if($portofolio){
+            return response()->json($portofolio,200);
+        }
     }
     // public function searchProject(Request $request){
     //     $project = Portofolio::where('code',  $request->code)->orWhere('name',  $request->name);
