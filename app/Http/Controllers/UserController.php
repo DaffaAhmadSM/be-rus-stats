@@ -63,7 +63,7 @@ class UserController extends Controller
             'email' => 'required',
             'tanggal_lahir' => 'required|date',
             'profile.notelp' => 'required',
-            'image' => 'required|mimes:png'
+            'image' => 'mimes:png'
         ]);
 
         if ($validator->fails()) {
