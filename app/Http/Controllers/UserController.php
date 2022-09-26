@@ -2,10 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\divisi;
 use App\Models\Profile;
+use App\Models\Skill;
 use App\Models\User;
+use App\Models\UserSkill;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
 class UserController extends Controller
@@ -62,14 +66,47 @@ class UserController extends Controller
             'nama' => 'required',
             'email' => 'required',
             'tanggal_lahir' => 'required|date',
-            'profile.notelp' => 'required',
-            'image' => 'mimes:png'
+            'profile.notelp' => 'required'
         ]);
 
         if ($validator->fails()) {
             return response()->json(["Error" => $validator->errors()->first()], 400);
         }
+        $checkRole = Auth::user();
         $user = User::findOrFail($id);
+        if($checkRole->hasRole('student') && $user->hasRole('mentor')){
+            return response()->json([
+                'message' => 'Maaf Anda tidak bisa mengedit data profile ini!'
+            ]);
+        }
+        if($checkRole->hasRole('mentor') && $user->hasRole('ceo')){
+            return response()->json([
+                'message' => 'Maaf Anda tidak bisa mengedit data profile ini!'
+            ]);
+        }
+        if($checkRole->hasRole('student') && $user->hasRole('pekerja')){
+            return response()->json([
+                'message' => 'Maaf Anda tidak bisa mengedit data profile ini!'
+            ]);
+        }
+        if($request->divisi){
+            $skill = UserSkill::where('user_id', $user->id)->get();
+            $skill->delete();
+            $divisi = divisi::where('id', $request->divisi)->with('divisiSkill')->first();
+            foreach ($divisi->divisiSkill as $dd) {
+                $skill = Skill::where('skill_category_id', $dd->skill_category_id)->get();
+                $a[] = $skill;
+                // var_dump($a);
+                foreach ($skill as $sk) {
+                    UserSkill::create([
+                        'user_id' => $user->id,
+                        'skill_id' => $sk->id,
+                        'nilai' => 30,
+                        'nilai_history' => 0
+                    ]);
+                }
+            }
+        }
         $profileGambar = Profile::where('user_id', $id)->first();
         // return $request->all();
         $user->fill($request->all());
