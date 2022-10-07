@@ -198,10 +198,6 @@ class MentorController extends Controller
             return response()->json(["Error" => $validator->errors()->first()], 400);
         }
         // return $request->all();
-        $divisi_skill = DivisionSkill::where('division_id', $request->divisi_id)->first();
-        if (!$divisi_skill) {
-            return response()->json(['Message' => "division not available 'cause division skill not set yet"], 400);
-        }
         $department = department::where('id', $request->department_id)->first();
         $divisi = divisi::where('id', $request->divisi_id)->with('divisiSkill')->first();
         // return date("Y-m-d", $request->tanggal_lahir);
@@ -228,12 +224,22 @@ class MentorController extends Controller
         ]);
 
         $user->assignRole('student');
-        foreach ($divisi->divisiSkill as $key => $value) {
-            $skill = Skill::where('skill_category_id', $value->skill_category_id)->get();
-            foreach ($skill as $sk) {
+        // foreach ($divisi->divisiSkill as $key => $value) {
+        //     $skill = Skill::where('skill_category_id', $value->skill_category_id)->get();
+        //     foreach ($skill as $sk) {
+        //         UserSkill::create([
+        //             'user_id' => $user->id,
+        //             'skill_id' => $sk->id,
+        //             'nilai' => 30,
+        //             'nilai_history' => 0
+        //         ]);
+        //     }
+        // }
+        foreach($user as $a){
+            foreach($a->divisisubskill as $d){
                 UserSkill::create([
-                    'user_id' => $user->id,
-                    'skill_id' => $sk->id,
+                    'user_id' => $a->id,
+                    'sub_skill_id' => $d->sub_skill_id,
                     'nilai' => 30,
                     'nilai_history' => 0
                 ]);

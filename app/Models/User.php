@@ -131,4 +131,7 @@ class User extends Authenticatable
         $jurusan = department::where('id', $divisi->department_id)->first();
         return $jurusan;
     }
+    public function divisisubskill(){
+        return $this->hasMany(DivisiSkillSubskill::class, "divisi_id", "divisi_id");
+    }
 }

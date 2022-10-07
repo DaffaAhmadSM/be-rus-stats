@@ -24,7 +24,7 @@ class UserSkill extends Model
 
     public function Skill()
     {
-        return $this->belongsTo(Skill::class);
+        return $this->belongsTo(SubSkill::class);
     }
 
     public function getDifferenceAttribute(){
