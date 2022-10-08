@@ -179,6 +179,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
                 Route::post('/create', [MentorController::class, 'studentCreate']);
                 Route::get('/detail/{uuid}', [MentorController::class, 'studentDetail']);
                 Route::get('/delete/{id}', [MentorController::class, 'deleteStudent']);
+
             });
 
         });
