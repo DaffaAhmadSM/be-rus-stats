@@ -14,6 +14,7 @@ use App\Models\UserDetail;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Models\DivisionSkill;
+use App\Models\DivisiSkillSubskill;
 use App\Models\Kota;
 use App\Models\SpecialityUser;
 use Illuminate\Support\Facades\Auth;
@@ -109,74 +110,101 @@ class MentorController extends Controller
     public function studentDetail($uuid)
     {
         $user = User::where('UUID', $uuid)->with('divisi')->with('profile')->first();
-        if ($user->hasRole('student')) {
-            $divisi_skill = DivisionSkill::where('division_id', $user->divisi_id)->with(['SkillCategory' => function ($q) use ($user) {
-                $q->with(['Data' => function ($q) use ($user) {
-                    $q->with(['Skor' => function ($q) use ($user) {
-                        $q->where('user_id', $user->id);
-                    }]);
-                }]);
-            }]);;
-            $data = [];
-
-            foreach ($divisi_skill->get() as $key => $value) {
-                $data[] = $value->SkillCategory->toArray();
+        $relasi = DivisiSkillSubskill::where('divisi_id', $user->divisi_id);
+        $relasi->with(['skill', 'subSkill' => function($q) use($user){
+            $q->with(['user' => function($q)use($user){
+                $q->where('user_id', $user->id);
+            }]);
+        }]);
+        $average = [];
+        $averageHistory = [];
+        foreach($relasi->get() as $e){
+            $average[] = $e->subSkill->user->nilai;
+            $averageHistory[] = $e->subSkill->user->nilai_history;
+            if($e->subSkill->user == null){
+                // var_dump($e->subSkill->user);
+                UserSkill::create([
+                    'user_id' => $user->id,
+                    'sub_skill_id' => $e->subSkill->id,
+                    'nilai' => 30,
+                    'nilai_history' => 0
+                ]);
             }
-            foreach ($data as $key_dat => $value) {
-                $data_dat[] = $value["data"];
-                $skillcategoryname[] = $value["name"];
-                $skillcategoryid[] = $value["id"];
-            }
-            for ($i = 0; $i < count($data_dat); $i++) {
-                $data_each = $data_dat[$i];
-                for ($e = 0; $e < count($data_each); $e++) {
-                    //* jika user tidak memiliki nilai skill per skill category maka akan membuat skill baru dengan nilai default 30 */
-                    if(!$data_each[$e]["skor"]){
-                        $skill = Skill::where('skill_category_id', $skillcategoryid[$i])->get();
-                        foreach ($skill as $sk) {
-                            UserSkill::create([
-                                'user_id' => $user->id,
-                                'skill_id' => $sk->id,
-                                'nilai' => 30,
-                                'nilai_history' => 0
-                            ]);
-                        }
-                            $divisi_skill = DivisionSkill::where('division_id', $user->divisi_id)->with(['SkillCategory' => function ($q) use ($user) {
-                                $q->with(['Data' => function ($q) use ($user) {
-                                    $q->with(['Skor' => function ($q) use ($user) {
-                                        $q->where('user_id', $user->id);
-                                    }]);
-                                }]);
-                            }]);;
-                            unset($data);
-                            unset($data_dat);
-                            foreach ($divisi_skill->get() as $key => $value) {
-                                $data[] = $value->SkillCategory->toArray();
-                            }
-                            foreach ($data as $key_dat => $value) {
-                                $data_dat[] = $value["data"];
-                            }
-                            $data_each = $data_dat[$i];
-                    }
-                    $data_e[] = $data_each[$e]["skor"]["nilai"];
-                    $data_e_h[] = $data_each[$e]["skor"]["nilai_history"];
-                }
-                $data_each_skill[] = [
-                    "name" => $skillcategoryname[$i],
-                    "average" => round(array_sum($data_e) / count($data_e),0),
-                    "average_history" => round(array_sum($data_e_h) / count($data_e_h),0)
-                ];
-                unset($data_e);
-                unset($data_e_h);
-            }
-            $overall = $user->average;
-            return response()->json([
-                "user" => $user,
-                "Overall" => round($overall, 1),
-                "user_detail" => $data,
-                "radar_chart" => $data_each_skill,
-            ], 200);
         }
+        return response()->json([
+            'data' => $relasi->get(),
+            "average" => round(array_sum($average) / count($average),0),
+            "average_history" => round(array_sum($averageHistory) / count($averageHistory),0)
+        ]);
+        // $user = User::where('UUID', $uuid)->with('divisi')->with('profile')->first();
+        // if ($user->hasRole('student')) {
+        //     $divisi_skill = DivisionSkill::where('division_id', $user->divisi_id)->with(['SkillCategory' => function ($q) use ($user) {
+        //         $q->with(['Data' => function ($q) use ($user) {
+        //             $q->with(['Skor' => function ($q) use ($user) {
+        //                 $q->where('user_id', $user->id);
+        //             }]);
+        //         }]);
+        //     }]);;
+        //     $data = [];
+
+        //     foreach ($divisi_skill->get() as $key => $value) {
+        //         $data[] = $value->SkillCategory->toArray();
+        //     }
+        //     foreach ($data as $key_dat => $value) {
+        //         $data_dat[] = $value["data"];
+        //         $skillcategoryname[] = $value["name"];
+        //         $skillcategoryid[] = $value["id"];
+        //     }
+        //     for ($i = 0; $i < count($data_dat); $i++) {
+        //         $data_each = $data_dat[$i];
+        //         for ($e = 0; $e < count($data_each); $e++) {
+        //             //* jika user tidak memiliki nilai skill per skill category maka akan membuat skill baru dengan nilai default 30 */
+        //             if(!$data_each[$e]["skor"]){
+        //                 $skill = Skill::where('skill_category_id', $skillcategoryid[$i])->get();
+        //                 foreach ($skill as $sk) {
+        //                     UserSkill::create([
+        //                         'user_id' => $user->id,
+        //                         'skill_id' => $sk->id,
+        //                         'nilai' => 30,
+        //                         'nilai_history' => 0
+        //                     ]);
+        //                 }
+        //                     $divisi_skill = DivisionSkill::where('division_id', $user->divisi_id)->with(['SkillCategory' => function ($q) use ($user) {
+        //                         $q->with(['Data' => function ($q) use ($user) {
+        //                             $q->with(['Skor' => function ($q) use ($user) {
+        //                                 $q->where('user_id', $user->id);
+        //                             }]);
+        //                         }]);
+        //                     }]);;
+        //                     unset($data);
+        //                     unset($data_dat);
+        //                     foreach ($divisi_skill->get() as $key => $value) {
+        //                         $data[] = $value->SkillCategory->toArray();
+        //                     }
+        //                     foreach ($data as $key_dat => $value) {
+        //                         $data_dat[] = $value["data"];
+        //                     }
+        //                     $data_each = $data_dat[$i];
+        //             }
+        //             $data_e[] = $data_each[$e]["skor"]["nilai"];
+        //             $data_e_h[] = $data_each[$e]["skor"]["nilai_history"];
+        //         }
+        //         $data_each_skill[] = [
+        //             "name" => $skillcategoryname[$i],
+        //             "average" => round(array_sum($data_e) / count($data_e),0),
+        //             "average_history" => round(array_sum($data_e_h) / count($data_e_h),0)
+        //         ];
+        //         unset($data_e);
+        //         unset($data_e_h);
+        //     }
+        //     $overall = $user->average;
+        //     return response()->json([
+        //         "user" => $user,
+        //         "Overall" => round($overall, 1),
+        //         "user_detail" => $data,
+        //         "radar_chart" => $data_each_skill,
+        //     ], 200);
+        // }
     }
 
     public function studentCreate(Request $request)
