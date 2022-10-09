@@ -19,6 +19,7 @@ use App\Http\Controllers\PortofolioController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\SkillCategoryCrud;
 use App\Http\Controllers\SkillCrud;
+use App\Http\Controllers\SubSkillController;
 use App\Http\Controllers\UserController;
 use App\Imports\UsersImport;
 use App\Models\divisi;
@@ -142,7 +143,6 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
             });
             Route::get('/provinsi', [MentorController::class, 'provinsi']);
             Route::get('/kota/provinsi/{id}', [MentorController::class, 'kota']);
-
             Route::group(["prefix" => "/project"], function(){
                 Route::get('/', [ProjectController::class, 'projectAll']);
                 Route::get('/user/{id}', [ProjectController::class, 'projectUser']);
@@ -166,6 +166,20 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
                 Route::get('/accept/{id}', [PortofolioController::class, 'acceptPortofolio']);
                 Route::post('/reject/{id}', [PortofolioController::class, 'rejectPortofolio']);
             });
+            Route::group(["prefix" => "/skill"], function () {
+                Route::post('/create', [SkillCategoryCrud::class, 'skillCategoryCreate']);
+                Route::get('/', [SkillCategoryCrud::class, 'skillCategoryReadAll']);
+                Route::get('show/{id}', [SkillCategoryCrud::class, 'skillCategoryReadById']);
+                Route::get('/delete/{id}', [SkillCategoryCrud::class, 'skillCategoryDelete']);
+                Route::post('/update/{id}', [SkillCategoryCrud::class, 'skillCategoryUpdate']);
+            });
+            Route::group(["prefix" => "/subskill"], function () {
+                Route::post('/create', [SubSkillController::class, 'subSkillCreate']);
+                Route::get('/', [SubSkillController::class, 'subSkillReadAll']);
+                Route::get('show/{id}', [SubSkillController::class, 'subSkillReadById']);
+                Route::get('/delete/{id}', [SubSkillController::class, 'subSkillDelete']);
+                Route::post('/update/{id}', [SubSkillController::class, 'subSkillUpdate']);
+            });
         });
         Route::group(["prefix" => "/user"], function () {
             Route::get('/', [MentorController::class, 'getUser']);
@@ -173,30 +187,11 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
             Route::get('/top3/gold', [MentorController::class, 'top3gold']);
             Route::get('/top3/silver', [MentorController::class, 'top3silver']);
             Route::post('/updateskills/{id}', [MentorController::class, 'updateSkill']);
-
             Route::group(["prefix" => "/student"], function () {
                 Route::get('/', [MentorController::class, 'getStudents']);
                 Route::post('/create', [MentorController::class, 'studentCreate']);
                 Route::get('/detail/{uuid}', [MentorController::class, 'studentDetail']);
                 Route::get('/delete/{id}', [MentorController::class, 'deleteStudent']);
-
-            });
-
-        });
-        Route::group(["prefix" => "/skill"], function () {
-
-            Route::get('/', [SkillCrud::class, 'skillReadAll']);
-            Route::get('show/{id}', [SkillCrud::class, 'skillReadBySkillCategory']);
-            Route::get('/delete/{id}', [SkillCrud::class, 'skillDelete']);
-            Route::post('/update/{id}', [SkillCrud::class, 'skillUpdate']);
-
-
-            Route::group(["prefix" => "skillcategory"] , function(){
-                Route::post('/create', [SkillCategoryCrud::class, 'skillCategoryCreate']);
-                Route::get('/', [SkillCategoryCrud::class, 'skillCategoryReadAll']);
-                Route::get('show/{id}', [SkillCategoryCrud::class, 'skillCategoryReadById']);
-                Route::get('/delete/{id}', [SkillCategoryCrud::class, 'skillCategoryDelete']);
-                Route::post('/update/{id}', [SkillCategoryCrud::class, 'skillCategoryUpdate']);
             });
         });
     });

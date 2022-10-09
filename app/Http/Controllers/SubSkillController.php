@@ -2,13 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Skill;
+use App\Models\SubSkill;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
-class SkillCategoryCrud extends Controller
+class SubSkillController extends Controller
 {
-    public function skillCategoryCreate(Request $request)
+    public function subSkillCreate(Request $request)
     {
         // return $request->all();
         $validator = Validator::make($request->all(), [
@@ -19,12 +19,12 @@ class SkillCategoryCrud extends Controller
         if ($validator->fails()) {
             return response()->json(["Error" => $validator->errors()->first()], 401);
         }
-        $skillCategoryC = Skill::create([
+        $subSkillC = SubSkill::create([
             'name' => $request->name,
             'description' => $request->description
         ]);
     }
-    public function skillCategoryUpdate(Request $request, $id)
+    public function subSkillUpdate(Request $request, $id)
     {
         $validator = Validator::make($request->all(), [
             'name' => 'required',
@@ -33,7 +33,7 @@ class SkillCategoryCrud extends Controller
         if ($validator->fails()) {
             return response()->json(["Error" => $validator->errors()->first()], 401);
         }
-        $data = Skill::where('id', $id);
+        $data = SubSkill::where('id', $id);
         $data->update([
             'name' => $request->name,
             'description' => $request->description
@@ -42,27 +42,27 @@ class SkillCategoryCrud extends Controller
             'Message' => 'Data Berhasil Diupdate!'
         ]);
     }
-    public function skillCategoryReadAll()
+    public function subSkillReadAll()
     {
-        $data = Skill::all();
+        $data = SubSkill::all();
         return response()->json($data);
     }
-    public function skillCategoryReadById(Request $request, $id)
+    public function subSkillReadById(Request $request, $id)
     {
-        $data = Skill::where('id', $id);
+        $data = SubSkill::where('id', $id);
         return response()->json($data->first());
     }
-    public function skillCategoryDelete($id)
+    public function subSkillDelete($id)
     {
-        $data = Skill::where('id', $id);
+        $data = SubSkill::where('id', $id);
         if ($data) {
             $data->delete();
             return response()->json([
-                'Message' => 'Data Skill Sudah Terhapus!'
+                'Message' => 'Data SubSkill Sudah Terhapus!'
             ]);
         }
         return response()->json([
-            'Message' => 'Data Skill Tidak Ada!'
+            'Message' => 'Data SubSkill Tidak Ada!'
         ], 401);
     }
 }

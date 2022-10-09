@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\divisi;
 use App\Models\DivisionSkill;
+use App\Models\DivisiSkillSubskill;
 use Illuminate\Support\Facades\Validator;
 
 class DivisionController extends Controller
@@ -29,14 +30,14 @@ class DivisionController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'divisi' => 'required',
-            'skill_categories' => 'required'
+            'skill' => 'required',
+            'sub_skill' => 'required'
         ]);
         if ($validator->fails()) {
             return response()->json(["Error" => $validator->errors()->first()], 401);
         }
-        DivisionSkill::create([
-            'division_id' => $request->divisi,
-            'skill_category_id' => $request->skill_categories
+        DivisiSkillSubskill::create([
+
         ]);
         return response()->json(
             [
