@@ -17,6 +17,7 @@ use App\Http\Controllers\SiswaController;
 use App\Http\Controllers\MentorController;
 use App\Http\Controllers\PortofolioController;
 use App\Http\Controllers\ProjectController;
+use App\Http\Controllers\RoleController;
 use App\Http\Controllers\SkillCategoryCrud;
 use App\Http\Controllers\SkillCrud;
 use App\Http\Controllers\SubSkillController;
@@ -100,7 +101,6 @@ Route::post('/login', [LoginController::class, 'login']);
 Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::get("search", function () {
     });
-
     Route::post('/logout', [LoginController::class, 'logout']);
     Route::get('/countries/all', [CountryController::class, 'index']);
     Route::get('/countries/{id}/cities', [CityController::class, 'show']);
@@ -192,6 +192,11 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
                 Route::post('/create', [MentorController::class, 'studentCreate']);
                 Route::get('/detail/{uuid}', [MentorController::class, 'studentDetail']);
                 Route::get('/delete/{id}', [MentorController::class, 'deleteStudent']);
+            });
+            Route::group(["prefix" => "/role"], function(){
+                Route::get('/mentor', [RoleController::class, 'getRoleMentor']);
+                Route::get('/guru', [RoleController::class, 'getRoleGuru']);
+                Route::get('/ceo', [RoleController::class, 'getRoleCeo']);
             });
         });
     });
