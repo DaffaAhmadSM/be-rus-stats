@@ -116,11 +116,8 @@ class MentorController extends Controller
                 $q->where('user_id', $user->id);
             }]);
         }]);
-        $average = [];
-        $averageHistory = [];
+
         foreach($relasi->get() as $e){
-            $average[] = $e->subSkill->user->nilai;
-            $averageHistory[] = $e->subSkill->user->nilai_history;
             if($e->subSkill->user == null){
                 // var_dump($e->subSkill->user);
                 UserSkill::create([
@@ -131,10 +128,48 @@ class MentorController extends Controller
                 ]);
             }
         }
+
+        $relasi_get = $relasi->get();
+        $skill = $relasi_get->groupBy('skill_id');
+        foreach ($skill as $key => $value) {
+            $skill[$key] = $value->flatMap(function($item){
+                return [    
+                    $item->sub_skill_id => $item->subSkill->user
+                ];
+            });
+
+            $sub_skill[] = $value->flatMap(function($item){
+                return [    
+                    $item->sub_skill_id => $item->subSkill
+                ];
+            });
+        }
+        $skill = $skill->map(function($item){
+            return[
+                "nilai" => $item->avg('nilai'),
+                "nilai_history" => $item->avg('nilai_history'),
+            ];
+        });
+        
+
+        $skill_unique = $relasi_get->unique('skill_id')->values()->all();
+        for ($i=0; $i < count($skill_unique); $i++) { 
+            $skill_unique_each[] = [
+                "name" => $skill_unique[$i]->skill->name,
+                "average" => round($skill[$skill_unique[$i]->skill_id]['nilai'],0),
+                "average_history" => round($skill[$skill_unique[$i]->skill_id]['nilai_history'],0)
+            ];
+
+            $user_detail[] = [
+                "id" => $skill_unique[$i]->id,
+                "name" => $skill_unique[$i]->skill->name,
+                "description" => $skill_unique[$i]->skill->description,
+                "data" => $sub_skill[$i]
+            ];
+        }
         return response()->json([
-            'data' => $relasi->get(),
-            "average" => round(array_sum($average) / count($average),0),
-            "average_history" => round(array_sum($averageHistory) / count($averageHistory),0)
+            'user_detail' => $user_detail,
+            "radar_chart" => $skill_unique_each,
         ]);
         // $user = User::where('UUID', $uuid)->with('divisi')->with('profile')->first();
         // if ($user->hasRole('student')) {
