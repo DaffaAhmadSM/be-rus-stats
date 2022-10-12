@@ -32,11 +32,15 @@ class LoginController extends Controller
                     'status'  => 'error'
                 ], 401);
         }
+
         $token = $user->createToken('auth_token')->plainTextToken;
         return response()->json([
             "message" => 'Login Success',
             "token" => $token,
-            "role" => $user->getRoleNames()->first()
+            "role" => $user->getRoleNames()->first(),
+            "guru" => url('/mentor/user/role/guru'),
+            "ceo" => url('/mentor/user/role/ceo'),
+            "mentor" => url('/mentor/user/role/mentor'),
         ],200);
     }
 
