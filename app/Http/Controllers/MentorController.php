@@ -112,14 +112,14 @@ class MentorController extends Controller
         $user = User::where('UUID', $uuid)->with('divisi')->with('profile')->first();
         $relasi = DivisiSkillSubskill::where('divisi_id', $user->divisi_id);
         $relasi->with(['skill', 'subSkill' => function($q) use($user){
-            $q->with(['user' => function($q)use($user){
+            $q->with(['skor' => function($q)use($user){
                 $q->where('user_id', $user->id);
             }]);
         }]);
 
         foreach($relasi->get() as $e){
-            if($e->subSkill->user == null){
-                // var_dump($e->subSkill->user);
+            if($e->subSkill->skor == null){
+                // dd($e->subSkill->skor);
                 UserSkill::create([
                     'user_id' => $user->id,
                     'sub_skill_id' => $e->subSkill->id,
@@ -134,7 +134,7 @@ class MentorController extends Controller
         foreach ($skill as $key => $value) {
             $skill[$key] = $value->flatMap(function($item){
                 return [    
-                    $item->sub_skill_id => $item->subSkill->user
+                    $item->sub_skill_id => $item->subSkill->skor
                 ];
             });
 
@@ -144,6 +144,7 @@ class MentorController extends Controller
                 ];
             });
         }
+        
         $skill = $skill->map(function($item){
             return[
                 "nilai" => $item->avg('nilai'),
