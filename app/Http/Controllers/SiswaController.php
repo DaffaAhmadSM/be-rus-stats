@@ -14,6 +14,7 @@ use Illuminate\Http\Request;
 use App\Models\DivisionSkill;
 use App\Models\SpecialityUser;
 use Illuminate\Support\Facades\DB;
+use App\Models\DivisiSkillSubskill;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Auth\Events\Validated;
@@ -114,78 +115,70 @@ class SiswaController extends Controller
     public function getUserDetail()
     {
         $user = Auth::user();
-        $divisi_skill = DivisionSkill::where('division_id', $user->divisi_id);
-        $data = [];
-        $divisi_skill->with(['SkillCategory' => function ($q) {
-            $q->with(['Data' => function ($q) {
-                $q->with(['Skor' => function ($q) {
-                    $q->where('user_id', Auth::id());
-                }]);
+        $relasi = DivisiSkillSubskill::where('divisi_id', $user->divisi_id);
+        $relasi->with(['skill', 'subSkill' => function($q) use($user){
+            $q->with(['skor' => function($q)use($user){
+                $q->where('user_id', $user->id);
             }]);
         }]);
-        foreach ($divisi_skill->get() as $key => $value) {
-            $data[] = $value->SkillCategory->toArray();
-        }
-        foreach ($data as $key_dat => $value) {
-            $data_dat[] = $value["data"];
-            $skillcategoryname[] = $value["name"];
-            $skillcategoryid[] = $value["id"];
-        }
-        for ($i = 0; $i < count($data_dat); $i++) {
-            $data_each = $data_dat[$i];
-            for ($e = 0; $e < count($data_each); $e++) {
-                //* jika user tidak memiliki nilai skill per skill category maka akan membuat skill baru dengan nilai default 30 */
-                if(!$data_each[$e]["skor"]){
-                    $skill = Skill::where('skill_category_id', $skillcategoryid[$i])->get();
-                    foreach ($skill as $sk) {
-                        UserSkill::create([
-                            'user_id' => $user->id,
-                            'skill_id' => $sk->id,
-                            'nilai' => 30,
-                            'nilai_history' => 0
-                        ]);
-                    }
-                        $divisi_skill = DivisionSkill::where('division_id', $user->divisi_id)->with(['SkillCategory' => function ($q) use ($user) {
-                            $q->with(['Data' => function ($q) use ($user) {
-                                $q->with(['Skor' => function ($q) use ($user) {
-                                    $q->where('user_id', $user->id);
-                                }]);
-                            }]);
-                        }]);;
-                        unset($data);
-                        unset($data_dat);
-                        foreach ($divisi_skill->get() as $key => $value) {
-                            $data[] = $value->SkillCategory->toArray();
-                        }
-                        foreach ($data as $key_dat => $value) {
-                            $data_dat[] = $value["data"];
-                        }
-                        $data_each = $data_dat[$i];
-                }
-                $data_e[] = $data_each[$e]["skor"]["nilai"];
-                $data_e_h[] = $data_each[$e]["skor"]["nilai_history"];
+
+        foreach($relasi->get() as $e){
+            if($e->subSkill->skor == null){
+                // dd($e->subSkill->skor);
+                UserSkill::create([
+                    'user_id' => $user->id,
+                    'sub_skill_id' => $e->subSkill->id,
+                    'nilai' => 30,
+                    'nilai_history' => 0
+                ]);
             }
-            $data_each_skill[] = [
-                "name" => $skillcategoryname[$i],
-                "average" => round(array_sum($data_e) / count($data_e),0),
-                "average_history" => round(array_sum($data_e_h) / count($data_e_h),0)
-            ];
-            unset($data_e);
-            unset($data_e_h);
         }
-        // foreach (array_merge(...$data_dat) as $key_skor => $value_skor) {
-        //     $data_skor[] = $value_skor["skor"];
-        // }
-        // foreach ($data_skor as $key_nilai => $value_nilai) {
-        //     if ($value_nilai) {
-        //         $all_nilai[] = $value_nilai["nilai"];
-        //     }
-        // }
-        // $overall = array_sum($all_nilai) / count($all_nilai);
+
+        $relasi_get = $relasi->get();
+        $skill = $relasi_get->groupBy('skill_id');
+        foreach ($skill as $key => $value) {
+            $skill[$key] = $value->flatMap(function($item){
+                return [    
+                    $item->sub_skill_id => $item->subSkill->skor
+                ];
+            });
+
+            $sub_skill[] = $value->flatMap(function($item){
+                return [    
+                    $item->sub_skill_id => $item->subSkill
+                ];
+            });
+        }
+        
+        $skill = $skill->map(function($item){
+            return[
+                "nilai" => $item->avg('nilai'),
+                "nilai_history" => $item->avg('nilai_history'),
+            ];
+        });
+        
+
+        $skill_unique = $relasi_get->unique('skill_id')->values()->all();
+        for ($i=0; $i < count($skill_unique); $i++) { 
+            $skill_unique_each[] = [
+                "name" => $skill_unique[$i]->skill->name,
+                "average" => round($skill[$skill_unique[$i]->skill_id]['nilai'],0),
+                "average_history" => round($skill[$skill_unique[$i]->skill_id]['nilai_history'],0)
+            ];
+
+            $user_detail[] = [
+                "id" => $skill_unique[$i]->id,
+                "name" => $skill_unique[$i]->skill->name,
+                "description" => $skill_unique[$i]->skill->description,
+                "data" => $sub_skill[$i]
+            ];
+        }
         return response()->json([
-            "user_detail" => $data,
-            "radar_chart" => $data_each_skill
-        ], 200);
+            "user" => $user,
+            "Overall" => round($user->average, 1),
+            'user_detail' => $user_detail,
+            "radar_chart" => $skill_unique_each,
+        ]);
     }
 
 
