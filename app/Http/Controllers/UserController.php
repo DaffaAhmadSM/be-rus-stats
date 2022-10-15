@@ -67,7 +67,7 @@ class UserController extends Controller
             'nama' => 'required',
             'email' => 'required',
             'tanggal_lahir' => 'required|date',
-            'profile.notelp' => 'required'
+            // 'profile.notelp' => 'required'
         ]);
 
         if ($validator->fails()) {
