@@ -52,8 +52,8 @@ class DepartmentController extends Controller
     }
     public function listDataDepartment()
     {
-        $department = department::get();
-        return response()->json($department);
+        $department = department::with('divisi');
+        return response()->json($department->get());
     }
     public function deleteDepartment($id){
         $department = department::where('id', $id);

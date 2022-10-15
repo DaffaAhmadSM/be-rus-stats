@@ -4,9 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Models\divisi;
 use App\Models\department;
+use App\Models\DivisiSkillSubskill;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use PhpParser\Node\FunctionLike;
 
 class DivisiController extends Controller
 {
@@ -69,6 +71,15 @@ class DivisiController extends Controller
        return response()->json([
         'message' => 'Data Divisi Tidak Ada!'
     ], 400);
+
+    }
+    public function divisiSkillSubSkill($id){
+        $data = DivisiSkillSubskill::where('divisi_id');
+        if($data->get()){
+            return response($data->get(), 200);
+        }
+    }
+    public function divisiSkillSubSkillCreate(){
 
     }
 }
