@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\divisi;
+use App\Models\DivisiSkillSubskill;
 use App\Models\Profile;
 use App\Models\Skill;
 use App\Models\User;
@@ -73,7 +74,8 @@ class UserController extends Controller
             return response()->json(["Error" => $validator->errors()->first()], 400);
         }
         $checkRole = Auth::user();
-        $user = User::findOrFail($id);
+        // $user = User::findOrFail($id);
+        $user = User::where('id', $id)->first();
         if($checkRole->hasRole('student') && $user->hasRole('mentor')){
             return response()->json([
                 'message' => 'Maaf Anda tidak bisa mengedit data profile ini!'
@@ -89,22 +91,17 @@ class UserController extends Controller
                 'message' => 'Maaf Anda tidak bisa mengedit data profile ini!'
             ]);
         }
-        if($request->divisi){
+        if($request->divisi != $user->divisi_id){
             $skill = UserSkill::where('user_id', $user->id)->get();
             $skill->delete();
-            $divisi = divisi::where('id', $request->divisi)->with('divisiSkill')->first();
-            foreach ($divisi->divisiSkill as $dd) {
-                $skill = Skill::where('skill_category_id', $dd->skill_category_id)->get();
-                $a[] = $skill;
-                // var_dump($a);
-                foreach ($skill as $sk) {
-                    UserSkill::create([
-                        'user_id' => $user->id,
-                        'skill_id' => $sk->id,
-                        'nilai' => 30,
-                        'nilai_history' => 0
-                    ]);
-                }
+            $relasi = DivisiSkillSubskill::where('divisi_id', $user->divisi_id);
+            foreach($relasi->get() as $e){
+                UserSkill::create([
+                    'user_id' => $user->id,
+                    'sub_skill_id' => $e->subSkill->id,
+                    'nilai' => 30,
+                    'nilai_history' => 0
+                ]);
             }
         }
         $profileGambar = Profile::where('user_id', $id)->first();
@@ -115,6 +112,7 @@ class UserController extends Controller
             'notelp' => $request->profile['notelp'],
             'provinsi_id' => $request->profile['provinsi_id'],
             'kota_id' => $request->profile['kota_id'],
+            'divisi_id' => $request->divisi_id ? $request->divisi_id : $user->divisi_id
         ]);
         if (Storage::disk('public')->exists('images/'.$profileGambar->gambar)) {
             // ...
