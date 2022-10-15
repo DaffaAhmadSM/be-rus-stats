@@ -92,7 +92,7 @@ class UserController extends Controller
             ]);
         }
         if($request->divisi != $user->divisi_id){
-            $skill = UserSkill::where('user_id', $user->id)->get();
+            $skill = UserSkill::where('user_id', $user->id);
             $skill->delete();
             $relasi = DivisiSkillSubskill::where('divisi_id', $user->divisi_id);
             foreach($relasi->get() as $e){
@@ -111,25 +111,29 @@ class UserController extends Controller
         $user->profile()->update([
             'notelp' => $request->profile['notelp'],
             'provinsi_id' => $request->profile['provinsi_id'],
-            'kota_id' => $request->profile['kota_id'],
-            'divisi_id' => $request->divisi_id ? $request->divisi_id : $user->divisi_id
+            'kota_id' => $request->profile['kota_id']
         ]);
-        if (Storage::disk('public')->exists('images/'.$profileGambar->gambar)) {
-            // ...
-            Storage::delete('images/'. $profileGambar->gambar);
-            $user->profile()->update([
-                'gambar' =>  $user->UUID . $request->image->getClientOriginalName()
-            ]);
-            $path = Storage::disk('public')->put('images/'. $user->UUID . $request->image->getClientOriginalName(), file_get_contents($request->image));
+        if($profileGambar->gambar){
+            if (Storage::disk('public')->exists('images/'.$profileGambar->gambar)) {
+                // ...
+                Storage::delete('images/'. $profileGambar->gambar);
+                $user->profile()->update([
+                    'gambar' =>  $user->UUID . $request->image->getClientOriginalName()
+                ]);
+                $path = Storage::disk('public')->put('images/'. $user->UUID . $request->image->getClientOriginalName(), file_get_contents($request->image));
 
-        }
-        else {
-            $user->profile()->update([
-                'gambar' =>  $user->UUID . $request->image->getClientOriginalName()
-            ]);
-            $path = Storage::disk('public')->put('images/'. $user->UUID . $request->image->getClientOriginalName(), file_get_contents($request->image));
+            }
+            else {
+                $user->profile()->update([
+                    'gambar' =>  $user->UUID . $request->image->getClientOriginalName()
+                ]);
+                $path = Storage::disk('public')->put('images/'. $user->UUID . $request->image->getClientOriginalName(), file_get_contents($request->image));
 
+            }
         }
+        $user->profile()->update([
+            'gambar' => $user->UUID . $request->image->getClientOriginalName()
+        ]);
         return response()->json($user->load(['profile.province', 'profile.city', 'divisi']));
     }
 
