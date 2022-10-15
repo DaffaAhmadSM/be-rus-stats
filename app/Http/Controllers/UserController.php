@@ -91,50 +91,52 @@ class UserController extends Controller
                 'message' => 'Maaf Anda tidak bisa mengedit data profile ini!'
             ]);
         }
-        if($request->divisi != $user->divisi_id){
-            $skill = UserSkill::where('user_id', $user->id);
-            $skill->delete();
-            $relasi = DivisiSkillSubskill::where('divisi_id', $user->divisi_id);
-            foreach($relasi->get() as $e){
-                UserSkill::create([
-                    'user_id' => $user->id,
-                    'sub_skill_id' => $e->subSkill->id,
-                    'nilai' => 30,
-                    'nilai_history' => 0
-                ]);
+        if($user){
+            if($request->divisi != $user->divisi_id){
+                $skill = UserSkill::where('user_id', $user->id);
+                $skill->delete();
+                $relasi = DivisiSkillSubskill::where('divisi_id', $user->divisi_id);
+                foreach($relasi->get() as $e){
+                    UserSkill::create([
+                        'user_id' => $user->id,
+                        'sub_skill_id' => $e->subSkill->id,
+                        'nilai' => 30,
+                        'nilai_history' => 0
+                    ]);
+                }
             }
-        }
-        $profileGambar = Profile::where('user_id', $id)->first();
-        // return $request->all();
-        $user->fill($request->all());
-        $user->update();
-        $user->profile()->update([
-            'notelp' => $request->profile['notelp'],
-            'provinsi_id' => $request->profile['provinsi_id'],
-            'kota_id' => $request->profile['kota_id']
-        ]);
-        if($profileGambar->gambar){
-            if (Storage::disk('public')->exists('images/'.$profileGambar->gambar)) {
-                // ...
-                Storage::delete('images/'. $profileGambar->gambar);
-                $user->profile()->update([
-                    'gambar' =>  $user->UUID . $request->image->getClientOriginalName()
-                ]);
-                $path = Storage::disk('public')->put('images/'. $user->UUID . $request->image->getClientOriginalName(), file_get_contents($request->image));
+            $profileGambar = Profile::where('user_id', $id)->first();
+            // return $request->all();
+            $user->fill($request->all());
+            $user->update();
+            $user->profile()->update([
+                'notelp' => $request->profile['notelp'],
+                'provinsi_id' => $request->profile['provinsi_id'],
+                'kota_id' => $request->profile['kota_id']
+            ]);
+            if($profileGambar->gambar){
+                if (Storage::disk('public')->exists('images/'.$profileGambar->gambar)) {
+                    // ...
+                    Storage::delete('images/'. $profileGambar->gambar);
+                    $user->profile()->update([
+                        'gambar' =>  $user->UUID . $request->image->getClientOriginalName()
+                    ]);
+                    $path = Storage::disk('public')->put('images/'. $user->UUID . $request->image->getClientOriginalName(), file_get_contents($request->image));
 
-            }
-            else {
-                $user->profile()->update([
-                    'gambar' =>  $user->UUID . $request->image->getClientOriginalName()
-                ]);
-                $path = Storage::disk('public')->put('images/'. $user->UUID . $request->image->getClientOriginalName(), file_get_contents($request->image));
+                }
+                else {
+                    $user->profile()->update([
+                        'gambar' =>  $user->UUID . $request->image->getClientOriginalName()
+                    ]);
+                    $path = Storage::disk('public')->put('images/'. $user->UUID . $request->image->getClientOriginalName(), file_get_contents($request->image));
 
+                }
             }
+            $user->profile()->update([
+                'gambar' => $user->UUID . $request->image->getClientOriginalName()
+            ]);
+            return response()->json($user->load(['profile.province', 'profile.city', 'divisi']));
         }
-        $user->profile()->update([
-            'gambar' => $user->UUID . $request->image->getClientOriginalName()
-        ]);
-        return response()->json($user->load(['profile.province', 'profile.city', 'divisi']));
     }
 
     /**
