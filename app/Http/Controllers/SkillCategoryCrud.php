@@ -13,8 +13,6 @@ class SkillCategoryCrud extends Controller
         // return $request->all();
         $validator = Validator::make($request->all(), [
             'name' => 'required',
-            'description' => 'required',
-            'skill' => 'required'
         ]);
         if ($validator->fails()) {
             return response()->json(["Error" => $validator->errors()->first()], 401);
@@ -28,7 +26,6 @@ class SkillCategoryCrud extends Controller
     {
         $validator = Validator::make($request->all(), [
             'name' => 'required',
-            'description' => 'required'
         ]);
         if ($validator->fails()) {
             return response()->json(["Error" => $validator->errors()->first()], 401);

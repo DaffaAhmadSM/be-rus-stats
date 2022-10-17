@@ -11,7 +11,7 @@ class DivisiSkillSubskill extends Model
     protected $guarded = ['id'];
     protected $hidden = ['created_at', 'updated_at'];
     public function divisi(){
-        return $this->belongsTo(divisi::class, 'id', 'divisi_id');
+        return $this->belongsTo(divisi::class,'divisi_id','id');
     }
     public function skill(){
         return $this->belongsTo(Skill::class, 'skill_id','id');
@@ -45,28 +45,28 @@ class DivisiSkillSubskill extends Model
         $skill = $relasi_get->groupBy('skill_id');
         foreach ($skill as $key => $value) {
             $skill[$key] = $value->flatMap(function($item){
-                return [    
+                return [
                     $item->sub_skill_id => $item->subSkill->skor
                 ];
             });
 
             $sub_skill[] = $value->flatMap(function($item){
-                return [    
+                return [
                     $item->sub_skill_id => $item->subSkill
                 ];
             });
         }
-        
+
         $skill = $skill->map(function($item){
             return[
                 "nilai" => $item->avg('nilai'),
                 "nilai_history" => $item->avg('nilai_history'),
             ];
         });
-        
+
 
         $skill_unique = $relasi_get->unique('skill_id')->values()->all();
-        for ($i=0; $i < count($skill_unique); $i++) { 
+        for ($i=0; $i < count($skill_unique); $i++) {
             $skill_unique_each[] = [
                 "name" => $skill_unique[$i]->skill->name,
                 "average" => round($skill[$skill_unique[$i]->skill_id]['nilai'],0),

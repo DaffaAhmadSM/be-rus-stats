@@ -73,8 +73,19 @@ class DivisiController extends Controller
     ], 400);
 
     }
-    public function divisiSkillSubSkill($id){
-        $data = DivisiSkillSubskill::where('divisi_id');
+    public function divisiSkill($id){
+        $data = DivisiSkillSubskill::where('divisi_id', $id)->with('skill', 'divisi');
+
+        $divisi = $data->get()->groupBy('divisi_id');
+        $skill = $data->get()->groupBy('skill_id');
+        $json = [];
+        foreach($data->get() as $da){
+            $div = divisi::where('id', $da->divisi_id)->first()->nama;
+            $json [] = [
+                "divisi" => $div
+            ];
+        }
+
         if($data->get()){
             return response($data->get(), 200);
         }
