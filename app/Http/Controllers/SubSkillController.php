@@ -13,7 +13,6 @@ class SubSkillController extends Controller
         // return $request->all();
         $validator = Validator::make($request->all(), [
             'name' => 'required',
-            'skill' => 'required'
         ]);
         if ($validator->fails()) {
             return response()->json(["Error" => $validator->errors()->first()], 401);
