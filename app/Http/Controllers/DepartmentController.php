@@ -68,4 +68,19 @@ class DepartmentController extends Controller
             'message' => 'Data Department tidak ada!'
         ],400);
     }
+    public function departmentDetail($id){
+        $department = department::where('id', $id)->with('divisi');
+        if($department->get()){
+            foreach($department->get() as $a){
+                return response()->json([
+                    'data' => $department->get(),
+                    'totalDivisi' => count($a->divisi)
+                ],400);
+            }
+        }
+        return response()->json([
+            'data' => $department,
+            'message' => 'Data Department tidak ada!'
+        ],400);
+    }
 }

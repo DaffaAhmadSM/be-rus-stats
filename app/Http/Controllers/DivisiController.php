@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\divisi;
 use App\Models\department;
 use App\Models\DivisiSkillSubskill;
+use App\Models\Skill;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -74,23 +75,30 @@ class DivisiController extends Controller
 
     }
     public function divisiSkill($id){
-        $data = DivisiSkillSubskill::where('divisi_id', $id)->with('skill', 'divisi');
-
-        $divisi = $data->get()->groupBy('divisi_id');
-        $skill = $data->get()->groupBy('skill_id');
-        $json = [];
-        foreach($data->get() as $da){
-            $div = divisi::where('id', $da->divisi_id)->first()->nama;
-            $json [] = [
-                "divisi" => $div
-            ];
+        $divisi = divisi::where('id', $id);
+        $skill = DivisiSkillSubskill::where('divisi_id', $id)->get();
+        $skill_unique = $skill->unique('skill_id')->values()->all();
+        $skillData = [];
+        foreach($skill_unique as $sk){
+            $data = Skill::where('id', $sk->skill_id)->get();
+            $skillData[] = $data;
         }
-
-        if($data->get()){
-            return response($data->get(), 200);
+        $arraySkill = [];
+        foreach($skillData as $s){
+            foreach($s as $a){
+                $arraySkill[] = $a;
+            }
         }
+        return response()->json([
+            'divisi' =>$divisi->first(),
+            'skill' => $arraySkill,
+            'totalSkill' => count($skill_unique)
+        ]);
     }
-    public function divisiSkillSubSkillCreate(){
-
+    public function divisiAll(){
+        $divisi = divisi::with('department')->simplePaginate(10);
+        return response()->json([
+            'divisi' => $divisi
+        ]);
     }
 }

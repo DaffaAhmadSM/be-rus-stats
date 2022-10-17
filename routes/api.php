@@ -5,6 +5,7 @@ use App\Http\Controllers\CountryController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\DepartmentCrudController;
 use App\Http\Controllers\DivisiController;
+use App\Http\Controllers\DivisiCrudController;
 use App\Http\Controllers\DivisionController;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -131,6 +132,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
         Route::group(["prefix" => "/data"], function(){
             Route::group(["prefix" => "/department"], function(){
                 Route::get('/', [DepartmentController::class, 'listDataDepartment']);
+                Route::get('/{id}', [DepartmentController::class, 'departmentDetail']);
                 Route::get('/create', [DepartmentController::class, 'departmentCreate']);
                 Route::get('/update/{id}', [DepartmentController::class, 'departmentUpdate']);
                 Route::get('/delete/{id}', [DepartmentController::class, 'deleteDepartment']);
@@ -141,6 +143,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
                 Route::get('/update/{id}', [DivisiController::class, 'divisiUpdate']);
                 Route::get('/delete/{id}', [DivisiController::class, 'divisiDelete']);
                 Route::get('{id}/skill', [DivisiController::class, 'divisiSkill']);
+                Route::get('/', [DivisiController::class, 'divisiAll']);
             });
             Route::get('/provinsi', [MentorController::class, 'provinsi']);
             Route::get('/kota/provinsi/{id}', [MentorController::class, 'kota']);
@@ -180,6 +183,12 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
                 Route::get('show/{id}', [SubSkillController::class, 'subSkillReadById']);
                 Route::get('/delete/{id}', [SubSkillController::class, 'subSkillDelete']);
                 Route::post('/update/{id}', [SubSkillController::class, 'subSkillUpdate']);
+            });
+            Route::group(["prefix" => "/search"], function () {
+                Route::get('/divisi', [DivisiCrudController::class, 'searchDivisi']);
+                Route::get('/department', [DivisiCrudController::class, 'searchDepartment']);
+                Route::get('/skill', [DivisiCrudController::class, 'searchSkill']);
+                Route::get('/subskill', [DivisiCrudController::class, 'searchSubSkill']);
             });
         });
         Route::group(["prefix" => "/user"], function () {
