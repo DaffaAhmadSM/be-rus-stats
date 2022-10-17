@@ -20,7 +20,7 @@ class SubSkillController extends Controller
         }
         $subSkillC = SubSkill::create([
             'name' => $request->name,
-            'description' => $request->description
+            'description' => $request->description ? $request->description : ''
         ]);
     }
     public function subSkillUpdate(Request $request, $id)
@@ -34,7 +34,7 @@ class SubSkillController extends Controller
         $data = SubSkill::where('id', $id);
         $data->update([
             'name' => $request->name,
-            'description' => $request->description
+            'description' => $request->description ? $request->description : $data->first()->description
         ]);
         return response()->json([
             'Message' => 'Data Berhasil Diupdate!'

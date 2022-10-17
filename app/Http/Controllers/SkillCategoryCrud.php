@@ -19,13 +19,13 @@ class SkillCategoryCrud extends Controller
         }
         $skillCategoryC = Skill::create([
             'name' => $request->name,
-            'description' => $request->description
+            'description' => $request->description ? $request->description : ''
         ]);
     }
     public function skillCategoryUpdate(Request $request, $id)
     {
         $validator = Validator::make($request->all(), [
-            'name' => 'required',
+            'name' => 'required'
         ]);
         if ($validator->fails()) {
             return response()->json(["Error" => $validator->errors()->first()], 401);
@@ -33,7 +33,7 @@ class SkillCategoryCrud extends Controller
         $data = Skill::where('id', $id);
         $data->update([
             'name' => $request->name,
-            'description' => $request->description
+            'description' => $request->description ? $request->description : $data->first()->description
         ]);
         return response()->json([
             'Message' => 'Data Berhasil Diupdate!'
