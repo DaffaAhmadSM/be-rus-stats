@@ -44,7 +44,7 @@ class SubSkillController extends Controller
     }
     public function subSkillReadAll()
     {
-        $data = SubSkill::paginate(6);
+        $data = SubSkill::paginate(15);
         return response()->json($data);
     }
     public function subSkillReadById(Request $request, $id)
