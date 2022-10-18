@@ -134,13 +134,13 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
                 Route::get('/', [DepartmentController::class, 'listDataDepartment']);
                 Route::get('/detail/{id}', [DepartmentController::class, 'departmentDetail']);
                 Route::post('/create', [DepartmentController::class, 'departmentCreate']);
-                Route::get('/update/{id}', [DepartmentController::class, 'departmentUpdate']);
+                Route::post('/update/{id}', [DepartmentController::class, 'departmentUpdate']);
                 Route::get('/delete/{id}', [DepartmentController::class, 'deleteDepartment']);
             });
             Route::group(["prefix" => "/divisi"], function(){
                 Route::get('/department/{id}', [DivisiController::class, 'divisiByDepartment']);
                 Route::post('/create', [DivisiController::class, 'divisiCreate']);
-                Route::get('/update/{id}', [DivisiController::class, 'divisiUpdate']);
+                Route::post('/update/{id}', [DivisiController::class, 'divisiUpdate']);
                 Route::get('/delete/{id}', [DivisiController::class, 'divisiDelete']);
                 Route::get('{id}/skill', [DivisiController::class, 'divisiSkill']);
                 Route::get('/', [DivisiController::class, 'divisiAll']);
