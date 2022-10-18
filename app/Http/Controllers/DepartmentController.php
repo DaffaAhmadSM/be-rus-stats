@@ -75,7 +75,7 @@ class DepartmentController extends Controller
                 return response()->json([
                     'data' => $department->get(),
                     'totalDivisi' => count($a->divisi)
-                ],400);
+                ],200);
             }
         }
         return response()->json([
