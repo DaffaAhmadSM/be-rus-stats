@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Auth;
 
 class RoleController extends Controller
 {
-    public function getRoleMentor(){
+    public function getRolePekerja(){
         if(Auth::user()->hasRole('pekerja') && Auth::user()->hasRole('ceo')){
             $res = User::with('divisi')->role('pekerja')->with('profile')->paginate(6);
             return response()->json($res, 200);

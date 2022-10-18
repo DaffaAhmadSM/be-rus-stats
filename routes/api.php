@@ -132,7 +132,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
         Route::group(["prefix" => "/data"], function(){
             Route::group(["prefix" => "/department"], function(){
                 Route::get('/', [DepartmentController::class, 'listDataDepartment']);
-                Route::get('/{id}', [DepartmentController::class, 'departmentDetail']);
+                Route::get('/detail/{id}', [DepartmentController::class, 'departmentDetail']);
                 Route::get('/create', [DepartmentController::class, 'departmentCreate']);
                 Route::get('/update/{id}', [DepartmentController::class, 'departmentUpdate']);
                 Route::get('/delete/{id}', [DepartmentController::class, 'deleteDepartment']);
@@ -160,6 +160,8 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
                 Route::get('/accept/{uuid}/{codeProject}', [ProjectController::class, 'terimaUserProject']);
                 Route::get('/reject/{uuid}/{codeProject}', [ProjectController::class, 'tolakUserProject']);
             });
+
+            //* route portfolio
             Route::group(["prefix" => "/portofolio"], function(){
                 Route::get('/', [PortofolioController::class, 'allPortofolio']);
                 Route::get('/pending/user', [PortofolioController::class, 'pendingUserPortofolio']);
@@ -177,6 +179,8 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
                 Route::get('/delete/{id}', [SkillCategoryCrud::class, 'skillCategoryDelete']);
                 Route::post('/update/{id}', [SkillCategoryCrud::class, 'skillCategoryUpdate']);
             });
+
+            //* route subskill
             Route::group(["prefix" => "/subskill"], function () {
                 Route::post('/create', [SubSkillController::class, 'subSkillCreate']);
                 Route::get('/', [SubSkillController::class, 'subSkillReadAll']);
@@ -184,6 +188,8 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
                 Route::get('/delete/{id}', [SubSkillController::class, 'subSkillDelete']);
                 Route::post('/update/{id}', [SubSkillController::class, 'subSkillUpdate']);
             });
+
+            //* route search
             Route::group(["prefix" => "/search"], function () {
                 Route::get('/divisi', [DivisiCrudController::class, 'searchDivisi']);
                 Route::get('/department', [DivisiCrudController::class, 'searchDepartment']);
@@ -203,11 +209,37 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
                 Route::get('/detail/{uuid}', [MentorController::class, 'studentDetail']);
                 Route::get('/delete/{id}', [MentorController::class, 'deleteStudent']);
             });
-            Route::group(["prefix" => "/role"], function(){
-                Route::get('/mentor', [RoleController::class, 'getRoleMentor']);
-                Route::get('/guru', [RoleController::class, 'getRoleGuru']);
-                Route::get('/ceo', [RoleController::class, 'getRoleCeo']);
-            });
         });
+
+        Route::group(['middleware' => ['role:pekerja'], "prefix" => "/pekerja"], function () {
+            /* 
+            * Route pekerja
+            * Access : siswa pkl(view)
+            */
+        });
+
+        Route::group(['middleware' => ['role:guru'], "prefix" => "/guru"], function () {
+            /*
+            * Route guru
+            * Access: pekerja, siswa pkl
+            */
+            
+            Route::get('/guru', [RoleController::class, 'getRoleGuru']);
+            Route::get('/pekerja', [RoleController::class, 'getRolePekerja']);
+
+        });
+
+        Route::group(['middleware' => ['role:ceo'], "prefix" => "/ceo"], function () {
+            /*
+            * Route ceo
+            * Access: all user
+            */
+            
+            Route::get('/ceo', [RoleController::class, 'getRoleCeo']);
+            Route::get('/guru', [RoleController::class, 'getRoleGuru']);
+            Route::get('/pekerja', [RoleController::class, 'getRolePekerja']);
+
+        });
+
     });
 });

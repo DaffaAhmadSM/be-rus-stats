@@ -97,8 +97,6 @@ class DivisiController extends Controller
     }
     public function divisiAll(){
         $divisi = divisi::with('department')->simplePaginate(10);
-        return response()->json([
-            'divisi' => $divisi
-        ]);
+        return response()->json($divisi, 200);
     }
 }

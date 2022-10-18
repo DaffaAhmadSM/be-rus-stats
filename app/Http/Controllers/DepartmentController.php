@@ -13,7 +13,7 @@ class DepartmentController extends Controller
     {
         $validator = Validator::make($request->all(), [
             "nama" => 'required|string',
-            "code" => 'required'
+            "code" => 'string'
         ]);
         if ($validator->fails()) {
             return response()->json(["Error" => $validator->errors()->first()]);
@@ -21,7 +21,7 @@ class DepartmentController extends Controller
         try {
             department::create([
                 "nama" => $request -> nama,
-                "code" => $request -> code
+                "code" => $request -> code ? $request -> code : null
             ]);
         }
         catch (Exception $e) {
@@ -30,12 +30,12 @@ class DepartmentController extends Controller
 
         return response()->json([
             'message' => 'Department Berhasil Dibuat'
-        ],200);
+        ],201);
     }
     public function departmentUpdate(Request $request, $id){
         $validator = Validator::make($request->all(), [
             "nama" => 'required|string',
-            "code" => 'required'
+            "code" => 'string'
         ]);
         if ($validator->fails()) {
             return response()->json(["Error" => $validator->errors()->first()]);
@@ -43,7 +43,7 @@ class DepartmentController extends Controller
         $department = department::where('id', $id)->first();
         $department->update([
             "nama" => $request -> nama,
-            "code" => $request -> code
+            "code" => $request -> code ? $request -> code : null
         ]);
         return response()->json([
             'data' => $department,
@@ -56,8 +56,8 @@ class DepartmentController extends Controller
         return response()->json($department->get());
     }
     public function deleteDepartment($id){
-        $department = department::where('id', $id);
-        if($department->get()){
+        $department = department::where('id', $id)->get();
+        if($department){
             $department->delete();
             return response()->json([
                 'message' => 'Department Berhasil Dihapus!'
@@ -69,11 +69,11 @@ class DepartmentController extends Controller
         ],400);
     }
     public function departmentDetail($id){
-        $department = department::where('id', $id)->with('divisi');
-        if($department->get()){
-            foreach($department->get() as $a){
+        $department = department::where('id', $id)->with('divisi')->get();
+        if($department){
+            foreach($department as $a){
                 return response()->json([
-                    'data' => $department->get(),
+                    'data' => $department,
                     'totalDivisi' => count($a->divisi)
                 ],200);
             }
