@@ -142,7 +142,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
                 Route::post('/create', [DivisiController::class, 'divisiCreate']);
                 Route::post('/update/{id}', [DivisiController::class, 'divisiUpdate']);
                 Route::get('/delete/{id}', [DivisiController::class, 'divisiDelete']);
-                Route::get('{id}/skill', [DivisiController::class, 'divisiSkill']);
+                Route::get('/detail/{id}', [DivisiController::class, 'divisiDetail']);
                 Route::get('/', [DivisiController::class, 'divisiAll']);
             });
             Route::get('/provinsi', [MentorController::class, 'provinsi']);
