@@ -20,23 +20,22 @@ class DivisiController extends Controller
             "department_id" => 'required|integer'
         ]);
         if ($validator->fails()) {
-            return response()->json(["Error" => $validator->errors()->first()]);
+            return response()->json(["Error" => $validator->errors()->first()], 400);
         }
-        $department = department::find($request->department_id);
-        if($department){
-            try {
-                divisi::create([
-                    "nama" => $request -> nama,
-                    "department_id" => $request -> department_id
-                ]);
-            }
-            catch (Exception $e) {
-                return $e;
-            }
-            return response()->json(["Message" => "data created"], 201);
-        }else{
-            return response()->json(["Message" => "department_id tidak ditemukan"], 400);
+        if (divisi::where('nama', $request->nama)->where('department_id', $request->department_id)->exists()) {
+            return response()->json(["Error" => "Divisi already exists"], 400);
         }
+        try {
+            $datacreate = divisi::create([
+                "nama" => $request -> nama,
+                "department_id" => $request -> department_id
+            ]);
+        }
+        catch (Exception $e) {
+            return response()->json(["Error" => $e->getMessage()], 500);
+        }
+        return response()->json($datacreate, 201);
+        
     }
     public function divisiUpdate(Request $request ,$id){
         $validator = Validator::make($request->all(), [
@@ -44,15 +43,15 @@ class DivisiController extends Controller
             "department_id" => 'required|integer'
         ]);
         if ($validator->fails()) {
-            return response()->json(["Error" => $validator->errors()->first()]);
+            return response()->json(["Error" => $validator->errors()->first()], 400);
         }
-        $divisi = divisi::where('id', $id);
-        if($divisi->get()){
+        $divisi = divisi::find($id);
+        if($divisi){
            $divisi->update([
                 "nama" => $request -> nama,
                 "department_id" => $request -> department_id
             ]);
-            return response()->json(["Message" => "Divisi berhasil di update"], 200);
+            return response()->json($divisi, 200);
         }
         return response()->json(["Message" => "Divisi tidak ditemukan!"], 400);
     }
