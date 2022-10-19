@@ -21,56 +21,29 @@ class DivisiCrudController extends Controller
     }
     public function searchDivisi(Request $request)
     {
-        $res = divisi::where('nama', 'like', '%' . $request->nama . '%')
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|string',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(["Error" => $validator->errors()->first()], 400);
+        }
+        $res = divisi::where('nama', 'like', '%' . $request->name . '%')
             ->with(['department' => function($q){
                 $q->select('id', 'nama');
-            }]);
-            $skill = DivisiSkillSubskill::where('divisi_id', $res->first()->id)->get();
-            $skill_unique = $skill->unique('skill_id')->values()->all();
-            $skillData = [];
-            foreach($skill_unique as $sk){
-                $data = Skill::where('id', $sk->skill_id)->get();
-                $skillData[] = $data;
-            }
-        $arraySkill = [];
-        foreach($skillData as $s){
-            foreach($s as $a){
-                $arraySkill[] = $a;
-            }
-        }
-        return response()->json([
-            'divisi' =>$res->get(),
-            'skill' => $arraySkill,
-            'totalSkill' => count($skill_unique)
-        ]);
+            }])->simplePaginate(10);
+        return response()->json($res, 200);
     }
     public function searchSkill(Request $request)
     {
-        $res = Skill::where('name', 'like', '%' . $request->nama . '%');
-        $subSkill = DivisiSkillSubskill::where('skill_id', $res->first()->id)->get();
-        $subSkill_unique = $subSkill->unique('sub_skill_id')->values()->all();
-        $subSkillData = [];
-        foreach($subSkill_unique as $sk){
-            $data = SubSkill::where('id', $sk->sub_skill_id)->get();
-            $subSkillData[] = $data;
-        }
-        $arraySkill = [];
-        foreach($subSkillData as $s){
-            foreach($s as $a){
-                $arraySkill[] = $a;
-            }
-        }
-        return response()->json([
-            'divisi' =>$res->get(),
-            'skill' => $arraySkill,
-            'totalSkill' => count($subSkill_unique)
-        ]);
+        $res = Skill::where('name', 'like', '%' . $request->name . '%')->simplePaginate(10);
+        return response()->json($res, 200);
+        
     }
     public function searchSubSkill(Request $request)
     {
-        $res = SubSkill::where('name', 'like', '%' . $request->nama . '%')
-            ->get();
-        return response()->json($res->get());
+        $res = SubSkill::where('name', 'like', '%' . $request->name . '%')->get();
+        return response()->json($res);
     }
     // public function divisiCreate(Request $request)
     // {

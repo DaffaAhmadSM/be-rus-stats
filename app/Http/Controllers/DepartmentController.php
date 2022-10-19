@@ -38,7 +38,7 @@ class DepartmentController extends Controller
             "code" => 'string'
         ]);
         if ($validator->fails()) {
-            return response()->json(["Error" => $validator->errors()->first()]);
+            return response()->json(["Error" => $validator->errors()->first()], 400);
         }
         $department = department::where('id', $id)->first();
         $department->update([
@@ -52,8 +52,8 @@ class DepartmentController extends Controller
     }
     public function listDataDepartment()
     {
-        $department = department::with('divisi');
-        return response()->json($department->get());
+        $department = department::with('divisi')->get();
+        return response()->json($department);
     }
     public function deleteDepartment($id){
         $department = department::where('id', $id)->get();
