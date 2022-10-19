@@ -34,7 +34,7 @@ class DivisiController extends Controller
         catch (Exception $e) {
             return response()->json(["Error" => $e->getMessage()], 500);
         }
-        return response()->json($datacreate, 201);
+        return response()->json($datacreate->load('department'), 201);
         
     }
     public function divisiUpdate(Request $request ,$id){
@@ -51,7 +51,7 @@ class DivisiController extends Controller
                 "nama" => $request -> nama,
                 "department_id" => $request -> department_id
             ]);
-            return response()->json($divisi, 200);
+            return response()->json($divisi->load('department'), 200);
         }
         return response()->json(["Message" => "Divisi tidak ditemukan!"], 400);
     }
