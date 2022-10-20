@@ -134,10 +134,8 @@ class MentorController extends Controller
         if ($validator->fails()) {
             return response()->json(["Error" => $validator->errors()->first()], 400);
         }
-        // return $request->all();
         $department = department::where('id', $request->department_id)->first();
-        $divisi = divisi::where('id', $request->divisi_id)->with('divisiSkill')->first();
-        // return date("Y-m-d", $request->tanggal_lahir);
+        $divisi = divisi::where('id', $request->divisi_id)->with('dataskill')->first();
         $user = User::create([
             'email' => $request->email,
             'nama' => $request->nama,
@@ -145,52 +143,38 @@ class MentorController extends Controller
             'password' => $request->password ? Hash::make($request->password) : Hash::make('smkrus'),
             'divisi_id' => $divisi->id,
             'UUID' => Str::orderedUuid(),
-            'average' => 30.0,
+            'average' => 30,
         ]);
 
-        $path = Storage::disk('public')->put('images/'. $user->UUID . $request->image->getClientOriginalName(), file_get_contents($request->image));
-        $userDetail = Profile::create([
-            'user_id' => $user->id,
-            'nickname' => $request->nickname != null ? $request : '',
-            'bio' => $request->bio != null ? $request : '',
-            'notelp' => $request->notelp,
-            // 'negara_id' => $request->negara_id,
-            'gambar' => $user->UUID . $request->image->getClientOriginalName(),
-            'provinsi_id' => $request->provinsi_id != null ? $request->provinsi_id : 1,
-            'kota_id' => $request->kota_id != null ? $request->kota_id : 1,
-        ]);
-
-        $user->assignRole('student');
-        // foreach ($divisi->divisiSkill as $key => $value) {
-        //     $skill = Skill::where('skill_category_id', $value->skill_category_id)->get();
-        //     foreach ($skill as $sk) {
-        //         UserSkill::create([
-        //             'user_id' => $user->id,
-        //             'skill_id' => $sk->id,
-        //             'nilai' => 30,
-        //             'nilai_history' => 0
-        //         ]);
-        //     }
-        // }
-        foreach($user as $a){
-            foreach($a->divisisubskill as $d){
-                UserSkill::create([
-                    'user_id' => $a->id,
-                    'sub_skill_id' => $d->sub_skill_id,
-                    'nilai' => 30,
-                    'nilai_history' => 0
-                ]);
-            }
-        }
-        $user->updated([
-            'average' => 30
-        ]);
-        // Average::create([
+        // $path = Storage::disk('public')->put('images/'. $user->UUID . $request->image->getClientOriginalName(), file_get_contents($request->image));
+        // $userDetail = Profile::create([
         //     'user_id' => $user->id,
-        //     'average' => 30,
+        //     'nickname' => $request->nickname != null ? $request : '',
+        //     'bio' => $request->bio != null ? $request : '',
+        //     'notelp' => $request->notelp,
+        //     // 'negara_id' => $request->negara_id,
+        //     'gambar' => $user->UUID . $request->image->getClientOriginalName(),
+        //     'provinsi_id' => $request->provinsi_id != null ? $request->provinsi_id : 1,
+        //     'kota_id' => $request->kota_id != null ? $request->kota_id : 1,
         // ]);
-
-        return response()->json(["message" => "data created"], 201);
+        // $user->assignRole('student');
+        $userskillcreate =  [];
+        foreach($user->divisisubskill as $divisisubskill){
+            $userskillcreate[] = [
+                'user_id' => $user->id,
+                'sub_skill_id' => $divisisubskill->sub_skill_id,
+                'nilai' => 30,
+                'nilai_history' => 0
+            ];
+        }
+        try {
+            UserSkill::insert($userskillcreate);
+            return response()->json(["message" => "data created"], 201);
+        } catch (\Throwable $th) {
+            return response()->json(["message" => $th], 400);
+        }
+        
+        
     }
 
     public function updateSkill(Request $request, $id)
