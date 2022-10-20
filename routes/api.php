@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\Hash;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CityController;
+use App\Http\Controllers\GuruController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ExcelController;
@@ -215,10 +216,14 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
                 Route::post('/search', [PekerjaController::class, 'search']);
                 Route::get('/', [RoleController::class, 'getRolePekerja']);
             });
+            Route::group(["prefix" => "/guru"], function () {
+                Route::post('/search', [GuruController::class, 'search']);
+                Route::get('/', [RoleController::class, 'getRoleGuru']);
+            });
 
 
             Route::get('/ceo', [RoleController::class, 'getRoleCeo']);
-            Route::get('/guru', [RoleController::class, 'getRoleGuru']);
+            
             
         });
 
