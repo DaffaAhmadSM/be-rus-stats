@@ -113,7 +113,7 @@ class MentorController extends Controller
         $data = DivisiSkillSubskill::getuser($user);
 
         return response()->json($data->original);
-       
+
     }
 
     public function studentCreate(Request $request)
@@ -260,6 +260,10 @@ class MentorController extends Controller
     {
 
         $user = User::role('student')->where('average', '>=', 70)->where('average', '<', 90)->orderBy('average', 'desc')->take(3)->with('profile')->get();
+        return response()->json($user);
+    }
+    public function top3goldguru(){
+        $user = User::role('guru')->where('average', '>=', 70)->where('average', '<', 90)->orderBy('average', 'desc')->take(3)->with('profile')->get();
         return response()->json($user);
     }
 }
