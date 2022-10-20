@@ -95,9 +95,8 @@ class MentorController extends Controller
     }
     public function deleteStudent($id)
     {
-        $user = User::where('id', $id);
-        $dataUser = $user->first();
-        $userSkill = UserSkill::where('user_id', $dataUser->id);
+        $user = User::find($id);
+        $userSkill = UserSkill::where('user_id', $user->id);
         $userSkill->delete();
         $user->delete();
         return response()->json([
@@ -146,18 +145,18 @@ class MentorController extends Controller
             'average' => 30,
         ]);
 
-        // $path = Storage::disk('public')->put('images/'. $user->UUID . $request->image->getClientOriginalName(), file_get_contents($request->image));
-        // $userDetail = Profile::create([
-        //     'user_id' => $user->id,
-        //     'nickname' => $request->nickname != null ? $request : '',
-        //     'bio' => $request->bio != null ? $request : '',
-        //     'notelp' => $request->notelp,
-        //     // 'negara_id' => $request->negara_id,
-        //     'gambar' => $user->UUID . $request->image->getClientOriginalName(),
-        //     'provinsi_id' => $request->provinsi_id != null ? $request->provinsi_id : 1,
-        //     'kota_id' => $request->kota_id != null ? $request->kota_id : 1,
-        // ]);
-        // $user->assignRole('student');
+        $path = Storage::disk('public')->put('images/'. $user->UUID . $request->image->getClientOriginalName(), file_get_contents($request->image));
+        $userDetail = Profile::create([
+            'user_id' => $user->id,
+            'nickname' => $request->nickname != null ? $request : '',
+            'bio' => $request->bio != null ? $request : '',
+            'notelp' => $request->notelp,
+            // 'negara_id' => $request->negara_id,
+            'gambar' => $user->UUID . $request->image->getClientOriginalName(),
+            'provinsi_id' => $request->provinsi_id != null ? $request->provinsi_id : 1,
+            'kota_id' => $request->kota_id != null ? $request->kota_id : 1,
+        ]);
+        $user->assignRole('student');
         $userskillcreate =  [];
         foreach($user->divisisubskill as $divisisubskill){
             $userskillcreate[] = [
