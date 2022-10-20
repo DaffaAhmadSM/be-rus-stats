@@ -19,7 +19,7 @@ return [
 
     'allowed_methods' => ['POST', 'GET'],
 
-    'allowed_origins' => ['rustat.smkrus.com'],
+    'allowed_origins' => ['*'],
 
     'allowed_origins_patterns' => [],
 
