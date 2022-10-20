@@ -209,37 +209,14 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
                 Route::get('/detail/{uuid}', [MentorController::class, 'studentDetail']);
                 Route::get('/delete/{id}', [MentorController::class, 'deleteStudent']);
             });
-        });
 
-        Route::group(['middleware' => ['role:pekerja'], "prefix" => "/pekerja"], function () {
-            /* 
-            * Route pekerja
-            * Access : siswa pkl(view)
-            */
-        });
-
-        Route::group(['middleware' => ['role:guru'], "prefix" => "/guru"], function () {
-            /*
-            * Route guru
-            * Access: pekerja, siswa pkl
-            */
-            
-            Route::get('/guru', [RoleController::class, 'getRoleGuru']);
-            Route::get('/pekerja', [RoleController::class, 'getRolePekerja']);
-
-        });
-
-        Route::group(['middleware' => ['role:ceo'], "prefix" => "/ceo"], function () {
-            /*
-            * Route ceo
-            * Access: all user
-            */
-            
             Route::get('/ceo', [RoleController::class, 'getRoleCeo']);
             Route::get('/guru', [RoleController::class, 'getRoleGuru']);
             Route::get('/pekerja', [RoleController::class, 'getRolePekerja']);
-
         });
+
+        
+        
 
     });
 });

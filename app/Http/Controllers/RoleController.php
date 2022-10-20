@@ -13,20 +13,20 @@ class RoleController extends Controller
             $res = User::with('divisi')->role('pekerja')->with('profile')->paginate(6);
             return response()->json($res, 200);
         }
-        return response()->json([], 200);
+        return response()->json([], 400);
     }
     public function getRoleGuru(){
         if(Auth::user()->hasRole('guru') && Auth::user()->hasRole('ceo')){
             $res = User::with('divisi')->role('pekerja')->with('profile')->paginate(6);
             return response()->json($res, 200);
         }
-        return response()->json([], 200);
+        return response()->json([], 400);
     }
     public function getRoleCeo(){
         if(Auth::user()->hasRole('ceo')){
             $res = User::with('divisi')->role('ceo')->with('profile')->paginate(6);
             return response()->json($res, 200);
         }
-        return response()->json([], 200);
+        return response()->json([], 400);
     }
 }
