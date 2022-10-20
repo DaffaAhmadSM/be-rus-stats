@@ -215,20 +215,24 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
             Route::group(["prefix" => "/pekerja"], function () {
                 Route::post('/search', [PekerjaController::class, 'search']);
                 Route::get('/', [RoleController::class, 'getRolePekerja']);
+                Route::get('/top3/gold', [MentorController::class, 'top3goldpekerja']);
+                Route::get('/top3/silver', [MentorController::class, 'top3silverpekerja']);
             });
             Route::group(["prefix" => "/guru"], function () {
                 Route::post('/search', [GuruController::class, 'search']);
                 Route::get('/', [RoleController::class, 'getRoleGuru']);
+                Route::get('/top3/gold', [MentorController::class, 'top3goldguru']);
+                Route::get('/top3/silver', [MentorController::class, 'top3silverguru']);
             });
 
 
             Route::get('/ceo', [RoleController::class, 'getRoleCeo']);
-            
-            
+
+
         });
 
-        
-        
+
+
 
     });
 });

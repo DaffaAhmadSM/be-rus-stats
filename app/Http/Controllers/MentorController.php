@@ -172,8 +172,8 @@ class MentorController extends Controller
         } catch (\Throwable $th) {
             return response()->json(["message" => $th], 400);
         }
-        
-        
+
+
     }
 
     public function updateSkill(Request $request, $id)
@@ -246,7 +246,19 @@ class MentorController extends Controller
         return response()->json($user);
     }
     public function top3goldguru(){
+        $user = User::role('guru')->where('average', '<', 90)->orderBy('average', 'desc')->take(3)->with('profile')->get();
+        return response()->json($user);
+    }
+    public function top3silverguru(){
         $user = User::role('guru')->where('average', '>=', 70)->where('average', '<', 90)->orderBy('average', 'desc')->take(3)->with('profile')->get();
+        return response()->json($user);
+    }
+    public function top3goldpekerja(){
+        $user = User::role('pekerja')->where('average', '<', 90)->orderBy('average', 'desc')->take(3)->with('profile')->get();
+        return response()->json($user);
+    }
+    public function top3silverpekerja(){
+        $user = User::role('pekerja')->where('average', '>=', 70)->where('average', '<', 90)->orderBy('average', 'desc')->take(3)->with('profile')->get();
         return response()->json($user);
     }
 }
