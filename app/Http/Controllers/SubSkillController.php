@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\SubSkill;
 use Illuminate\Http\Request;
+use App\Models\DivisiSkillSubskill;
 use Illuminate\Support\Facades\Validator;
 
 class SubSkillController extends Controller
@@ -61,5 +62,11 @@ class SubSkillController extends Controller
         return response()->json([
             'Message' => 'Data SubSkill Tidak Ada!'
         ], 401);
+    }
+
+    public function subSkillByDivisiandskill($divisi, $skill)
+    {
+        $data = DivisiSkillSubskill::where('skill_id', $skill)->where('divisi_id', $divisi)->with(['subSkill', 'skill'])->paginate(15);
+        return response()->json($data);
     }
 }

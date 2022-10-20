@@ -1,36 +1,38 @@
 <?php
 
-use App\Http\Controllers\CityController;
-use App\Http\Controllers\CountryController;
-use App\Http\Controllers\DepartmentController;
-use App\Http\Controllers\DepartmentCrudController;
-use App\Http\Controllers\DivisiController;
-use App\Http\Controllers\DivisiCrudController;
-use App\Http\Controllers\DivisionController;
 use App\Models\User;
+use App\Models\Skill;
+use App\Models\divisi;
+use App\Models\Profile;
+use App\Models\UserSkill;
+use App\Models\UserDetail;
+use App\Imports\UsersImport;
 use Illuminate\Http\Request;
 use Illuminate\Auth\Events\Login;
 use Spatie\Permission\Models\Role;
+use App\Http\Controllers\SkillCrud;
+use Illuminate\Support\Facades\Hash;
+use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\CityController;
+use App\Http\Controllers\GuruController;
+use App\Http\Controllers\RoleController;
+use App\Http\Controllers\UserController;
 use App\Http\Controllers\ExcelController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\SiswaController;
+use App\Http\Controllers\DivisiController;
 use App\Http\Controllers\MentorController;
-use App\Http\Controllers\PortofolioController;
+use App\Http\Controllers\CountryController;
+use App\Http\Controllers\PekerjaController;
 use App\Http\Controllers\ProjectController;
-use App\Http\Controllers\RoleController;
 use App\Http\Controllers\SkillCategoryCrud;
-use App\Http\Controllers\SkillCrud;
+use App\Http\Controllers\DivisionController;
 use App\Http\Controllers\SubSkillController;
-use App\Http\Controllers\UserController;
-use App\Imports\UsersImport;
-use App\Models\divisi;
-use App\Models\Profile;
-use App\Models\Skill;
-use App\Models\UserDetail;
-use App\Models\UserSkill;
-use Illuminate\Support\Facades\Hash;
-use Maatwebsite\Excel\Facades\Excel;
+use App\Http\Controllers\DepartmentController;
+use App\Http\Controllers\DivisiCrudController;
+use App\Http\Controllers\PortofolioController;
+use App\Http\Controllers\DepartmentCrudController;
 
 /*
 |--------------------------------------------------------------------------
@@ -187,6 +189,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
                 Route::get('show/{id}', [SubSkillController::class, 'subSkillReadById']);
                 Route::get('/delete/{id}', [SubSkillController::class, 'subSkillDelete']);
                 Route::post('/update/{id}', [SubSkillController::class, 'subSkillUpdate']);
+                Route::get('/divisi/{divisi}/skill/{skill}', [SubSkillController::class, 'subSkillByDivisiandskill']);
             });
 
             //* route search
@@ -209,10 +212,19 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
                 Route::get('/detail/{uuid}', [MentorController::class, 'studentDetail']);
                 Route::get('/delete/{id}', [MentorController::class, 'deleteStudent']);
             });
+            Route::group(["prefix" => "/pekerja"], function () {
+                Route::post('/search', [PekerjaController::class, 'search']);
+                Route::get('/', [RoleController::class, 'getRolePekerja']);
+            });
+            Route::group(["prefix" => "/guru"], function () {
+                Route::post('/search', [GuruController::class, 'search']);
+                Route::get('/', [RoleController::class, 'getRoleGuru']);
+            });
+
 
             Route::get('/ceo', [RoleController::class, 'getRoleCeo']);
-            Route::get('/guru', [RoleController::class, 'getRoleGuru']);
-            Route::get('/pekerja', [RoleController::class, 'getRolePekerja']);
+            
+            
         });
 
         

@@ -9,18 +9,19 @@ use Illuminate\Support\Facades\Auth;
 class RoleController extends Controller
 {
     public function getRolePekerja(){
-        if(Auth::user()->hasRole('pekerja') && Auth::user()->hasRole('ceo')){
+        if(Auth::user()->hasRole('pekerja') || Auth::user()->hasRole('ceo')){
             $res = User::with('divisi')->role('pekerja')->with('profile')->paginate(6);
             return response()->json($res, 200);
         }
         return response()->json([], 400);
     }
     public function getRoleGuru(){
-        if(Auth::user()->hasRole('guru') && Auth::user()->hasRole('ceo')){
-            $res = User::with('divisi')->role('pekerja')->with('profile')->paginate(6);
-            return response()->json($res, 200);
+        if(Auth::user()->hasRole('guru') || Auth::user()->hasRole('ceo')){
+            $res = User::with('divisi')->role('guru')->with('profile')->paginate(6);
+                return response()->json($res, 200);
+            
         }
-        return response()->json([], 400);
+        return response()->json(["message" => "Unauthorized user!"], 401);
     }
     public function getRoleCeo(){
         if(Auth::user()->hasRole('ceo')){

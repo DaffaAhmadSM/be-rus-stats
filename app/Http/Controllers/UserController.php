@@ -114,7 +114,7 @@ class UserController extends Controller
                 'provinsi_id' => $request->profile['provinsi_id'],
                 'kota_id' => $request->profile['kota_id']
             ]);
-            if($profileGambar->gambar){
+            if($request->image){
                 if (Storage::disk('public')->exists('images/'.$profileGambar->gambar)) {
                     // ...
                     Storage::delete('images/'. $profileGambar->gambar);
@@ -132,9 +132,7 @@ class UserController extends Controller
 
                 }
             }
-            $user->profile()->update([
-                'gambar' => $user->UUID . $request->image->getClientOriginalName()
-            ]);
+            
             return response()->json($user->load(['profile.province', 'profile.city', 'divisi']));
         }
     }
