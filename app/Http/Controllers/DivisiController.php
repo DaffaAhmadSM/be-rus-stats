@@ -99,7 +99,6 @@ class DivisiController extends Controller
             $item->sub_skill = DivisiSkillSubskill::where('divisi_id', $item->divisi_id)->where('skill_id', $item->skill_id)->with('subSkill')->get();
             return $item;
         });
-        return $skill;
         return response()->json([
             "department" => $division->department, 
             "skill"=>$skill,
