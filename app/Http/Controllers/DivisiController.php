@@ -17,35 +17,44 @@ class DivisiController extends Controller
     {
         $validator = Validator::make($request->all(), [
             "divisi" => 'array|required',
-            "divisi.nama" => 'required|string',
-            "divisi.department_id" => 'required|integer',
-            "skill" => 'array|required',
-            "skill.*" => 'array|required',
-            "skill.*.skill_id" => 'required|integer',
-            "skill.*.sub_skill_id" => 'required|integer',
+            "divisi.name" => 'required|string',
+            "department" => 'array',
+            "department.id" => 'required|integer',
+            "skill" => 'array',
+            "skill.*" => 'array',
+            "skill.*.id" => 'required|integer',
+            "skill.*.sub_skill" => 'array',
+            "skill.*.sub_skill.*" => 'array',
+            "skill.*.sub_skill.*.id" => 'integer|required'
         ]);
+        
+
         if ($validator->fails()) {
-            return response()->json([$validator->errors()], 400);
+            return response()->json(["Message"=>$validator->errors()->first()], 400);
         }
-        if (divisi::where('nama', $request->divisi["nama"])->where('department_id', $request->divisi["department_id"])->exists()) {
+        if (divisi::where('nama', $request->divisi["name"])->where('department_id', $request->department["id"])->exists()) {
             return response()->json(["Error" => "Divisi already exists"], 400);
         }
+
+        return $request->all();
 
         
 
         try {
             $datacreate = divisi::create([
-                "nama" => $request -> divisi["nama"],
-                "department_id" => $request -> divisi["department_id"]
+                "nama" => $request -> divisi["name"],
+                "department_id" => $request -> department["id"]
             ]);
         $divisi_skill_subskill = [];
 
         foreach ($request->skill as $skill) {
-            $divisi_skill_subskill[] = [
-                "skill_id" => $skill["skill_id"],
-                "sub_skill_id" => $skill["sub_skill_id"],
-                "divisi_id" => $datacreate->id
-            ];
+            foreach ($skill["sub_skill"] as $sub_skill) {
+                $divisi_skill_subskill[] = [
+                    "divisi_id" => $datacreate->id,
+                    "skill_id" => $skill["id"],
+                    "sub_skill_id" => $sub_skill["id"]
+                ];
+            }
         }
 
         DivisiSkillSubskill::insert($divisi_skill_subskill);
