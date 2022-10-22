@@ -31,18 +31,18 @@ class DivisiCrudController extends Controller
         $res = divisi::where('nama', 'like', '%' . $request->name . '%')
             ->with(['department' => function($q){
                 $q->select('id', 'nama');
-            }])->simplePaginate(10);
+            }])->paginate(10);
         return response()->json($res, 200);
     }
     public function searchSkill(Request $request)
     {
-        $res = Skill::where('name', 'like', '%' . $request->name . '%')->simplePaginate(10);
+        $res = Skill::where('name', 'like', '%' . $request->name . '%')->paginate(10);
         return response()->json($res, 200);
-        
+
     }
     public function searchSubSkill(Request $request)
     {
-        $res = SubSkill::where('name', 'like', '%' . $request->name . '%')->simplePaginate(10);
+        $res = SubSkill::where('name', 'like', '%' . $request->name . '%')->paginate(10);
         return response()->json($res);
     }
 }
