@@ -36,10 +36,6 @@ class DivisiController extends Controller
             return response()->json(["Error" => "Divisi already exists"], 400);
         }
 
-        return $request->all();
-
-        
-
         try {
             $datacreate = divisi::create([
                 "nama" => $request -> divisi["name"],
