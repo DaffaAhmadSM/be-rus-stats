@@ -27,7 +27,7 @@ class DivisiController extends Controller
             "skill.*.sub_skill.*" => 'array',
             "skill.*.sub_skill.*.id" => 'integer|required'
         ]);
-        
+
 
         if ($validator->fails()) {
             return response()->json(["Message"=>$validator->errors()->first()], 400);
@@ -59,23 +59,52 @@ class DivisiController extends Controller
             return response()->json(["Error" => $e->getMessage()], 500);
         }
         return response()->json($datacreate->load('department'), 201);
-        
+
     }
     public function divisiUpdate(Request $request ,$id){
         $validator = Validator::make($request->all(), [
-            "nama" => 'required|string',
-            "department_id" => 'required|integer'
+            "divisi" => 'array',
+            "divisi.name" => 'string',
+            "department" => 'array',
+            "department.id" => 'integer',
+            "skill" => 'array',
+            "skill.*" => 'array',
+            "skill.*.id" => 'integer',
+            "skill.*.sub_skill" => 'array',
+            "skill.*.sub_skill.*" => 'array',
+            "skill.*.sub_skill.*.id" => 'integer'
         ]);
         if ($validator->fails()) {
             return response()->json(["Error" => $validator->errors()->first()], 400);
         }
         $divisi = divisi::find($id);
         if($divisi){
-           $divisi->update([
-                "nama" => $request -> nama,
-                "department_id" => $request -> department_id
-            ]);
-            return response()->json($divisi->load('department'), 200);
+           if($request->divisi){
+                $divisi->update([
+                    'name' => $request->divisi['name']
+                ]);
+           }
+           if($request->department){
+               $divisi->update([
+                   'department_id' => $request -> department["id"]
+                ]);
+            }
+            if($request->skill){
+                $dataRelasi = DivisiSkillSubskill::where('divisi_id', $id);
+                $dataRelasi->get()->delete();
+                $divisi_skill_subskill = [];
+                foreach ($request->skill as $skill) {
+                    foreach ($skill["sub_skill"] as $sub_skill) {
+                        $divisi_skill_subskill[] = [
+                            "divisi_id" => $id,
+                            "skill_id" => $skill["id"],
+                            "sub_skill_id" => $sub_skill["id"]
+                        ];
+                    }
+                }
+
+                DivisiSkillSubskill::insert($divisi_skill_subskill);
+                }
         }
         return response()->json(["Message" => "Divisi tidak ditemukan!"], 400);
     }
@@ -105,7 +134,7 @@ class DivisiController extends Controller
             return $item;
         });
         return response()->json([
-            "department" => $division->department, 
+            "department" => $division->department,
             "skill"=>$skill,
         ], 200);
     }
