@@ -23,9 +23,9 @@ class DivisiController extends Controller
             "skill" => 'array',
             "skill.*" => 'array',
             "skill.*.id" => 'required|integer',
-            "skill.*.sub_skill" => 'array',
-            "skill.*.sub_skill.*" => 'array',
-            "skill.*.sub_skill.*.id" => 'integer|required'
+            "skill.*.subskill" => 'array',
+            "skill.*.subskill.*" => 'array',
+            "skill.*.subskill.*.id" => 'integer|required'
         ]);
         
 
