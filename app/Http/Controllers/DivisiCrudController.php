@@ -13,36 +13,29 @@ use Illuminate\Support\Facades\Validator;
 
 class DivisiCrudController extends Controller
 {
-    public function searchDepartment(Request $request)
+    public function searchDepartment($search)
     {
-        $res = department::where('nama', 'like', '%' . $request->name . '%')
+        $res = department::where('nama', 'like', '%' . $search . '%')
             ->with('divisi');
         return response()->json($res->get());
     }
-    public function searchDivisi(Request $request)
+    public function searchDivisi($search)
     {
-        $validator = Validator::make($request->all(), [
-            'name' => 'required|string',
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json(["Error" => $validator->errors()->first()], 400);
-        }
-        $res = divisi::where('nama', 'like', '%' . $request->name . '%')
+        $res = divisi::where('nama', 'like', '%' . $search . '%')
             ->with(['department' => function($q){
                 $q->select('id', 'nama');
             }])->paginate(10);
         return response()->json($res, 200);
     }
-    public function searchSkill(Request $request)
+    public function searchSkill($search)
     {
-        $res = Skill::where('name', 'like', '%' . $request->name . '%')->paginate(10);
+        $res = Skill::where('name', 'like', '%' . $search. '%')->paginate(10);
         return response()->json($res, 200);
 
     }
-    public function searchSubSkill(Request $request)
+    public function searchSubSkill($search)
     {
-        $res = SubSkill::where('name', 'like', '%' . $request->name . '%')->paginate(10);
+        $res = SubSkill::where('name', 'like', '%' . $search . '%')->paginate(10);
         return response()->json($res);
     }
 }

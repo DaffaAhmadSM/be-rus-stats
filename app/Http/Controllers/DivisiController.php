@@ -23,9 +23,9 @@ class DivisiController extends Controller
             "skill" => 'array',
             "skill.*" => 'array',
             "skill.*.id" => 'required|integer',
-            "skill.*.sub_skill" => 'array',
-            "skill.*.sub_skill.*" => 'array',
-            "skill.*.sub_skill.*.id" => 'integer|required'
+            "skill.*.subskill" => 'array',
+            "skill.*.subskill.*" => 'array',
+            "skill.*.subskill.*.id" => 'integer|required'
         ]);
 
 
@@ -44,7 +44,7 @@ class DivisiController extends Controller
         $divisi_skill_subskill = [];
 
         foreach ($request->skill as $skill) {
-            foreach ($skill["sub_skill"] as $sub_skill) {
+            foreach ($skill["subskill"] as $sub_skill) {
                 $divisi_skill_subskill[] = [
                     "divisi_id" => $datacreate->id,
                     "skill_id" => $skill["id"],
