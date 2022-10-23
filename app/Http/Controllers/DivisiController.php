@@ -87,7 +87,7 @@ class DivisiController extends Controller
             }
             if($request->skill){
                 $dataRelasi = DivisiSkillSubskill::where('divisi_id', $id);
-                $dataRelasi->get()->delete();
+                $dataRelasi->delete();
                 $divisi_skill_subskill = [];
                 foreach ($request->skill as $skill) {
                     foreach ($skill["subskill"] as $sub_skill) {
