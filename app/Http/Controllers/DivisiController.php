@@ -77,7 +77,7 @@ class DivisiController extends Controller
         if($divisi){
            if($request->divisi['name']){
                 $divisi->update([
-                    'name' => $request->divisi['name']
+                    'nama' => $request->divisi['name']
                 ]);
            }
            if($request->department['id']){
