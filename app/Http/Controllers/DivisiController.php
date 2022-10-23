@@ -94,7 +94,7 @@ class DivisiController extends Controller
                 $dataRelasi->get()->delete();
                 $divisi_skill_subskill = [];
                 foreach ($request->skill as $skill) {
-                    foreach ($skill["sub_skill"] as $sub_skill) {
+                    foreach ($skill["subskill"] as $sub_skill) {
                         $divisi_skill_subskill[] = [
                             "divisi_id" => $id,
                             "skill_id" => $skill["id"],
