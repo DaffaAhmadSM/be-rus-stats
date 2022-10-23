@@ -66,9 +66,9 @@ class DivisiController extends Controller
             "skill" => 'array',
             "skill.*" => 'array',
             "skill.*.id" => 'integer',
-            "skill.*.sub_skill" => 'array',
-            "skill.*.sub_skill.*" => 'array',
-            "skill.*.sub_skill.*.id" => 'integer'
+            "skill.*.subskill" => 'array',
+            "skill.*.subskill.*" => 'array',
+            "skill.*.subskill.*.id" => 'integer'
         ]);
         if ($validator->fails()) {
             return response()->json(["Error" => $validator->errors()->first()], 400);

@@ -14,12 +14,9 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 class PekerjaController extends Controller
 {
-    public function search(Request $request)
+    public function search($search)
     {
-        $validator = Validator::make($request->all(), [
-            'name' => 'required|string',
-        ]);
-        $data = User::role('pekerja')->where('nama', 'like', '%' . $request->name . '%')->simplePaginate(10);
+        $data = User::role('pekerja')->where('nama', 'like', '%' . $search . '%')->simplePaginate(10);
         return response()->json($data, 200);
     }
     public function pekerjaCreate(Request $request){
