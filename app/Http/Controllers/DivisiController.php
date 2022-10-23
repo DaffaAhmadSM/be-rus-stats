@@ -27,8 +27,6 @@ class DivisiController extends Controller
             "skill.*.subskill.*" => 'array',
             "skill.*.subskill.*.id" => 'integer|required'
         ]);
-
-
         if ($validator->fails()) {
             return response()->json(["Message"=>$validator->errors()->first()], 400);
         }
@@ -63,9 +61,7 @@ class DivisiController extends Controller
     }
     public function divisiUpdate(Request $request ,$id){
         $validator = Validator::make($request->all(), [
-            "divisi" => 'array',
             "divisi.name" => 'string',
-            "department" => 'array',
             "department.id" => 'integer',
             "skill" => 'array',
             "skill.*" => 'array',
@@ -79,15 +75,17 @@ class DivisiController extends Controller
         }
         $divisi = divisi::find($id);
         if($divisi){
-           if($request->divisi){
+           if($request->divisi['name']){
                 $divisi->update([
                     'name' => $request->divisi['name']
                 ]);
+                return response()->json($divisi, 200);
            }
-           if($request->department){
+           if($request->department['id']){
                $divisi->update([
                    'department_id' => $request -> department["id"]
                 ]);
+                return response()->json($divisi, 200);
             }
             if($request->skill){
                 $dataRelasi = DivisiSkillSubskill::where('divisi_id', $id);
@@ -104,6 +102,7 @@ class DivisiController extends Controller
                 }
 
                 DivisiSkillSubskill::insert($divisi_skill_subskill);
+                return response()->json($divisi, 200);
                 }
         }
         return response()->json(["Message" => "Divisi tidak ditemukan!"], 400);
