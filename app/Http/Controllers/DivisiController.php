@@ -105,10 +105,7 @@ class DivisiController extends Controller
                     return response()->json(["Error" => $e->getMessage()], 500);
                 }
                 }
-                return response()->json([
-                    "Message" => "Data updated successfully",
-                    "data" => $divisi
-                ], 200);
+                return response()->json($divisi->load(department), 200);
         }
         return response()->json(["Message" => "Divisi tidak ditemukan!"], 400);
     }
