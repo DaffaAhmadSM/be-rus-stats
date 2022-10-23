@@ -98,10 +98,17 @@ class DivisiController extends Controller
                         ];
                     }
                 }
-
-                DivisiSkillSubskill::insert($divisi_skill_subskill);
+                try {
+                    DivisiSkillSubskill::insert($divisi_skill_subskill);
                 }
-                return response()->json($divisi, 200);
+                catch (Exception $e) {
+                    return response()->json(["Error" => $e->getMessage()], 500);
+                }
+                }
+                return response()->json([
+                    "Message" => "Data updated successfully",
+                    "data" => $divisi
+                ], 200);
         }
         return response()->json(["Message" => "Divisi tidak ditemukan!"], 400);
     }
