@@ -194,10 +194,10 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
 
             //* route search
             Route::group(["prefix" => "/search"], function () {
-                Route::post('/divisi', [DivisiCrudController::class, 'searchDivisi']);
-                Route::post('/department', [DivisiCrudController::class, 'searchDepartment']);
-                Route::post('/skill', [DivisiCrudController::class, 'searchSkill']);
-                Route::post('/subskill', [DivisiCrudController::class, 'searchSubSkill']);
+                Route::get('/divisi/{search}', [DivisiCrudController::class, 'searchDivisi']);
+                Route::get('/department/{search}', [DivisiCrudController::class, 'searchDepartment']);
+                Route::get('/skill/{search}', [DivisiCrudController::class, 'searchSkill']);
+                Route::get('/subskill/{search}', [DivisiCrudController::class, 'searchSubSkill']);
             });
         });
         Route::group(["prefix" => "/user"], function () {
@@ -230,9 +230,6 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
 
 
         });
-
-
-
 
     });
 });
