@@ -79,13 +79,11 @@ class DivisiController extends Controller
                 $divisi->update([
                     'name' => $request->divisi['name']
                 ]);
-                return response()->json($divisi, 200);
            }
            if($request->department['id']){
                $divisi->update([
                    'department_id' => $request -> department["id"]
                 ]);
-                return response()->json($divisi, 200);
             }
             if($request->skill){
                 $dataRelasi = DivisiSkillSubskill::where('divisi_id', $id);
@@ -102,8 +100,8 @@ class DivisiController extends Controller
                 }
 
                 DivisiSkillSubskill::insert($divisi_skill_subskill);
-                return response()->json($divisi, 200);
                 }
+                return response()->json($divisi, 200);
         }
         return response()->json(["Message" => "Divisi tidak ditemukan!"], 400);
     }
