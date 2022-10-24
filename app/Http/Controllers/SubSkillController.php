@@ -19,8 +19,7 @@ class SubSkillController extends Controller
             return response()->json(["Error" => $validator->errors()->first()], 401);
         }
         $subSkillC = SubSkill::create([
-            'name' => $request->name,
-            'description' => $request->description ? $request->description : ''
+            'name' => $request->name
         ]);
     }
     public function subSkillUpdate(Request $request, $id)
