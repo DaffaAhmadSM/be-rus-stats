@@ -113,7 +113,7 @@ class UserController extends Controller
                 $user->profile()->update([
                     'notelp' => $request->profile['notelp'],
                     'provinsi_id' =>  $request->profile['provinsi_id'],
-                    'kota_id' => $request->profile['kota'],
+                    'kota_id' => $request->profile['kota_id'],
                 ]);
             }
             if($request->image){
