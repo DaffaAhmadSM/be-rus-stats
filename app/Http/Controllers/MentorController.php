@@ -111,7 +111,7 @@ class MentorController extends Controller
         $user = User::where('UUID', $uuid)->with('divisi')->with('profile')->first();
         $data = DivisiSkillSubskill::getuser($user);
 
-        return response()->json($data);
+        return response()->json($data->original);
 
     }
 

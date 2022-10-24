@@ -31,7 +31,6 @@ class DivisiSkillSubskill extends Model
         $user_skill = [];
         foreach($relasi->get() as $e){
             if($e->subSkill->skor == null){
-                // dd($e->subSkill->skor);
                 $user_skill[] = [
                     'user_id' => $user->id,
                     'sub_skill_id' => $e->subSkill->id,
@@ -41,22 +40,28 @@ class DivisiSkillSubskill extends Model
                 ];
             }
         }
+
         if(count($user_skill) > 0){
             UserSkill::insert($user_skill);
         }
 
-        $relasi_get = $relasi->get();
+        $user_relasi = UserSkill::where('user_id', $user->id);
+        $user_relasi->with(['Skill' => function($q) use($user){
+            $q->with('Skor');
+        }])->with('subSkill');
+
+        $relasi_get = $user_relasi->get();
         $skill = $relasi_get->groupBy('skill_id');
         foreach ($skill as $key => $value) {
             $skill[$key] = $value->flatMap(function($item){
                 return [
-                    $item->sub_skill_id => $item->subSkill->skor
+                    $item->sub_skill_id => $item->Skill->skor
                 ];
             });
 
             $sub_skill[] = $value->flatMap(function($item){
                 return [
-                    $item->sub_skill_id => $item->subSkill
+                    $item->sub_skill_id => array_merge($item->subSkill->toArray(),["skor" => $item->Skill->skor])
                 ];
             });
         }
