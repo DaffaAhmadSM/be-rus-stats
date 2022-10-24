@@ -58,10 +58,10 @@ class MentorController extends Controller
         $res = User::with('divisi')->role('student')->with('profile')->paginate(6);
         return response()->json($res, 200);
     }
-    public function searchUsers(Request $request)
+    public function searchUsers($search)
     {
         $res = User::with('divisi')->role('student')
-            ->where('nama', 'like', '%' . $request->name . '%')
+            ->where('nama', 'like', '%' . $search . '%')
             ->paginate(6);
 
         return response()->json($res);

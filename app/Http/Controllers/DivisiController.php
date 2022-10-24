@@ -66,9 +66,9 @@ class DivisiController extends Controller
             "skill" => 'array',
             "skill.*" => 'array',
             "skill.*.id" => 'integer',
-            "skill.*.sub_skill" => 'array',
-            "skill.*.sub_skill.*" => 'array',
-            "skill.*.sub_skill.*.id" => 'integer'
+            "skill.*.subskill" => 'array',
+            "skill.*.subskill.*" => 'array',
+            "skill.*.subskill.*.id" => 'integer'
         ]);
         if ($validator->fails()) {
             return response()->json(["Error" => $validator->errors()->first()], 400);
@@ -77,19 +77,17 @@ class DivisiController extends Controller
         if($divisi){
            if($request->divisi['name']){
                 $divisi->update([
-                    'name' => $request->divisi['name']
+                    'nama' => $request->divisi['name']
                 ]);
-                return response()->json($divisi, 200);
            }
            if($request->department['id']){
                $divisi->update([
                    'department_id' => $request -> department["id"]
                 ]);
-                return response()->json($divisi, 200);
             }
             if($request->skill){
                 $dataRelasi = DivisiSkillSubskill::where('divisi_id', $id);
-                $dataRelasi->get()->delete();
+                $dataRelasi->delete();
                 $divisi_skill_subskill = [];
                 foreach ($request->skill as $skill) {
                     foreach ($skill["subskill"] as $sub_skill) {
@@ -100,10 +98,14 @@ class DivisiController extends Controller
                         ];
                     }
                 }
-
-                DivisiSkillSubskill::insert($divisi_skill_subskill);
-                return response()->json($divisi, 200);
+                try {
+                    DivisiSkillSubskill::insert($divisi_skill_subskill);
                 }
+                catch (Exception $e) {
+                    return response()->json(["Error" => $e->getMessage()], 500);
+                }
+                }
+                return response()->json($divisi->load('department'), 200);
         }
         return response()->json(["Message" => "Divisi tidak ditemukan!"], 400);
     }

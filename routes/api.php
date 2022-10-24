@@ -202,7 +202,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
         });
         Route::group(["prefix" => "/user"], function () {
             Route::get('/', [MentorController::class, 'getUser']);
-            Route::post('/search', [MentorController::class, 'searchUsers']);
+            Route::get('/search/{search}', [MentorController::class, 'searchUsers']);
             Route::get('/top3/gold', [MentorController::class, 'top3gold']);
             Route::get('/top3/silver', [MentorController::class, 'top3silver']);
             Route::post('/updateskills/{id}', [MentorController::class, 'updateSkill']);
@@ -213,14 +213,14 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
                 Route::get('/delete/{id}', [MentorController::class, 'deleteStudent']);
             });
             Route::group(["prefix" => "/pekerja"], function () {
-                Route::post('/search', [PekerjaController::class, 'search']);
+                Route::get('/search/{search}', [PekerjaController::class, 'search']);
                 Route::get('/', [RoleController::class, 'getRolePekerja']);
                 Route::get('/top3/gold', [MentorController::class, 'top3goldpekerja']);
                 Route::get('/top3/silver', [MentorController::class, 'top3silverpekerja']);
                 Route::get('/create', [PekerjaController::class, 'pekerjaCreate']);
             });
             Route::group(["prefix" => "/guru"], function () {
-                Route::post('/search', [GuruController::class, 'search']);
+                Route::get('/search/{search}', [GuruController::class, 'search']);
                 Route::get('/', [RoleController::class, 'getRoleGuru']);
                 Route::get('/top3/gold', [MentorController::class, 'top3goldguru']);
                 Route::get('/top3/silver', [MentorController::class, 'top3silverguru']);
