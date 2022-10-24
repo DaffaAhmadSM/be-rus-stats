@@ -90,7 +90,7 @@ class UserController extends Controller
             ]);
         }
         if($user){
-            if($request->divisi && $request->divisi != $user->divisi_id){
+            if($request->divisi_id && $request->divisi_id != $user->divisi_id){
                 $skill = UserSkill::where('user_id', $user->id);
                 $skill->delete();
                 $relasi = DivisiSkillSubskill::where('divisi_id', $user->divisi_id);
