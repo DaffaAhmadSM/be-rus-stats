@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\allprovinsi;
 use App\Models\User;
 use App\Models\Skill;
 use App\Models\divisi;
@@ -10,20 +11,26 @@ use App\Models\Profile;
 use App\Models\UserSkill;
 use App\Models\department;
 use App\Models\UserDetail;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Models\DivisionSkill;
+use App\Models\DivisiSkillSubskill;
+use App\Models\Kota;
 use App\Models\SpecialityUser;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 
 class MentorController extends Controller
 {
     public function getUser()
     {
-        $res = User::with(['divisi','profile' => function ($query) {
-            $query->with(['country', 'city']);
+        $res = User::with(['divisi' => function($q) {
+            $q->with('department');
+        },'profile' => function ($query) {
+            $query->with(['province', 'city']);
         }])->findOrFail(Auth::id());
         $user = Auth::user();
         $overall = $user->average;
@@ -43,18 +50,18 @@ class MentorController extends Controller
         return response()->json([
             "Message" => "Success",
             "data" => $merge,
-            
+
     ]);
     }
     public function getStudents()
     {
-        $res = User::with('divisi')->role('student')->paginate(6);
+        $res = User::with('divisi')->role('student')->with('profile')->paginate(6);
         return response()->json($res, 200);
     }
-    public function searchUsers(Request $request)
+    public function searchUsers($search)
     {
         $res = User::with('divisi')->role('student')
-            ->where('nama', 'like', '%' . $request->name . '%')
+            ->where('nama', 'like', '%' . $search . '%')
             ->paginate(6);
 
         return response()->json($res);
@@ -73,17 +80,23 @@ class MentorController extends Controller
     }
     public function listDataDepartmentDivisi()
     {
-        return response()->json([
-            'status' => 'Success',
-            'department' => department::all(),
-            'divisi' => divisi::all()
-        ]);
+        $department = department::get();
+        return response()->json($department);
+    }
+    public function divisiByDepartment($id){
+         $division = divisi::where('department_id',$id)->get();
+        return response()->json($division);
+    }
+    public function provinsi(){
+        return response()->json( allprovinsi::all());
+    }
+    public function kota($id){
+        return response()->json(Kota::where('provinsi_id', $id)->get());
     }
     public function deleteStudent($id)
     {
-        $user = User::where('id', $id);
-        $dataUser = $user->first();
-        $userSkill = UserSkill::where('user_id', $dataUser->id);
+        $user = User::find($id);
+        $userSkill = UserSkill::where('user_id', $user->id);
         $userSkill->delete();
         $user->delete();
         return response()->json([
@@ -92,78 +105,14 @@ class MentorController extends Controller
         ]);
     }
 
-    
+
     public function studentDetail($uuid)
     {
-        $user = User::where('UUID', $uuid)->with('divisi')->first();
-        if ($user->hasRole('student')) {
-            $divisi_skill = DivisionSkill::where('division_id', $user->divisi_id)->with(['SkillCategory' => function ($q) use ($user) {
-                $q->with(['Data' => function ($q) use ($user) {
-                    $q->with(['Skor' => function ($q) use ($user) {
-                        $q->where('user_id', $user->id);
-                    }]);
-                }]);
-            }]);;
-            $data = [];
+        $user = User::where('UUID', $uuid)->with('divisi')->with('profile')->first();
+        $data = DivisiSkillSubskill::getuser($user);
 
-            foreach ($divisi_skill->get() as $key => $value) {
-                $data[] = $value->SkillCategory->toArray();
-            }
-            foreach ($data as $key_dat => $value) {
-                $data_dat[] = $value["data"];
-                $skillcategoryname[] = $value["name"];
-                $skillcategoryid[] = $value["id"];
-            }
-            for ($i = 0; $i < count($data_dat); $i++) {
-                $data_each = $data_dat[$i];
-                for ($e = 0; $e < count($data_each); $e++) {
-                    //* jika user tidak memiliki nilai skill per skill category maka akan membuat skill baru dengan nilai default 30 */
-                    if(!$data_each[$e]["skor"]){
-                        $skill = Skill::where('skill_category_id', $skillcategoryid[$i])->get();
-                        foreach ($skill as $sk) {
-                            UserSkill::create([
-                                'user_id' => $user->id,
-                                'skill_id' => $sk->id,
-                                'nilai' => 30,
-                                'nilai_history' => 0
-                            ]);
-                        }
-                            $divisi_skill = DivisionSkill::where('division_id', $user->divisi_id)->with(['SkillCategory' => function ($q) use ($user) {
-                                $q->with(['Data' => function ($q) use ($user) {
-                                    $q->with(['Skor' => function ($q) use ($user) {
-                                        $q->where('user_id', $user->id);
-                                    }]);
-                                }]);
-                            }]);;
-                            unset($data);
-                            unset($data_dat);
-                            foreach ($divisi_skill->get() as $key => $value) {
-                                $data[] = $value->SkillCategory->toArray();
-                            }
-                            foreach ($data as $key_dat => $value) {
-                                $data_dat[] = $value["data"];
-                            }
-                            $data_each = $data_dat[$i];
-                    }
-                    $data_e[] = $data_each[$e]["skor"]["nilai"];    
-                    $data_e_h[] = $data_each[$e]["skor"]["nilai_history"];
-                }
-                $data_each_skill[] = [
-                    "name" => $skillcategoryname[$i],
-                    "average" => round(array_sum($data_e) / count($data_e),0),
-                    "average_history" => round(array_sum($data_e_h) / count($data_e_h),0)
-                ];
-                unset($data_e);
-                unset($data_e_h);
-            }
-            $overall = $user->average;
-            return response()->json([
-                "user" => $user,
-                "Overall" => round($overall, 1),
-                "user_detail" => $data,
-                "radar_chart" => $data_each_skill,
-            ], 200);
-        }
+        return response()->json($data->original);
+
     }
 
     public function studentCreate(Request $request)
@@ -172,59 +121,59 @@ class MentorController extends Controller
             'email' => 'required|email|unique:users',
             'nama' => 'required|string',
             'tanggal_lahir' => 'required|date',
-            'password' => 'required',
-            'nickname' => 'string',
-            'bio' => 'text',
-            'notelp' => 'string',
+            // 'password' => 'required',
+            // 'nickname' => 'string',
+            // 'bio' => 'text',
+            'notelp' => 'required|string',
             'divisi_id' => 'required|integer',
-            'department_id' => 'required|integer'
+            'image' => 'required|image' ,
+            'provinsi_id' => 'required|integer',
+            'kota_id' => 'required|integer',
         ]);
         if ($validator->fails()) {
             return response()->json(["Error" => $validator->errors()->first()], 400);
         }
-            
-        $divisi_skill = DivisionSkill::where('division_id', $request->divisi_id)->first();
-        if (!$divisi_skill) {
-            return response()->json(['Message' => "division not available 'cause division skill not set yet"], 400);
-        }
         $department = department::where('id', $request->department_id)->first();
-        $divisi = divisi::where('id', $request->divisi_id)->with('divisiSkill')->first();
+        $divisi = divisi::where('id', $request->divisi_id)->with('dataskill')->first();
         $user = User::create([
             'email' => $request->email,
             'nama' => $request->nama,
             'tanggal_lahir' => $request->tanggal_lahir,
-            'password' => Hash::make($request->password),
-            'divisi_id' => $divisi->id
+            'password' => $request->password ? Hash::make($request->password) : Hash::make('smkrus'),
+            'divisi_id' => $divisi->id,
+            'UUID' => Str::orderedUuid(),
+            'average' => 30,
         ]);
+
+        $path = Storage::disk('public')->put('images/'. $user->UUID . $request->image->getClientOriginalName(), file_get_contents($request->image));
         $userDetail = Profile::create([
             'user_id' => $user->id,
             'nickname' => $request->nickname != null ? $request : '',
             'bio' => $request->bio != null ? $request : '',
-            'notelp' => $request->notelp != null ? $request : '',
-            'negara_id' => $request->negara_id,
-            'kota_id' => $request->kota_id
+            'notelp' => $request->notelp,
+            // 'negara_id' => $request->negara_id,
+            'gambar' => $user->UUID . $request->image->getClientOriginalName(),
+            'provinsi_id' => $request->provinsi_id != null ? $request->provinsi_id : 1,
+            'kota_id' => $request->kota_id != null ? $request->kota_id : 1,
         ]);
         $user->assignRole('student');
-        foreach ($divisi->divisiSkill as $key => $value) {
-            $skill = Skill::where('skill_category_id', $value->skill_category_id)->get();
-            foreach ($skill as $sk) {
-                UserSkill::create([
-                    'user_id' => $user->id,
-                    'skill_id' => $sk->id,
-                    'nilai' => 30,
-                    'nilai_history' => 0
-                ]);
-            }
+        $userskillcreate =  [];
+        foreach($user->divisisubskill as $divisisubskill){
+            $userskillcreate[] = [
+                'user_id' => $user->id,
+                'sub_skill_id' => $divisisubskill->sub_skill_id,
+                'nilai' => 30,
+                'nilai_history' => 0
+            ];
         }
-        $user->updated([
-            'average' => 30
-        ]);
-        // Average::create([
-        //     'user_id' => $user->id,
-        //     'average' => 30,
-        // ]);
+        try {
+            UserSkill::insert($userskillcreate);
+            return response()->json(["message" => "data created"], 201);
+        } catch (\Throwable $th) {
+            return response()->json(["message" => $th], 400);
+        }
 
-        return response()->json(["message" => "data created"], 201);
+
     }
 
     public function updateSkill(Request $request, $id)
@@ -286,14 +235,30 @@ class MentorController extends Controller
     public function top3gold()
     {
 
-        $user = User::role('student')->where('average', '>=', 90)->orderBy('average', 'desc')->get();
+        $user = User::role('student')->where('average', '>=', 90)->orderBy('average', 'desc')->take(3)->with('profile')->get();
         return response()->json($user);
     }
 
     public function top3silver()
     {
 
-        $user = User::role('student')->where('average', '>=', 70)->where('average', '<', 90)->orderBy('average', 'desc')->get();
+        $user = User::role('student')->where('average', '>=', 70)->where('average', '<', 90)->orderBy('average', 'desc')->take(3)->with('profile')->get();
+        return response()->json($user);
+    }
+    public function top3goldguru(){
+        $user = User::role('guru')->where('average', '<', 90)->orderBy('average', 'desc')->take(3)->with('profile')->get();
+        return response()->json($user);
+    }
+    public function top3silverguru(){
+        $user = User::role('guru')->where('average', '>=', 70)->where('average', '<', 90)->orderBy('average', 'desc')->take(3)->with('profile')->get();
+        return response()->json($user);
+    }
+    public function top3goldpekerja(){
+        $user = User::role('pekerja')->where('average', '<', 90)->orderBy('average', 'desc')->take(3)->with('profile')->get();
+        return response()->json($user);
+    }
+    public function top3silverpekerja(){
+        $user = User::role('pekerja')->where('average', '>=', 70)->where('average', '<', 90)->orderBy('average', 'desc')->take(3)->with('profile')->get();
         return response()->json($user);
     }
 }

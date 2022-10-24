@@ -1,5 +1,7 @@
 <?php
 
+use App\Models\Profile;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -14,9 +16,8 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-    return response()
-        ->json([
-            'message' => 'Authentication Failed',
-            'status'  => 'error'
-        ], 401);
+    return response()->json([
+        'error' => '401',
+        'message' => 'authentification failed'
+    ], 401);
 })->name("login");

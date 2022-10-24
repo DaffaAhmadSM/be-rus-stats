@@ -19,8 +19,9 @@ class CreateProfilesTable extends Migration
             $table->string('nickname');
             $table->text('bio')->nullable();
             $table->string('notelp');
-            $table->foreignId('negara_id')->constrained('negaras')->onDelete('cascade');
+            $table->foreignId('provinsi_id')->constrained('allprovinsis')->onDelete('cascade');
             $table->foreignId('kota_id')->constrained('kotas')->onDelete('cascade');
+            $table->string('gambar');
             $table->timestamps();
         });
     }

@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateDivisionSkillsTable extends Migration
+class CreateProjectUsersTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,10 +13,11 @@ class CreateDivisionSkillsTable extends Migration
      */
     public function up()
     {
-        Schema::create('division_skills', function (Blueprint $table) {
+        Schema::create('project_users', function (Blueprint $table) {
             $table->id();
-            $table->foreignId("division_id")->constrained("divisis");
-            $table->foreignId("skill_category_id")->constrained("skill_categories");
+            $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
+            $table->foreignId('project_id')->constrained('projects')->onDelete('cascade');
+            $table->string('status');
             $table->timestamps();
         });
     }
@@ -28,6 +29,6 @@ class CreateDivisionSkillsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('division_skills');
+        Schema::dropIfExists('project_users');
     }
 }

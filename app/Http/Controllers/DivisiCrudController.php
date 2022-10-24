@@ -4,107 +4,38 @@ namespace App\Http\Controllers;
 
 use App\Models\divisi;
 use App\Models\department;
+use App\Models\DivisiSkillSubskill;
+use App\Models\Skill;
+use App\Models\SubSkill;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
 class DivisiCrudController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
+    public function searchDepartment($search)
     {
-        //
+        $res = department::where('nama', 'like', '%' . $search . '%')
+            ->with('divisi');
+        return response()->json($res->get());
     }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
+    public function searchDivisi($search)
     {
-        
+        $res = divisi::where('nama', 'like', '%' . $search . '%')
+            ->with(['department' => function($q){
+                $q->select('id', 'nama');
+            }])->paginate(10);
+        return response()->json($res, 200);
     }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
+    public function searchSkill($search)
     {
-        $validator = Validator::make($request->all(), [
-            "nama" => 'required|string',
-            "department_id" => 'required|integer'
-        ]);
-        if ($validator->fails()) {
-            return response()->json(["Error" => $validator->errors()->first()]);
-        }
-        $department = department::find($request->department_id);
-        if($department){
-            try {
-                
-                divisi::create([
-                    "nama" => $request -> nama,
-                    "department_id" => $request -> department_id
-                ]);
-            }
-            catch (exception $e) {
-                return $e;
-            }
-            return response()->json(["Message" => "data created"], 201);
-        }else{
-            return response()->json(["Message" => "department_id tidak ditemukan"], 400);
-        }
+        $res = Skill::where('name', 'like', '%' . $search. '%')->paginate(10);
+        return response()->json($res, 200);
 
     }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
+    public function searchSubSkill($search)
     {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-        //
+        $res = SubSkill::where('name', 'like', '%' . $search . '%')->paginate(10);
+        return response()->json($res);
     }
 }

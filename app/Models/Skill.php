@@ -8,14 +8,10 @@ use Illuminate\Database\Eloquent\Model;
 class Skill extends Model
 {
     use HasFactory;
-    protected $hidden = ["id", "created_at", "updated_at", "skill_category_id"];
-    public function SkillCategory()
-    {
-        return $this->belongsTo(SkillCategory::class);
-    }
-
+    protected $hidden = ["created_at", "updated_at", "skill_category_id"];
+    protected $guarded = ['id'];
     public function Skor()
     {
-        return $this->hasOne(UserSkill::class, 'skill_id', 'id');
+        return $this->hasMany(UserSkill::class, 'skill_id', 'id');
     }
 }

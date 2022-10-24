@@ -42,7 +42,7 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
     // protected $appends = ['link'];
-    protected $appends = ['skill', 'division', 'rank', 'speciality'];
+    protected $appends = ['skill', 'division', 'rank', 'speciality', 'profile', 'department'];
     // public function getLinkAttribute()
     // {
     //     // $this->roles();
@@ -61,7 +61,7 @@ class User extends Authenticatable
     public function getDivisionAttribute()
     {
         $divisi = divisi::where('id', $this->divisi_id)->first();
-        return $divisi->nama;
+        return $divisi;
     }
     public function userHistory()
     {
@@ -119,5 +119,19 @@ class User extends Authenticatable
         }
 
         return $speciality_each;
+    }
+
+    public function getProfileAttribute()
+    {
+        $profile = Profile::where("user_id", $this->id)->first();
+        return $profile;
+    }
+    public function getDepartmentAttribute(){
+        $divisi = divisi::where('id', $this->divisi_id)->first();
+        $jurusan = department::where('id', $divisi->department_id)->first();
+        return $jurusan;
+    }
+    public function divisisubskill(){
+        return $this->hasMany(DivisiSkillSubskill::class, "divisi_id", "divisi_id");
     }
 }

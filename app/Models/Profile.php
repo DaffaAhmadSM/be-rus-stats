@@ -2,21 +2,30 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Profile extends Model
 {
     use HasFactory;
     protected $guarded = ['id'];
-
-    public function country()
+    protected $appends = ['link'];
+    public function province()
     {
-        return $this->hasOne(Negara::class,  'id', 'negara_id');
+        return $this->hasOne(allprovinsi::class,  'id', 'provinsi_id');
     }
 
     public function city()
     {
         return $this->hasOne(Kota::class, 'id', 'kota_id');
+    }
+    public function getLinkAttribute(){
+        // return Storage::disk('public')->url("images/".$this->gambar);
+        if($this->gambar){
+            return url('/storage/images/'.$this->gambar);
+        }
+        return url('/storage/images/user.png');
+        // return url(public_path('/storage/images/').$this->gambar);
     }
 }

@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateNegarasTable extends Migration
+class CreateAllprovinsisTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,9 +13,9 @@ class CreateNegarasTable extends Migration
      */
     public function up()
     {
-        Schema::create('negaras', function (Blueprint $table) {
+        Schema::create('allprovinsis', function (Blueprint $table) {
             $table->id();
-            $table->string('nama');
+            $table->string('nama')->nullable();
             $table->timestamps();
         });
     }
@@ -27,6 +27,6 @@ class CreateNegarasTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('negaras');
+        Schema::dropIfExists('allprovinsis');
     }
 }
