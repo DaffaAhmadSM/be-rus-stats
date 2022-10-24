@@ -35,13 +35,14 @@ class DivisiSkillSubskill extends Model
                 $user_skill[] = [
                     'user_id' => $user->id,
                     'sub_skill_id' => $e->subSkill->id,
+                    'skill_id' => $e->skill->id,
                     'nilai' => 30,
                     'nilai_history' => 0
                 ];
             }
         }
         if(count($user_skill) > 0){
-            Skor::insert($user_skill);
+            UserSkill::insert($user_skill);
         }
 
         $relasi_get = $relasi->get();
