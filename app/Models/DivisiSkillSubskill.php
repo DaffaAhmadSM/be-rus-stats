@@ -28,17 +28,20 @@ class DivisiSkillSubskill extends Model
                 $q->where('user_id', $user->id);
             }]);
         }]);
-
+        $user_skill = [];
         foreach($relasi->get() as $e){
             if($e->subSkill->skor == null){
                 // dd($e->subSkill->skor);
-                UserSkill::create([
+                $user_skill[] = [
                     'user_id' => $user->id,
                     'sub_skill_id' => $e->subSkill->id,
                     'nilai' => 30,
                     'nilai_history' => 0
-                ]);
+                ];
             }
+        }
+        if(count($user_skill) > 0){
+            Skor::insert($user_skill);
         }
 
         $relasi_get = $relasi->get();
