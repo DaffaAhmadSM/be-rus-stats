@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Collection;
 
 class DivisiSkillSubskill extends Model
 {
@@ -46,55 +47,70 @@ class DivisiSkillSubskill extends Model
         }
 
         $user_relasi = UserSkill::where('user_id', $user->id);
-        $user_relasi->with(['Skill' => function($q) use($user){
-            $q->with('Skor');
-        }])->with('subSkill');
+        $user_relasi->with(['Skills', 'subSkill']);
 
         $relasi_get = $user_relasi->get();
         $skill = $relasi_get->groupBy('skill_id');
         foreach ($skill as $key => $value) {
-            $skill[$key] = $value->flatMap(function($item){
+            $skill_each[] = $value->flatMap(function($item){
                 return [
-                    $item->sub_skill_id => $item->Skill->skor
+                [ "id" => $item->subSkill->id,
+                            "name" => $item->subSkill->name,
+                            "skor"  =>  ["id" => $item->id,
+                                        "sub_skill_id" => $item->sub_skill_id,
+                                        "skill_id" => $item->skill_id,
+                                        "name" => $item->subSkill->name,
+                                        "nilai" => $item->nilai,
+                                        "nilai_history" => $item->nilai_history,
+                                        "difference" => $item->difference,
+                                        "status" => $item->status,
+                                        "nilai_int" => $item->nilai_int,
+                                        "nilai_history_int" => $item->nilai_history_int,
+                                        "show_nilai_history" => $item->show_nilai_history]
+                                ]
                 ];
             });
 
-            $sub_skill[] = $value->flatMap(function($item){
+            $nilai[] = $value->flatMap(function($item){
                 return [
-                    $item->sub_skill_id => array_merge($item->subSkill->toArray(),["skor" => $item->Skill->skor])
+                   [
+                    'skill_id' => $item->skills->id,
+                    "name" => $item->Skills->name,
+                    "description" => $item->Skills->description,
+                    "nilai" => $item->nilai, 
+                    "nilai_history" => $item->nilai_history]
                 ];
             });
         }
-
-        $skill = $skill->map(function($item){
-            return[
-                "nilai" => $item->avg('nilai'),
-                "nilai_history" => $item->avg('nilai_history'),
+        // foreach ($nilai as $key => $value) {
+        //     $nilai[$key] = [
+        //         "name" => $value[0]['name'],
+        //         "average" => $value->avg('nilai'),
+        //         "averege_history" => $value->avg('nilai_history')
+        //     ];
+        // }
+        for ($i=0; $i < count($nilai); $i++) { 
+            $nilai[$i] = [
+                "name" => $nilai[$i][0]['name'],
+                "description" => $nilai[$i][0]['description'],
+                "skill_id" => $nilai[$i][0]['skill_id'],
+                "average" => $nilai[$i]->avg('nilai'),
+                "averege_history" => $nilai[$i]->avg('nilai_history')
             ];
-        });
 
-
-        $skill_unique = $relasi_get->unique('skill_id')->values()->all();
-        for ($i=0; $i < count($skill_unique); $i++) {
-            $skill_unique_each[] = [
-                "name" => $skill_unique[$i]->skill->name,
-                "average" => round($skill[$skill_unique[$i]->skill_id]['nilai'],0),
-                "average_history" => round($skill[$skill_unique[$i]->skill_id]['nilai_history'],0)
-            ];
-
-            $user_detail[] = [
-                "id" => $skill_unique[$i]->id,
-                "name" => $skill_unique[$i]->skill->name,
-                "description" => $skill_unique[$i]->skill->description,
-                "data" => $sub_skill[$i]
+            $skill_each[$i] = [
+                "id" => $nilai[$i]['skill_id'],
+                "name" => $nilai[$i]['name'],
+                "description" => $nilai[$i]['description'],
+                "data" => $skill_each[$i]
             ];
         }
         return response()->json([
             "user" => $user,
             "role" => $user->getRoleNames()->first,
             "Overall" => round($user->average, 1),
-            'user_detail' => $user_detail,
-            "radar_chart" => $skill_unique_each,
+            'user_detail' => $skill_each,
+            "radar_chart" => $nilai,
         ]);
     }
 }

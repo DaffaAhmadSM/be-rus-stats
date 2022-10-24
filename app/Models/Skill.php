@@ -12,6 +12,6 @@ class Skill extends Model
     protected $guarded = ['id'];
     public function Skor()
     {
-        return $this->hasOne(UserSkill::class, 'skill_id', 'id');
+        return $this->hasMany(UserSkill::class, 'skill_id', 'id');
     }
 }
