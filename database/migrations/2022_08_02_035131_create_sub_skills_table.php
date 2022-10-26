@@ -16,10 +16,10 @@ class CreateSubSkillsTable extends Migration
         Schema::create('sub_skills', function (Blueprint $table) {
             $table->id();
             $table->string('name');
+            $table->foreignId('skill_id')->constrained('skills')->onDelete('cascade');
             $table->timestamps();
         });
     }
-
     /**
      * Reverse the migrations.
      *

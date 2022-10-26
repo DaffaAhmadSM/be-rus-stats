@@ -14,12 +14,14 @@ class SubSkillController extends Controller
         // return $request->all();
         $validator = Validator::make($request->all(), [
             'name' => 'required',
+            'skill_id' => 'required'
         ]);
         if ($validator->fails()) {
             return response()->json(["Error" => $validator->errors()->first()], 401);
         }
         $subSkillC = SubSkill::create([
-            'name' => $request->name
+            'name' => $request->name,
+            'skill_id' => $request->skill_id
         ]);
     }
     public function subSkillUpdate(Request $request, $id)

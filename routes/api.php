@@ -4,6 +4,7 @@ use App\Models\User;
 use App\Models\Skill;
 use App\Models\divisi;
 use App\Models\Profile;
+use App\Models\SubSkill;
 use App\Models\UserSkill;
 use App\Models\UserDetail;
 use App\Imports\UsersImport;
@@ -51,53 +52,13 @@ Route::get('/set', function () {
     // Role::create(['name' => 'guru']);
     // Role::create(['name' => 'pekerja']);
     // Role::create(['name' => 'student']);
-    // User::find(4)->assignRole('ceo');
-    // User::find(5)->assignRole('supervisor');
-    // User::find(6)->assignRole('pekerja');
-    // User::find(7)->assignRole('student');
-    // User::find(8)->assignRole('guru');
-    // User::find(9)->assignRole('student');
-    // User::find(10)->assignRole('student');
-    // User::find(11)->assignRole('student');
-    // User::find(25)->assignRole('student');
-    // User::create([
-    //     'email' => 'suwarno@mail.com',
-    //     'nama' => 'Suwarno',
+    // $user = User::create([
+    //     'email' => 'roy@rus-animation.com',
+    //     'nama' => 'Roy',
     //     'password' => Hash::make('abcde'),
-    //     'divisi_id' => 1,
+    //     // 'divisi_id' => 1,
     // ]);
-    // return public_path('data.xlsx');
-    // Excel::import(new UsersImport, public_path('user.xlsx'));
-    // $dataUser = User::role('student')->get();
-    $user = User::role('supervisor');
-    // $user = User::where('id',6);
-    $dataUser = $user->with('divisisubskill')->get();
-    // return $dataUser;
-    foreach($dataUser as $dd) {
-        foreach($dd->divisisubskill as $d){
-            UserSkill::create([
-                'user_id' => $dd->id,
-                'sub_skill_id' => $d->sub_skill_id,
-                'nilai' => 30,
-                'nilai_history' => 0
-            ]);
-        }
-    }
-
-    // $nick = explode(" ", $d->nama);
-    // // return $nick[0];
-    // $faker = Faker\Factory::create();
-    // Profile::create([
-    //     'user_id' => $d->id,
-    //     'nickname' => $nick[0],
-    //     'bio' => "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged",
-    //     'negara_id' => 60,
-    //     'kota_id' => random_int(1, 59),
-    //     'notelp' => '08' . (string)$faker->randomNumber(5, true) . (string)$faker->randomNumber(5, true)
-    // ]);
-    // }
-    // return $a;
-    // return $dataUser->doesntHave('userSkill')->get();
+    // $user->assignRole('ceo');
 });
 Route::post('/login', [LoginController::class, 'login']);
 

@@ -144,7 +144,6 @@ class MentorController extends Controller
             'UUID' => Str::orderedUuid(),
             'average' => 30,
         ]);
-
         $path = Storage::disk('public')->put('images/'. $user->UUID . $request->image->getClientOriginalName(), file_get_contents($request->image));
         $userDetail = Profile::create([
             'user_id' => $user->id,
@@ -158,10 +157,12 @@ class MentorController extends Controller
         ]);
         $user->assignRole('student');
         $userskillcreate =  [];
+        
         foreach($user->divisisubskill as $divisisubskill){
             $userskillcreate[] = [
                 'user_id' => $user->id,
                 'sub_skill_id' => $divisisubskill->sub_skill_id,
+                'skill_id' => $divisisubskill->skill_id,
                 'nilai' => 30,
                 'nilai_history' => 0
             ];
