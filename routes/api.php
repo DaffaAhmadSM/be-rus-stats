@@ -178,14 +178,14 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
                 Route::get('/', [RoleController::class, 'getRolePekerja']);
                 Route::get('/top3/gold', [MentorController::class, 'top3goldpekerja']);
                 Route::get('/top3/silver', [MentorController::class, 'top3silverpekerja']);
-                Route::get('/create', [PekerjaController::class, 'pekerjaCreate']);
+                Route::post('/create', [PekerjaController::class, 'pekerjaCreate']);
             });
             Route::group(["prefix" => "/guru"], function () {
                 Route::get('/search/{search}', [GuruController::class, 'search']);
                 Route::get('/', [RoleController::class, 'getRoleGuru']);
                 Route::get('/top3/gold', [MentorController::class, 'top3goldguru']);
                 Route::get('/top3/silver', [MentorController::class, 'top3silverguru']);
-                Route::get('/create', [GuruController::class, 'guruCreate']);
+                Route::post('/create', [GuruController::class, 'guruCreate']);
             });
 
 
