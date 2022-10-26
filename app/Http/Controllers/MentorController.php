@@ -55,7 +55,7 @@ class MentorController extends Controller
     }
     public function getStudents()
     {
-        $res = User::with('divisi')->role('student')->with('profile')->paginate(6);
+        $res = User::with('divisi')->role('student')->with('profile')->orderBy('id')->cursorPaginate(10);
         return response()->json($res, 200);
     }
     public function searchUsers($search)
