@@ -138,6 +138,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
             Route::group(["prefix" => "/skill"], function () {
                 Route::post('/create', [SkillCategoryCrud::class, 'skillCategoryCreate']);
                 Route::get('/', [SkillCategoryCrud::class, 'skillCategoryReadAll']);
+                Route::get('/all', [SkillCategoryCrud::class, 'skillCategoryReadAllnoPaginate']);
                 Route::get('show/{id}', [SkillCategoryCrud::class, 'skillCategoryReadById']);
                 Route::get('/delete/{id}', [SkillCategoryCrud::class, 'skillCategoryDelete']);
                 Route::post('/update/{id}', [SkillCategoryCrud::class, 'skillCategoryUpdate']);
