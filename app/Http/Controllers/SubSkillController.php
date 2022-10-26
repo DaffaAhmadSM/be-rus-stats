@@ -14,27 +14,31 @@ class SubSkillController extends Controller
         // return $request->all();
         $validator = Validator::make($request->all(), [
             'name' => 'required',
-            'skill_id' => 'required'
+            'skill' => 'required',
+            'skill.id' => 'required',
         ]);
         if ($validator->fails()) {
             return response()->json(["Error" => $validator->errors()->first()], 401);
         }
         $subSkillC = SubSkill::create([
             'name' => $request->name,
-            'skill_id' => $request->skill_id
+            'skill_id' => $request->skill['id']
         ]);
     }
     public function subSkillUpdate(Request $request, $id)
     {
         $validator = Validator::make($request->all(), [
-            'name' => 'required'
+            'name' => 'required',
+            'skill' => 'required',
+            'skill.id' => 'required',
         ]);
         if ($validator->fails()) {
             return response()->json(["Error" => $validator->errors()->first()], 401);
         }
         $data = SubSkill::where('id', $id);
         $data->update([
-            'name' => $request->name
+            'name' => $request->name,
+            'skill_id' => $request->skill['id']
         ]);
         return response()->json([
             'Message' => 'Data Berhasil Diupdate!'
