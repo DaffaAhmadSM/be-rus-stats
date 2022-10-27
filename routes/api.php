@@ -161,6 +161,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
                 Route::get('/department/{search}', [DivisiCrudController::class, 'searchDepartment']);
                 Route::get('/skill/{search}', [DivisiCrudController::class, 'searchSkill']);
                 Route::get('/subskill/{search}', [DivisiCrudController::class, 'searchSubSkill']);
+                Route::get('/skill/{id}/subskill/{search}', [DivisiCrudController::class, 'searchsubskillBySkill']);
             });
         });
         Route::group(["prefix" => "/user"], function () {
