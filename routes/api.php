@@ -142,6 +142,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
                 Route::get('show/{id}', [SkillCategoryCrud::class, 'skillCategoryReadById']);
                 Route::get('/delete/{id}', [SkillCategoryCrud::class, 'skillCategoryDelete']);
                 Route::post('/update/{id}', [SkillCategoryCrud::class, 'skillCategoryUpdate']);
+                Route::get('/{skill_id}/subskill', [SubSkillController::class, 'subSkillBySkill']);
             });
 
             //* route subskill
@@ -151,7 +152,6 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
                 Route::get('show/{id}', [SubSkillController::class, 'subSkillReadById']);
                 Route::get('/delete/{id}', [SubSkillController::class, 'subSkillDelete']);
                 Route::post('/update/{id}', [SubSkillController::class, 'subSkillUpdate']);
-                Route::get('skill/{skill_id}/subskill', [SubSkillController::class, 'subSkillBySkill']);
                 Route::get('/divisi/{divisi}/skill/{skill}', [SubSkillController::class, 'subSkillByDivisiandskill']);
             });
 
