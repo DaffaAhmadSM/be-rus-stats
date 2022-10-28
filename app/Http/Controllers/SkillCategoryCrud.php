@@ -60,6 +60,11 @@ class SkillCategoryCrud extends Controller
         $data = Skill::paginate(10);
         return response()->json($data, 200);
     }
+    public function skillCategoryReadAllnoPaginate()
+    {
+        $data = Skill::all();
+        return response()->json($data, 200);
+    }
     public function skillCategoryReadById(Request $request, $id)
     {
         $data = Skill::find($id);

@@ -67,15 +67,13 @@ class UserController extends Controller
             'nama' => 'required',
             'email' => 'required',
             'tanggal_lahir' => 'required|date',
-            // 'profile.notelp' => 'required'
         ]);
 
         if ($validator->fails()) {
             return response()->json(["Error" => $validator->errors()->first()], 400);
         }
         $checkRole = Auth::user();
-        // $user = User::findOrFail($id);
-        $user = User::where('id', $id)->first();
+        $user = User::findOrFail($id);
         if($checkRole->hasRole('student') && $user->hasRole('mentor')){
             return response()->json([
                 'message' => 'Maaf Anda tidak bisa mengedit data profile ini!'
@@ -92,28 +90,32 @@ class UserController extends Controller
             ]);
         }
         if($user){
-            if($request->divisi != $user->divisi_id){
+            if($request->divisi_id && $request->divisi_id != $user->divisi_id){
                 $skill = UserSkill::where('user_id', $user->id);
                 $skill->delete();
                 $relasi = DivisiSkillSubskill::where('divisi_id', $user->divisi_id);
                 foreach($relasi->get() as $e){
-                    UserSkill::create([
+                    $user_skill[] = [
                         'user_id' => $user->id,
                         'sub_skill_id' => $e->subSkill->id,
+                        'skill_id' => $e->skill->id,
                         'nilai' => 30,
                         'nilai_history' => 0
-                    ]);
+                    ];
                 }
+                UserSkill::insert($user_skill);
             }
             $profileGambar = Profile::where('user_id', $id)->first();
             // return $request->all();
             $user->fill($request->all());
             $user->update();
-            $user->profile()->update([
-                'notelp' => $request->profile['notelp'],
-                'provinsi_id' => $request->profile['provinsi_id'],
-                'kota_id' => $request->profile['kota_id']
-            ]);
+            if($request->profile){
+                $user->profile()->update([
+                    'notelp' => $request->profile['notelp'],
+                    'provinsi_id' =>  $request->profile['provinsi_id'],
+                    'kota_id' => $request->profile['kota_id'],
+                ]);
+            }
             if($request->image){
                 if (Storage::disk('public')->exists('images/'.$profileGambar->gambar)) {
                     // ...

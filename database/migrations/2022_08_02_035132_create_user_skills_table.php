@@ -17,6 +17,7 @@ class CreateUserSkillsTable extends Migration
             $table->id();
             $table->foreignId("user_id")->constrained("users")->onDelete('cascade');
             $table->foreignId("sub_skill_id")->constrained("sub_skills")->onDelete('cascade');
+            $table->foreignId("skill_id")->constrained("skills")->onDelete('cascade');
             $table->integer("nilai");
             $table->integer("nilai_history")->nullable();
             $table->timestamps();

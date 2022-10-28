@@ -26,6 +26,12 @@ class UserSkill extends Model
     {
         return $this->belongsTo(SubSkill::class);
     }
+    public function Skills(){
+        return $this->belongsTo(Skill::class, 'skill_id','id');
+    }
+    public function subSkill(){
+        return $this->belongsTo(SubSkill::class,'sub_skill_id' ,'id' );
+    }
 
     public function getDifferenceAttribute(){
         $nilai_now = $this->nilai;

@@ -55,7 +55,7 @@ class MentorController extends Controller
     }
     public function getStudents()
     {
-        $res = User::with('divisi')->role('student')->with('profile')->paginate(6);
+        $res = User::with('divisi')->role('student')->with('profile')->orderBy('id')->cursorPaginate(10);
         return response()->json($res, 200);
     }
     public function searchUsers($search)
@@ -117,63 +117,8 @@ class MentorController extends Controller
 
     public function studentCreate(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            'email' => 'required|email|unique:users',
-            'nama' => 'required|string',
-            'tanggal_lahir' => 'required|date',
-            // 'password' => 'required',
-            // 'nickname' => 'string',
-            // 'bio' => 'text',
-            'notelp' => 'required|string',
-            'divisi_id' => 'required|integer',
-            'image' => 'required|image' ,
-            'provinsi_id' => 'required|integer',
-            'kota_id' => 'required|integer',
-        ]);
-        if ($validator->fails()) {
-            return response()->json(["Error" => $validator->errors()->first()], 400);
-        }
-        $department = department::where('id', $request->department_id)->first();
-        $divisi = divisi::where('id', $request->divisi_id)->with('dataskill')->first();
-        $user = User::create([
-            'email' => $request->email,
-            'nama' => $request->nama,
-            'tanggal_lahir' => $request->tanggal_lahir,
-            'password' => $request->password ? Hash::make($request->password) : Hash::make('smkrus'),
-            'divisi_id' => $divisi->id,
-            'UUID' => Str::orderedUuid(),
-            'average' => 30,
-        ]);
-
-        $path = Storage::disk('public')->put('images/'. $user->UUID . $request->image->getClientOriginalName(), file_get_contents($request->image));
-        $userDetail = Profile::create([
-            'user_id' => $user->id,
-            'nickname' => $request->nickname != null ? $request : '',
-            'bio' => $request->bio != null ? $request : '',
-            'notelp' => $request->notelp,
-            // 'negara_id' => $request->negara_id,
-            'gambar' => $user->UUID . $request->image->getClientOriginalName(),
-            'provinsi_id' => $request->provinsi_id != null ? $request->provinsi_id : 1,
-            'kota_id' => $request->kota_id != null ? $request->kota_id : 1,
-        ]);
-        $user->assignRole('student');
-        $userskillcreate =  [];
-        foreach($user->divisisubskill as $divisisubskill){
-            $userskillcreate[] = [
-                'user_id' => $user->id,
-                'sub_skill_id' => $divisisubskill->sub_skill_id,
-                'nilai' => 30,
-                'nilai_history' => 0
-            ];
-        }
-        try {
-            UserSkill::insert($userskillcreate);
-            return response()->json(["message" => "data created"], 201);
-        } catch (\Throwable $th) {
-            return response()->json(["message" => $th], 400);
-        }
-
-
+        $user = User::createuser($request, 'student');
+        return response()->json($user->original, 201);
     }
 
     public function updateSkill(Request $request, $id)
@@ -185,9 +130,7 @@ class MentorController extends Controller
             return response()->json(["Error" => $validator->errors()->first()], 400);
         }
         $nilai = [];
-        // $id = [];
         foreach ($request->user_skills as $key => $user_skill) {
-            # code...
             $res = UserSkill::findOrFail($user_skill['id']);
             if ($user_skill['nilai'] != $res['nilai']) {
                 $res->update([
@@ -197,39 +140,14 @@ class MentorController extends Controller
             }
         }
         $dataSkill = UserSkill::where('user_id', $id)->get();
-        // $averageData = Average::where('user_id', $id);
         foreach ($dataSkill as $key => $value) {
             $nilai[] = $value->nilai;
         }
-        // $averageData->update([
-        //     'average' => array_sum($nilai) / count($nilai)
-        // ]);
         $user = User::where('id', $id);
         $user->update([
             'average' => array_sum($nilai) / count($nilai)
         ]);
-        // return $nilai;
         return response()->json(['Message' => 'Berhasil']);
-
-        // $res = U
-
-        // $validator = Validator::make($request->all(), [
-        //     'data' => 'required|array',
-        //     'data.*.id' => 'required',
-        //     'data.*.nilai' => 'required|integer',
-        // ]);
-        // if ($validator->fails()) {
-        //     return response()->json(["Error" => $validator->errors()->first()], 400);
-        // }
-        // $user = $request->json()->all();
-        // for ($i = 0; $i < count($user['data']); $i++) {
-        //     $data = UserSkill::find($user['data'][$i]['id']);
-        //     $newHistory = $data->nilai;
-        //     $data->update([
-        //         'nilai' => $user['data'][$i]['nilai'],
-        //         'nilai_history' => $newHistory
-        //     ]);
-        // }
     }
 
     public function top3gold()
