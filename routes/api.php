@@ -1,12 +1,4 @@
 <?php
-
-use App\Models\User;
-use App\Models\Skill;
-use App\Models\divisi;
-use App\Models\Profile;
-use App\Models\SubSkill;
-use App\Models\UserSkill;
-use App\Models\UserDetail;
 use App\Imports\UsersImport;
 use Illuminate\Http\Request;
 use Illuminate\Auth\Events\Login;
@@ -34,6 +26,7 @@ use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\DivisiCrudController;
 use App\Http\Controllers\PortofolioController;
 use App\Http\Controllers\DepartmentCrudController;
+use App\Http\Controllers\SpecialityCrudController;
 
 /*
 |--------------------------------------------------------------------------
@@ -91,7 +84,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
             Route::get('/find/{codeProject}', [ProjectController::class, 'findProject']);
         });
     });
-    Route::group(['middleware' => ['role:ceo|supervisor|pekerja|guru '], "prefix" => "/mentor"], function () {
+    Route::group(['middleware' => ['role:ceo|supervisor|pekerja|guru'], "prefix" => "/mentor"], function () {
         Route::group(["prefix" => "/data"], function(){
             Route::group(["prefix" => "/department"], function(){
                 Route::get('/', [DepartmentController::class, 'listDataDepartment']);
@@ -163,6 +156,13 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
                 Route::get('/subskill/{search}', [DivisiCrudController::class, 'searchSubSkill']);
                 Route::get('/skill/{id}/subskill/{search}', [DivisiCrudController::class, 'searchsubskillBySkill']);
             });
+            Route::group(["prefix" => "/speciality"], function () {
+                Route::post('user/{id}/create', [SpecialityCrudController::class, 'store']);
+                Route::get('{id}/delete', [SpecialityCrudController::class, 'destroy']);
+                Route::get('user/{id}   ', [SpecialityCrudController::class, 'show']);
+            });
+            
+            
         });
         Route::group(["prefix" => "/user"], function () {
             Route::get('/', [MentorController::class, 'getUser']);
