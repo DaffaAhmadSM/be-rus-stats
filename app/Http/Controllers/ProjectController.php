@@ -226,12 +226,17 @@ class ProjectController extends Controller
             $user = Auth::user();
             $project = Project::where('code', $codeProject)->first();
             $checkUser = ProjectUser::where('user_id', $user->id)->where('project_id', $project->id);
-            if($checkUser->get()){
+            // return $checkUser->first();
+            if($checkUser->first()){
                 return response()->json([
                     'message' => 'maaf siswa sudah ada di dalam project'
                 ],200);
             }
-            if($user && $project) {
+            if(!$project){
+                return response()->json([
+                    'message' => 'data project tidak ada!'
+                ],400);
+            }
                 ProjectUser::create([
                     'user_id' => $user->id,
                     'project_id' => $project->id,
@@ -240,15 +245,12 @@ class ProjectController extends Controller
                 return response()->json([
                     'message' => 'siswa telah diundang'
                 ],200);
-            }
-            return response()->json([
-                'message' => 'data siswa atau project tidak ada!'
-            ],400);
+
+
         } catch (\Throwable $th) {
             return response()->json([
                 'Message' => $th,
             ],400);
         }
     }
-
 }
