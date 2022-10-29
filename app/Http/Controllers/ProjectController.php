@@ -8,6 +8,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
 
 
 class ProjectController extends Controller
@@ -32,25 +33,31 @@ class ProjectController extends Controller
         if ($validator->fails()) {
             return response()->json(["Error" => $validator->errors()->first()], 400);
         }
-        try {
-            $bytes = random_bytes(3);
+        
+            
+            try {
+            $bytes = Str::random(10);
+            $check = Project::where('code', $bytes)->first();
+                while ($check) {
+                    $bytes = Str::random(10);
+                    $check = Project::where('code', $bytes)->first();
+                    if (!$check) {
+                        break;
+                    }
+                }
+                $project = Project::create([
+                    'name' => $request->name,
+                    'description' => $request->description,
+                    'code' => strtoupper($bytes),
+                    'user_id' => $request->user_id
+    
+                ]);
+                return response()->json($project,200);
+            } catch (\Exception $e) {
+                return response()->json(["Error" => $e->getMessage()], 400);
+            }
             // var_dump();
-            $project = Project::create([
-                'name' => $request->name,
-                'description' => $request->description,
-                'code' => strtoupper(bin2hex($bytes)),
-                'user_id' => $request->user_id
-
-            ]);
-            return response()->json([
-                'Message' => 'Project Created',
-                'Project' => $project
-            ],200);
-        } catch (\Throwable $th) {
-            return response()->json([
-                'Message' => $th,
-            ],400);
-        }
+            
     }
 
     public function searchProject(Request $request){

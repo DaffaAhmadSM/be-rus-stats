@@ -116,6 +116,12 @@ class UserController extends Controller
                     'kota_id' => $request->profile['kota_id'],
                 ]);
             }
+            if($request->speciality){
+                $user->speciality()->update([
+                    'speciality' => $request->speciality,
+                ]);
+            }
+
             if($request->image){
                 if (Storage::disk('public')->exists('images/'.$profileGambar->gambar)) {
                     // ...

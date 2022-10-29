@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\divisi;
+use App\Models\Speciality;
 use Illuminate\Support\Str;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Support\Facades\Hash;
@@ -96,6 +97,10 @@ class User extends Authenticatable
     {
         return $this->hasOne(Profile::class, 'user_id', 'id');
     }
+    public function speciality()
+    {
+        return $this->hasOne(Speciality::class, 'user_id', 'id');
+    }
 
     public function getRankAttribute(){
         $overall = $this->average;
@@ -152,6 +157,7 @@ class User extends Authenticatable
             'image' => 'required|image' ,
             'provinsi_id' => 'required|integer',
             'kota_id' => 'required|integer',
+            'speciality' => 'string',
         ]);
         if ($validator->fails()) {
             return response()->json(["Error" => $validator->errors()->first()], 400);
@@ -178,7 +184,13 @@ class User extends Authenticatable
             'provinsi_id' => $request->provinsi_id != null ? $request->provinsi_id : 1,
             'kota_id' => $request->kota_id != null ? $request->kota_id : 1,
         ]);
+        $speciality = $request->speciality != null ? $request->speciality : '';
+        Speciality::create([
+            'name' => $speciality,
+            'user_id' => $user->id,
+        ]);
         $user->assignRole((string)$role);
+        
         $userskillcreate =  [];
         foreach($user->divisisubskill as $divisisubskill){
             $userskillcreate[] = [
