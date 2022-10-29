@@ -121,9 +121,9 @@ class User extends Authenticatable
 
     public function getSpecialityAttribute()
     {
-        $specialities = Speciality::where("user_id", $this->id)->get();
+        $speciality = Speciality::where("user_id", $this->id)->get();
 
-        return $speciality_each;
+        return $speciality;
     }
 
     public function getProfileAttribute()
