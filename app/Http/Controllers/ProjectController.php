@@ -8,6 +8,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
 
 
 class ProjectController extends Controller
@@ -32,25 +33,31 @@ class ProjectController extends Controller
         if ($validator->fails()) {
             return response()->json(["Error" => $validator->errors()->first()], 400);
         }
-        try {
-            $bytes = random_bytes(3);
+        
+            
+            try {
+            $bytes = Str::random(10);
+            $check = Project::where('code', $bytes)->first();
+                while ($check) {
+                    $bytes = Str::random(10);
+                    $check = Project::where('code', $bytes)->first();
+                    if (!$check) {
+                        break;
+                    }
+                }
+                $project = Project::create([
+                    'name' => $request->name,
+                    'description' => $request->description,
+                    'code' => strtoupper($bytes),
+                    'user_id' => $request->user_id
+    
+                ]);
+                return response()->json($project,200);
+            } catch (\Exception $e) {
+                return response()->json(["Error" => $e->getMessage()], 400);
+            }
             // var_dump();
-            $project = Project::create([
-                'name' => $request->name,
-                'description' => $request->description,
-                'code' => strtoupper(bin2hex($bytes)),
-                'user_id' => $request->user_id
-
-            ]);
-            return response()->json([
-                'Message' => 'Project Created',
-                'Project' => $project
-            ],200);
-        } catch (\Throwable $th) {
-            return response()->json([
-                'Message' => $th,
-            ],400);
-        }
+            
     }
 
     public function searchProject(Request $request){
@@ -226,12 +233,17 @@ class ProjectController extends Controller
             $user = Auth::user();
             $project = Project::where('code', $codeProject)->first();
             $checkUser = ProjectUser::where('user_id', $user->id)->where('project_id', $project->id);
-            if($checkUser->get()){
+            // return $checkUser->first();
+            if($checkUser->first()){
                 return response()->json([
                     'message' => 'maaf siswa sudah ada di dalam project'
                 ],200);
             }
-            if($user && $project) {
+            if(!$project){
+                return response()->json([
+                    'message' => 'data project tidak ada!'
+                ],400);
+            }
                 ProjectUser::create([
                     'user_id' => $user->id,
                     'project_id' => $project->id,
@@ -240,10 +252,8 @@ class ProjectController extends Controller
                 return response()->json([
                     'message' => 'siswa telah diundang'
                 ],200);
-            }
-            return response()->json([
-                'message' => 'data siswa atau project tidak ada!'
-            ],400);
+
+
         } catch (\Throwable $th) {
             return response()->json([
                 'Message' => $th,

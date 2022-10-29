@@ -14,25 +14,31 @@ class SubSkillController extends Controller
         // return $request->all();
         $validator = Validator::make($request->all(), [
             'name' => 'required',
+            'skill' => 'required',
+            'skill.id' => 'required',
         ]);
         if ($validator->fails()) {
             return response()->json(["Error" => $validator->errors()->first()], 401);
         }
         $subSkillC = SubSkill::create([
-            'name' => $request->name
+            'name' => $request->name,
+            'skill_id' => $request->skill['id']
         ]);
     }
     public function subSkillUpdate(Request $request, $id)
     {
         $validator = Validator::make($request->all(), [
-            'name' => 'required'
+            'name' => 'required',
+            'skill' => 'required',
+            'skill.id' => 'required',
         ]);
         if ($validator->fails()) {
             return response()->json(["Error" => $validator->errors()->first()], 401);
         }
         $data = SubSkill::where('id', $id);
         $data->update([
-            'name' => $request->name
+            'name' => $request->name,
+            'skill_id' => $request->skill['id']
         ]);
         return response()->json([
             'Message' => 'Data Berhasil Diupdate!'
@@ -40,7 +46,7 @@ class SubSkillController extends Controller
     }
     public function subSkillReadAll()
     {
-        $data = SubSkill::paginate(15);
+        $data = SubSkill::with('skill')->paginate(15);
         return response()->json($data);
     }
     public function subSkillReadById(Request $request, $id)
@@ -66,5 +72,11 @@ class SubSkillController extends Controller
     {
         $data = DivisiSkillSubskill::where('skill_id', $skill)->where('divisi_id', $divisi)->with(['subSkill', 'skill'])->paginate(15);
         return response()->json($data);
+    }
+
+    public function subSkillBySkill(Request $request, $id)
+    {
+        $data = SubSkill::where('skill_id', $id)->with('skill')->cursorPaginate(15);
+        return response()->json($data, 200);
     }
 }

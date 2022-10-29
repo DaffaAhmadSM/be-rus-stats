@@ -5,12 +5,12 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\Request;
 
-class SupervisorController extends Controller
+class ManagementController extends Controller
 {
     public function search(Request $request)
     {
         $search = $request->search;
-        $res = User::role('supervisor')
+        $res = User::role('management')
             ->where('name', 'like', '%' . $search . '%')
             ->cursorPaginate(10);
         return response()->json($res);
@@ -18,25 +18,25 @@ class SupervisorController extends Controller
 
     public function index()
     {
-        $res = User::role('supervisor')->cursorPaginate(10);
+        $res = User::role('management')->cursorPaginate(10);
         return response()->json($res);
     }
 
     public function top3gold()
     {
-        $user = User::top3gold('supervisor');
+        $user = User::top3gold('management');
         return response()->json($user->original, 200);
     }
 
     public function top3silver()
     {
-        $user = User::top3silver('supervisor');
+        $user = User::top3silver('management');
         return response()->json($user->original, 200);
     }
 
     public function create(Request $request)
     {
-        $User = User::createuser($request, 'supervisor');
+        $User = User::createuser($request, 'management');
         return response()->json($User->original, 201);
     }
 }

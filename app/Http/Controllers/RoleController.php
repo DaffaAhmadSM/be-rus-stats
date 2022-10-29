@@ -9,17 +9,17 @@ use Illuminate\Support\Facades\Auth;
 class RoleController extends Controller
 {
     public function getRolePekerja(){
-        if(Auth::user()->hasRole('pekerja') || Auth::user()->hasRole('ceo')){
-            $res = User::with('divisi')->role('pekerja')->with('profile')->paginate(6);
+        if(Auth::user()->hasRole('pekerja') || Auth::user()->hasRole('ceo') || Auth::user()->hasRole('guru')){
+            $res = User::with('divisi')->role('pekerja')->with('profile')->cursorPaginate(10);
             return response()->json($res, 200);
         }
         return response()->json([], 400);
     }
     public function getRoleGuru(){
         if(Auth::user()->hasRole('guru') || Auth::user()->hasRole('ceo')){
-            $res = User::with('divisi')->role('guru')->with('profile')->paginate(6);
+            $res = User::with('divisi')->role('guru')->with('profile')->cursorPaginate(10);
                 return response()->json($res, 200);
-            
+
         }
         return response()->json(["message" => "Unauthorized user!"], 401);
     }

@@ -13,4 +13,8 @@ class SubSkill extends Model
     public function skor(){
         return $this->hasOne(UserSkill::class, 'sub_skill_id', 'id');
     }
+
+    public function skill(){
+        return $this->belongsTo(Skill::class, 'skill_id', 'id');
+    }
 }

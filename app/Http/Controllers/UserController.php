@@ -2,16 +2,17 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\divisi;
-use App\Models\DivisiSkillSubskill;
-use App\Models\Profile;
-use App\Models\Skill;
 use App\Models\User;
+use App\Models\Skill;
+use App\Models\divisi;
+use App\Models\Profile;
 use App\Models\UserSkill;
-use Illuminate\Support\Facades\Validator;
+use App\Models\Speciality;
 use Illuminate\Http\Request;
+use App\Models\DivisiSkillSubskill;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Validator;
 
 class UserController extends Controller
 {
@@ -116,6 +117,22 @@ class UserController extends Controller
                     'kota_id' => $request->profile['kota_id'],
                 ]);
             }
+            if($request->speciality){
+
+                $user_speciality = Speciality::where('user_id', $user->id);
+                if($user_speciality->exists()){
+                    $user_speciality->update([
+                        'name' => $request->speciality
+                    ]);
+                }else{
+                    Speciality::create([
+                        'user_id' => $user->id,
+                        'name' => $request->speciality
+                    ]);
+                }
+
+            }
+
             if($request->image){
                 if (Storage::disk('public')->exists('images/'.$profileGambar->gambar)) {
                     // ...

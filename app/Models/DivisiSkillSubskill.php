@@ -107,7 +107,7 @@ class DivisiSkillSubskill extends Model
         }
         return response()->json([
             "user" => $user,
-            "role" => $user->getRoleNames()->first,
+            "role" => $user->getRoleNames()->first(),
             "Overall" => round($user->average, 1),
             'user_detail' => $skill_each,
             "radar_chart" => $nilai,

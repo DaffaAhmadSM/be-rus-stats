@@ -1,11 +1,4 @@
 <?php
-
-use App\Models\User;
-use App\Models\Skill;
-use App\Models\divisi;
-use App\Models\Profile;
-use App\Models\UserSkill;
-use App\Models\UserDetail;
 use App\Imports\UsersImport;
 use Illuminate\Http\Request;
 use Illuminate\Auth\Events\Login;
@@ -31,8 +24,11 @@ use App\Http\Controllers\DivisionController;
 use App\Http\Controllers\SubSkillController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\DivisiCrudController;
+use App\Http\Controllers\ManagementController;
 use App\Http\Controllers\PortofolioController;
+use App\Http\Controllers\SupervisorController;
 use App\Http\Controllers\DepartmentCrudController;
+use App\Http\Controllers\SpecialityCrudController;
 
 /*
 |--------------------------------------------------------------------------
@@ -46,58 +42,18 @@ use App\Http\Controllers\DepartmentCrudController;
 */
 
 Route::get('/set', function () {
-    // Role::create(['name' => 'ceo']);
+    // Role::create(['name' => 'management']);
     // Role::create(['name' => 'supervisor']);
     // Role::create(['name' => 'guru']);
     // Role::create(['name' => 'pekerja']);
     // Role::create(['name' => 'student']);
-    // User::find(4)->assignRole('ceo');
-    // User::find(5)->assignRole('supervisor');
-    // User::find(6)->assignRole('pekerja');
-    // User::find(7)->assignRole('student');
-    // User::find(8)->assignRole('guru');
-    // User::find(9)->assignRole('student');
-    // User::find(10)->assignRole('student');
-    // User::find(11)->assignRole('student');
-    // User::find(25)->assignRole('student');
-    // User::create([
-    //     'email' => 'suwarno@mail.com',
-    //     'nama' => 'Suwarno',
+    // $user = User::create([
+    //     'email' => 'roy@rus-animation.com',
+    //     'nama' => 'Roy',
     //     'password' => Hash::make('abcde'),
-    //     'divisi_id' => 1,
+    //     // 'divisi_id' => 1,
     // ]);
-    // return public_path('data.xlsx');
-    // Excel::import(new UsersImport, public_path('user.xlsx'));
-    // $dataUser = User::role('student')->get();
-    $user = User::role('supervisor');
-    // $user = User::where('id',6);
-    $dataUser = $user->with('divisisubskill')->get();
-    // return $dataUser;
-    foreach($dataUser as $dd) {
-        foreach($dd->divisisubskill as $d){
-            UserSkill::create([
-                'user_id' => $dd->id,
-                'sub_skill_id' => $d->sub_skill_id,
-                'nilai' => 30,
-                'nilai_history' => 0
-            ]);
-        }
-    }
-
-    // $nick = explode(" ", $d->nama);
-    // // return $nick[0];
-    // $faker = Faker\Factory::create();
-    // Profile::create([
-    //     'user_id' => $d->id,
-    //     'nickname' => $nick[0],
-    //     'bio' => "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged",
-    //     'negara_id' => 60,
-    //     'kota_id' => random_int(1, 59),
-    //     'notelp' => '08' . (string)$faker->randomNumber(5, true) . (string)$faker->randomNumber(5, true)
-    // ]);
-    // }
-    // return $a;
-    // return $dataUser->doesntHave('userSkill')->get();
+    // $user->assignRole('ceo');
 });
 Route::post('/login', [LoginController::class, 'login']);
 
@@ -112,7 +68,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::get('/users/{id}/getbyuserid', [UserController::class, 'show']);
     Route::get('/users/{id}/roles', [UserController::class, 'getRoleById']);
 
-    Route::group(['middleware' => ['role:student|ceo|supervisor|pekerja|guru'], "prefix" => "/student"], function () {
+    Route::group(['middleware' => ['role:student|ceo|supervisor|pekerja|guru|management'], "prefix" => "/student"], function () {
         Route::get('user', [SiswaController::class, 'show']);
         Route::post('user/create', [SiswaController::class, 'store']);
         Route::get('user/detail', [SiswaController::class, 'getUserDetail']);
@@ -130,7 +86,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
             Route::get('/find/{codeProject}', [ProjectController::class, 'findProject']);
         });
     });
-    Route::group(['middleware' => ['role:ceo|supervisor|pekerja|guru '], "prefix" => "/mentor"], function () {
+    Route::group(['middleware' => ['role:ceo|supervisor|pekerja|guru|management'], "prefix" => "/mentor"], function () {
         Route::group(["prefix" => "/data"], function(){
             Route::group(["prefix" => "/department"], function(){
                 Route::get('/', [DepartmentController::class, 'listDataDepartment']);
@@ -177,9 +133,11 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
             Route::group(["prefix" => "/skill"], function () {
                 Route::post('/create', [SkillCategoryCrud::class, 'skillCategoryCreate']);
                 Route::get('/', [SkillCategoryCrud::class, 'skillCategoryReadAll']);
+                Route::get('/all', [SkillCategoryCrud::class, 'skillCategoryReadAllnoPaginate']);
                 Route::get('show/{id}', [SkillCategoryCrud::class, 'skillCategoryReadById']);
                 Route::get('/delete/{id}', [SkillCategoryCrud::class, 'skillCategoryDelete']);
                 Route::post('/update/{id}', [SkillCategoryCrud::class, 'skillCategoryUpdate']);
+                Route::get('/{skill_id}/subskill', [SubSkillController::class, 'subSkillBySkill']);
             });
 
             //* route subskill
@@ -198,7 +156,15 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
                 Route::get('/department/{search}', [DivisiCrudController::class, 'searchDepartment']);
                 Route::get('/skill/{search}', [DivisiCrudController::class, 'searchSkill']);
                 Route::get('/subskill/{search}', [DivisiCrudController::class, 'searchSubSkill']);
+                Route::get('/skill/{id}/subskill/{search}', [DivisiCrudController::class, 'searchsubskillBySkill']);
             });
+            Route::group(["prefix" => "/speciality"], function () {
+                Route::post('user/{id}/create', [SpecialityCrudController::class, 'store']);
+                Route::get('{id}/delete', [SpecialityCrudController::class, 'destroy']);
+                Route::get('user/{id}   ', [SpecialityCrudController::class, 'show']);
+            });
+            
+            
         });
         Route::group(["prefix" => "/user"], function () {
             Route::get('/', [MentorController::class, 'getUser']);
@@ -217,14 +183,30 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
                 Route::get('/', [RoleController::class, 'getRolePekerja']);
                 Route::get('/top3/gold', [MentorController::class, 'top3goldpekerja']);
                 Route::get('/top3/silver', [MentorController::class, 'top3silverpekerja']);
-                Route::get('/create', [PekerjaController::class, 'pekerjaCreate']);
+                Route::post('/create', [PekerjaController::class, 'pekerjaCreate']);
             });
             Route::group(["prefix" => "/guru"], function () {
                 Route::get('/search/{search}', [GuruController::class, 'search']);
                 Route::get('/', [RoleController::class, 'getRoleGuru']);
                 Route::get('/top3/gold', [MentorController::class, 'top3goldguru']);
                 Route::get('/top3/silver', [MentorController::class, 'top3silverguru']);
-                Route::get('/create', [GuruController::class, 'guruCreate']);
+                Route::post('/create', [GuruController::class, 'guruCreate']);
+            });
+
+            Route::group(["prefix" => "/supervisor"], function () {
+                Route::get('/search/{search}', [SupervisorController::class, 'search']);
+                Route::get('/', [SupervisorController::class, 'index']);
+                Route::get('/top3/gold', [SupervisorController::class, 'top3gold']);
+                Route::get('/top3/silver', [SupervisorController::class, 'top3silver']);
+                Route::post('/create', [SupervisorController::class, 'Create']);
+            });
+
+            Route::group(["prefix" => "/management"], function () { 
+                Route::get('/search/{search}', [ManagementController::class, 'search']);
+                Route::get('/', [ManagementController::class, 'index']);
+                Route::get('/top3/gold', [ManagementController::class, 'top3gold']);
+                Route::get('/top3/silver', [ManagementController::class, 'top3silver']);
+                Route::post('/create', [ManagementController::class, 'Create']);
             });
 
 
