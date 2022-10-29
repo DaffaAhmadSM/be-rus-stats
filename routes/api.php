@@ -24,7 +24,9 @@ use App\Http\Controllers\DivisionController;
 use App\Http\Controllers\SubSkillController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\DivisiCrudController;
+use App\Http\Controllers\ManagementController;
 use App\Http\Controllers\PortofolioController;
+use App\Http\Controllers\SupervisorController;
 use App\Http\Controllers\DepartmentCrudController;
 use App\Http\Controllers\SpecialityCrudController;
 
@@ -40,7 +42,7 @@ use App\Http\Controllers\SpecialityCrudController;
 */
 
 Route::get('/set', function () {
-    // Role::create(['name' => 'ceo']);
+    // Role::create(['name' => 'management']);
     // Role::create(['name' => 'supervisor']);
     // Role::create(['name' => 'guru']);
     // Role::create(['name' => 'pekerja']);
@@ -66,7 +68,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::get('/users/{id}/getbyuserid', [UserController::class, 'show']);
     Route::get('/users/{id}/roles', [UserController::class, 'getRoleById']);
 
-    Route::group(['middleware' => ['role:student|ceo|supervisor|pekerja|guru'], "prefix" => "/student"], function () {
+    Route::group(['middleware' => ['role:student|ceo|supervisor|pekerja|guru|management'], "prefix" => "/student"], function () {
         Route::get('user', [SiswaController::class, 'show']);
         Route::post('user/create', [SiswaController::class, 'store']);
         Route::get('user/detail', [SiswaController::class, 'getUserDetail']);
@@ -84,7 +86,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
             Route::get('/find/{codeProject}', [ProjectController::class, 'findProject']);
         });
     });
-    Route::group(['middleware' => ['role:ceo|supervisor|pekerja|guru'], "prefix" => "/mentor"], function () {
+    Route::group(['middleware' => ['role:ceo|supervisor|pekerja|guru|management'], "prefix" => "/mentor"], function () {
         Route::group(["prefix" => "/data"], function(){
             Route::group(["prefix" => "/department"], function(){
                 Route::get('/', [DepartmentController::class, 'listDataDepartment']);
@@ -189,6 +191,22 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
                 Route::get('/top3/gold', [MentorController::class, 'top3goldguru']);
                 Route::get('/top3/silver', [MentorController::class, 'top3silverguru']);
                 Route::post('/create', [GuruController::class, 'guruCreate']);
+            });
+
+            Route::group(["prefix" => "/supervisor"], function () {
+                Route::get('/search/{search}', [SupervisorController::class, 'search']);
+                Route::get('/', [SupervisorController::class, 'index']);
+                Route::get('/top3/gold', [SupervisorController::class, 'top3gold']);
+                Route::get('/top3/silver', [SupervisorController::class, 'top3silver']);
+                Route::post('/create', [SupervisorController::class, 'Create']);
+            });
+
+            Route::group(["prefix" => "/management"], function () { 
+                Route::get('/search/{search}', [ManagementController::class, 'search']);
+                Route::get('/', [ManagementController::class, 'index']);
+                Route::get('/top3/gold', [ManagementController::class, 'top3gold']);
+                Route::get('/top3/silver', [ManagementController::class, 'top3silver']);
+                Route::post('/create', [ManagementController::class, 'Create']);
             });
 
 

@@ -123,7 +123,7 @@ class User extends Authenticatable
     {
         $speciality = Speciality::where("user_id", $this->id)->first();
 
-        return $speciality->name;
+        return $speciality;
     }
 
     public function getProfileAttribute()
@@ -132,9 +132,8 @@ class User extends Authenticatable
         return $profile;
     }
     public function getDepartmentAttribute(){
-        $divisi = divisi::where('id', $this->divisi_id)->first();
-        $jurusan = department::where('id', $divisi->department_id)->first();
-        return $jurusan;
+        $divisi = divisi::where('id', $this->divisi_id)->with('department')->first();
+        return $divisi->department;
     }
     public function divisisubskill(){
         return $this->hasMany(DivisiSkillSubskill::class, "divisi_id", "divisi_id");
@@ -204,5 +203,17 @@ class User extends Authenticatable
             return response()->json(["error" => "data not created"], 400);
         }
 
+    }
+
+    public static function top3gold($role)
+    {
+        $user = User::role((string)$role)->where('average', '>=', 90)->orderBy('average', 'desc')->take(3)->with('profile')->get();
+        return response()->json($user);
+    }
+
+    public static function top3silver($role)
+    {
+        $user = User::role((string)$role)->where('average', '>=', 70)->where('average', '<', 90)->orderBy('average', 'desc')->take(3)->with('profile')->get();
+        return response()->json($user);
     }
 }

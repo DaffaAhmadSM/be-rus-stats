@@ -153,30 +153,31 @@ class MentorController extends Controller
     public function top3gold()
     {
 
-        $user = User::role('student')->where('average', '>=', 90)->orderBy('average', 'desc')->take(3)->with('profile')->get();
-        return response()->json($user);
+        $user = User::top3gold('student');
+        return response()->json($user->original, 200);
     }
 
     public function top3silver()
     {
 
-        $user = User::role('student')->where('average', '>=', 70)->where('average', '<', 90)->orderBy('average', 'desc')->take(3)->with('profile')->get();
-        return response()->json($user);
+        $user = User::top3silver('student');
+        return response()->json($user->original, 200);
+
     }
     public function top3goldguru(){
-        $user = User::role('guru')->where('average', '<', 90)->orderBy('average', 'desc')->take(3)->with('profile')->get();
-        return response()->json($user);
+        $user = User::top3gold('guru');
+        return response()->json($user->original, 200);
     }
     public function top3silverguru(){
-        $user = User::role('guru')->where('average', '>=', 70)->where('average', '<', 90)->orderBy('average', 'desc')->take(3)->with('profile')->get();
-        return response()->json($user);
+        $user = User::top3silver('guru');
+        return response()->json($user->original, 200);
     }
     public function top3goldpekerja(){
-        $user = User::role('pekerja')->where('average', '<', 90)->orderBy('average', 'desc')->take(3)->with('profile')->get();
-        return response()->json($user);
+        $user = User::top3gold('pekerja');
+        return response()->json($user->original, 200);
     }
     public function top3silverpekerja(){
-        $user = User::role('pekerja')->where('average', '>=', 70)->where('average', '<', 90)->orderBy('average', 'desc')->take(3)->with('profile')->get();
-        return response()->json($user);
+        $user = User::top3silver('pekerja');
+        return response()->json($user->original, 200);
     }
 }
