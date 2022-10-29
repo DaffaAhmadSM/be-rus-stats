@@ -118,7 +118,7 @@ class UserController extends Controller
             }
             if($request->speciality){
                 $user->speciality()->update([
-                    'speciality' => $request->speciality,
+                    'name' => $request->speciality,
                 ]);
             }
 
