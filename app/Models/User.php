@@ -123,7 +123,7 @@ class User extends Authenticatable
     {
         $speciality = Speciality::where("user_id", $this->id)->first();
 
-        return $speciality;
+        return $speciality->name;
     }
 
     public function getProfileAttribute()
