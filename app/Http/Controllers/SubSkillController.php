@@ -25,7 +25,7 @@ class SubSkillController extends Controller
             'skill_id' => $request->skill['id']
         ]);
 
-        return response()->json($subSkillC, 201);
+        return response()->json($subSkillC->load("skill"), 201);
     }
     public function subSkillUpdate(Request $request, $id)
     {
@@ -37,12 +37,12 @@ class SubSkillController extends Controller
         if ($validator->fails()) {
             return response()->json(["Error" => $validator->errors()->first()], 401);
         }
-        $data = SubSkill::where('id', $id);
+        $data = SubSkill::find($id);
         $data->update([
             'name' => $request->name,
             'skill_id' => $request->skill['id']
         ]);
-        return response()->json($data, 200);
+        return response()->json($data->load("skill"), 200);
     }
     public function subSkillReadAll()
     {

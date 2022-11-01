@@ -39,7 +39,7 @@ class SkillCategoryCrud extends Controller
             return response()->json(["Error" => $validator->errors()->first()], 400);
         }
         try{
-            $data = Skill::where('id', $id);
+            $data = Skill::find($id);
             $data->update([
                 'name' => $request->name,
                 'description' => $request->description ? $request->description : $data->first()->description
