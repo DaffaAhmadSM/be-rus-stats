@@ -24,6 +24,8 @@ class SubSkillController extends Controller
             'name' => $request->name,
             'skill_id' => $request->skill['id']
         ]);
+
+        return response()->json($subSkillC, 201);
     }
     public function subSkillUpdate(Request $request, $id)
     {
@@ -40,9 +42,7 @@ class SubSkillController extends Controller
             'name' => $request->name,
             'skill_id' => $request->skill['id']
         ]);
-        return response()->json([
-            'Message' => 'Data Berhasil Diupdate!'
-        ]);
+        return response()->json($data, 200);
     }
     public function subSkillReadAll()
     {

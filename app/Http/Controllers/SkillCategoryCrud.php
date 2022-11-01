@@ -22,9 +22,7 @@ class SkillCategoryCrud extends Controller
                 'name' => $request->name,
                 'description' => $request->description ? $request->description : ''
             ]);
-            return response()->json([
-                'Message' => 'Data Berhasil Ditambahkan!'
-            ], 201);}
+            return response()->json($skillCategoryC, 201);}
         catch(\Exception $e){
             return response()->json([
                 'Message' => 'Data Gagal Ditambahkan!'
@@ -46,9 +44,7 @@ class SkillCategoryCrud extends Controller
                 'name' => $request->name,
                 'description' => $request->description ? $request->description : $data->first()->description
             ]);
-            return response()->json([
-                'Message' => 'Data Berhasil Diupdate!'
-            ], 201);}
+            return response()->json($data, 200);}
         catch(\Exception $e){
             return response()->json([
                 'Message' => 'Data Gagal Diupdate!'
