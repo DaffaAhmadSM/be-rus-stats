@@ -88,7 +88,7 @@ class DivisiSkillSubskill extends Model
         //         "average" => $value->avg('nilai'),
         //         "averege_history" => $value->avg('nilai_history')
         //     ];
-        // }
+        // };
         for ($i=0; $i < count($nilai); $i++) { 
             $nilai[$i] = [
                 "name" => $nilai[$i][0]['name'],
@@ -102,7 +102,8 @@ class DivisiSkillSubskill extends Model
                 "id" => $nilai[$i]['skill_id'],
                 "name" => $nilai[$i]['name'],
                 "description" => $nilai[$i]['description'],
-                "data" => $skill_each[$i]
+                // short data base on subskill name
+                "data" => $skill_each[$i]->sortBy('name')->values()->all()
             ];
         }
         return response()->json([

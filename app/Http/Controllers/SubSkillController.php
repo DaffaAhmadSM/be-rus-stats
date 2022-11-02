@@ -76,7 +76,7 @@ class SubSkillController extends Controller
 
     public function subSkillBySkill(Request $request, $id)
     {
-        $data = SubSkill::where('skill_id', $id)->with('skill')->cursorPaginate(15);
+        $data = SubSkill::where('skill_id', $id)->with('skill')->orderBy('name')->cursorpaginate(15);
         return response()->json($data, 200);
     }
 }
