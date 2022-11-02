@@ -150,6 +150,22 @@ class MentorController extends Controller
         return response()->json(['Message' => 'Berhasil']);
     }
 
+    public function updateUserPassword(Request $request, $id)
+    {
+        $validator = Validator::make($request->all(), [
+            'password' => 'required|min:8',
+            'password_confirmation' => 'required|same:password'
+        ]);
+        if ($validator->fails()) {
+            return response()->json(["Error" => $validator->errors()->first()], 400);
+        }
+        $user = User::findOrFail($id);
+        $user->update([
+            'password' => Hash::make($request->password)
+        ]);
+        return response()->json(['Message_id' => 'Password Berhasil Diubah', 'Message_en' => 'Password Successfully Changed'], 200);
+    }
+
     public function top3gold()
     {
 

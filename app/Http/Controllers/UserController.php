@@ -178,4 +178,33 @@ class UserController extends Controller
             $res->getRoleNames()->first()
         );
     }
+
+    public function updatePassword(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            "old_password" => "required",
+            "new_password" => "required",
+            "confirm_password" => "required|same:new_password"
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(["Error" => $validator->errors()->first()], 400);
+        }
+
+        $user = User::findOrFail(Auth::user()->id);
+        if (Hash::check($request->old_password, $user->password)) {
+            $user->password = Hash::make($request->new_password);
+            $user->save();
+            return response()->json([
+                'message_id' => 'Password berhasil diubah',
+                'message_en' => 'Password successfully changed'
+            ], 200);
+        } else {
+            return response()->json([
+                'message_id' => 'Password lama tidak sesuai',
+                'message_en' => 'Old password is not correct'
+            ], 400);
+        }
+
+    }
 }

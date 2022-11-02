@@ -67,6 +67,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::post('users/{id}/updateaccount', [UserController::class, 'update']);
     Route::get('/users/{id}/getbyuserid', [UserController::class, 'show']);
     Route::get('/users/{id}/roles', [UserController::class, 'getRoleById']);
+    Route::post('users/update/password', [UserController::class, 'updatePassword']);
 
     Route::group(['middleware' => ['role:student|ceo|supervisor|pekerja|guru|management'], "prefix" => "/student"], function () {
         Route::get('user', [SiswaController::class, 'show']);
@@ -172,6 +173,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
             Route::get('/top3/gold', [MentorController::class, 'top3gold']);
             Route::get('/top3/silver', [MentorController::class, 'top3silver']);
             Route::post('/updateskills/{id}', [MentorController::class, 'updateSkill']);
+            Route::post('{id}/update/password', [MentorController::class, 'updateUserPassword']);
             Route::group(["prefix" => "/student"], function () {
                 Route::get('/', [MentorController::class, 'getStudents']);
                 Route::post('/create', [MentorController::class, 'studentCreate']);

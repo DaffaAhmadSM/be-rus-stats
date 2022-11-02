@@ -20,6 +20,9 @@ class ProjectController extends Controller
         ->join('users','users.id', 'projects.user_id')
         ->select('projects.*','users.nama as owner_name')
         ->first();
+        if(!$project) {
+            return response()->json(['message' => 'Project not found'], 404);
+        }
         return response()->json($project);
     }
 
