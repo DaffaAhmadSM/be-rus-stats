@@ -169,8 +169,17 @@ class ProjectController extends Controller
     public function projectDetail($code){
         $project = Project::where('code', $code)->with(['projectOwner','projectUser'=> function($q){
             $q->where('status', 'diterima')->with('user');
-        }]);
-        return response()->json($project->first());
+        }])->first();
+        $project_user = $project->projectUser->groupBy('user.division.nama');
+        foreach ($project_user as $key => $value) {
+            $project_user [$key] = [
+                'name' => $key,
+                'users' => $value
+            ];
+        }
+        $project_user = $project_user->values()->all();
+        $project->projectUser = $project_user;
+        return response()->json($project,200);
     }
 
     public function projectDelete($code){

@@ -106,12 +106,12 @@ class DivisiSkillSubskill extends Model
                 "data" => $skill_each[$i]->sortBy('name')->values()->all()
             ];
         }
-        return response()->json([
+        return[
             "user" => $user,
             "role" => $user->getRoleNames()->first(),
             "Overall" => round($user->average, 1),
             'user_detail' => $skill_each,
             "radar_chart" => $nilai,
-        ]);
+        ];
     }
 }

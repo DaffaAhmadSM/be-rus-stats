@@ -76,7 +76,45 @@ class SubSkillController extends Controller
 
     public function subSkillBySkill(Request $request, $id)
     {
-        $data = SubSkill::where('skill_id', $id)->with('skill')->orderBy('name')->cursorpaginate(15);
-        return response()->json($data, 200);
+        $data = SubSkill::where('skill_id', $id)->with('skill');
+        $alphabtical = [
+            'A' => [],
+            'B' => [],
+            'C' => [],
+            'D' => [],
+            'E' => [],
+            'F' => [],
+            'G' => [],
+            'H' => [],
+            'I' => [],
+            'J' => [],
+            'K' => [],
+            'L' => [],
+            'M' => [],
+            'N' => [],
+            'O' => [],
+            'P' => [],
+            'Q' => [],
+            'R' => [],
+            'S' => [],
+            'T' => [],
+            'U' => [],
+            'V' => [],
+            'W' => [],
+            'X' => [],
+            'Y' => [],
+            'Z' => [],
+        ];
+        foreach ($data->get() as $key => $value) {
+            $alphabtical[$value->name[0]][] = $value;
+        }
+        //count each alphabet array
+        foreach ($alphabtical as $key => $value) {
+            $alphabtical[$key] = [
+                'count' => count($value),
+                'data' => $value
+            ];
+        }
+        return response()->json($alphabtical, 200);
     }
 }
