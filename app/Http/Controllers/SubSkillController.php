@@ -76,7 +76,7 @@ class SubSkillController extends Controller
 
     public function subSkillBySkill(Request $request, $id)
     {
-        $data = SubSkill::where('skill_id', $id)->with('skill');
+        $data = SubSkill::where('skill_id', $id);
         $alphabtical = [
             'A' => [
                 'name' => 'A',
