@@ -39,10 +39,10 @@ class ProjectController extends Controller
         
             
             try {
-            $bytes = Str::random(10);
+            $bytes = Str::random(24);
             $check = Project::where('code', $bytes)->first();
                 while ($check) {
-                    $bytes = Str::random(10);
+                    $bytes = Str::random(24);
                     $check = Project::where('code', $bytes)->first();
                     if (!$check) {
                         break;
@@ -229,10 +229,10 @@ class ProjectController extends Controller
     public function studentHaveProject(){
         $user = Auth::user();
         $projectUser = ProjectUser::where('user_id', $user->id)->with(['project' => function($q){
-            $q->with('projectOwner');
-        }]);
+            $q->with('projectOwner')->withCount('projectUser');
+        }])->get();
             
-        return response()->json($projectUser->get(),200);
+        return response()->json($projectUser,200);
     }
     public function joinStudentProject($codeProject){
         try {
@@ -267,10 +267,9 @@ class ProjectController extends Controller
         }
     }
 
-    public function usersInProject($id)
+    public function usersInProject($codeProject)
     {
-        $project = projectUser::where('project_id', $id)->with('user')->get();
-        return response()->json($project,200);
-
+        $project = Project::where('code', $codeProject)->with('projectUser')->first();
+        return response()->json($project, 200);
     }
 }

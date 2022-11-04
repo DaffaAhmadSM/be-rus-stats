@@ -119,7 +119,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
                 Route::get('/leave/{uuid}/{codeProject}', [ProjectController::class, 'leaveUserProject']);
                 Route::get('/accept/{uuid}/{codeProject}', [ProjectController::class, 'terimaUserProject']);
                 Route::get('/reject/{uuid}/{codeProject}', [ProjectController::class, 'tolakUserProject']);
-                Route::get('/id/{id}/users', [ProjectController::class, 'usersInProject']);
+                Route::get('{codeProject}/users', [ProjectController::class, 'usersInProject']);
             });
 
             //* route portfolio
