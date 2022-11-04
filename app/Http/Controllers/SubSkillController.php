@@ -78,43 +78,118 @@ class SubSkillController extends Controller
     {
         $data = SubSkill::where('skill_id', $id)->with('skill');
         $alphabtical = [
-            'A' => [],
-            'B' => [],
-            'C' => [],
-            'D' => [],
-            'E' => [],
-            'F' => [],
-            'G' => [],
-            'H' => [],
-            'I' => [],
-            'J' => [],
-            'K' => [],
-            'L' => [],
-            'M' => [],
-            'N' => [],
-            'O' => [],
-            'P' => [],
-            'Q' => [],
-            'R' => [],
-            'S' => [],
-            'T' => [],
-            'U' => [],
-            'V' => [],
-            'W' => [],
-            'X' => [],
-            'Y' => [],
-            'Z' => [],
+            'A' => [
+                'name' => 'A',
+                'data' => []
+            ],
+            'B' => [
+                'name' => 'B',
+                'data' => []
+            ],
+            'C' => [
+                'name' => 'C',
+                'data' => []
+            ],
+            'D' => [
+                'name' => 'D',
+                'data' => []
+            ],
+            'E' => [
+                'name' => 'E',
+                'data' => []
+            ],
+            'F' => [
+                'name' => 'F',
+                'data' => []
+            ],
+            'G' => [
+                'name' => 'G',
+                'data' => []
+            ],
+            'H' => [
+                'name' => 'H',
+                'data' => []
+            ],
+            'I' => [
+                'name' => 'I',
+                'data' => []
+            ],
+            'J' => [
+                'name' => 'J',
+                'data' => []
+            ],
+            'K' => [
+                'name' => 'K',
+                'data' => []
+            ],
+            'L' => [
+                'name' => 'L',
+                'data' => []
+            ],
+            'M' => [
+                'name' => 'M',
+                'data' => []
+            ],
+            'N' => [
+                'name' => 'N',
+                'data' => []
+            ],
+            'O' => [
+                'name' => 'O',
+                'data' => []
+            ],
+            'P' => [
+                'name' => 'P',
+                'data' => []
+            ],
+            'Q' => [
+                'name' => 'Q',
+                'data' => []
+            ],
+            'R' => [
+                'name' => 'R',
+                'data' => []
+            ],
+            'S' => [
+                'name' => 'S',
+                'data' => []
+            ],
+            'T' => [
+                'name' => 'T',
+                'data' => []
+            ],
+            'U' => [
+                'name' => 'U',
+                'data' => []
+            ],
+            'V' => [
+                'name' => 'V',
+                'data' => []
+            ],
+            'W' => [
+                'name' => 'W',
+                'data' => []
+            ],
+            'X' => [
+                'name' => 'X',
+                'data' => []
+            ],
+            'Y' => [
+                'name' => 'Y',
+                'data' => []
+            ],
+            'Z' => [
+                'name' => 'Z',
+                'data' => []
+            ],
         ];
+       
         foreach ($data->get() as $key => $value) {
-            $alphabtical[$value->name[0]][] = $value;
+            $alphabtical[$value->name[0]]['data'][] = $value;
         }
-        //count each alphabet array
-        foreach ($alphabtical as $key => $value) {
-            $alphabtical[$key] = [
-                'count' => count($value),
-                'data' => $value
-            ];
-        }
-        return response()->json($alphabtical, 200);
+
+        $collection = collect($alphabtical);
+
+        return response()->json($collection->values()->all(), 200);
     }
 }
