@@ -229,16 +229,10 @@ class ProjectController extends Controller
     public function studentHaveProject(){
         $user = Auth::user();
         $projectUser = ProjectUser::where('user_id', $user->id)->with(['project' => function($q){
-            $q->with(['projectOwner','projectUser' => function($q){
-                $q
-                ->where('status', 'diterima')
-                ->with('user')
-                ;
-            }]);
+            $q->with('projectOwner');
         }]);
-        if($projectUser->get()){
-            return response()->json($projectUser->get(),200);
-        }
+            
+        return response()->json($projectUser->get(),200);
     }
     public function joinStudentProject($codeProject){
         try {
@@ -271,5 +265,12 @@ class ProjectController extends Controller
                 'Message' => $th,
             ],400);
         }
+    }
+
+    public function usersInProject($id)
+    {
+        $project = projectUser::where('project_id', $id)->with('user')->get();
+        return response()->json($project,200);
+
     }
 }
