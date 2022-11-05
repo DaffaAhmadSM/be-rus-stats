@@ -193,9 +193,9 @@ class SubSkillController extends Controller
         return response()->json($collection->values()->all(), 200);
     }
 
-    public function subSkillSearchAlphabetical($search)
+    public function subSkillSearchAlphabetical($id, $search)
     {
-        $data = SubSkill::where('name', 'like','%'. $search . '%')->get();
+        $data = SubSkill::where('skill_id', $id)->where('name', 'like','%'. $search . '%')->get();
         $alphabtical = [
             'A' => [
                 'name' => 'A',
