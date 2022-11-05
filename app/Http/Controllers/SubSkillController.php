@@ -192,4 +192,120 @@ class SubSkillController extends Controller
 
         return response()->json($collection->values()->all(), 200);
     }
+
+    public function subSkillSearchAlphabetical($search)
+    {
+        $data = SubSkill::where('name', 'like', $search . '%')->with('skill')->get();
+        $alphabtical = [
+            'A' => [
+                'name' => 'A',
+                'data' => []
+            ],
+            'B' => [
+                'name' => 'B',
+                'data' => []
+            ],
+            'C' => [
+                'name' => 'C',
+                'data' => []
+            ],
+            'D' => [
+                'name' => 'D',
+                'data' => []
+            ],
+            'E' => [
+                'name' => 'E',
+                'data' => []
+            ],
+            'F' => [
+                'name' => 'F',
+                'data' => []
+            ],
+            'G' => [
+                'name' => 'G',
+                'data' => []
+            ],
+            'H' => [
+                'name' => 'H',
+                'data' => []
+            ],
+            'I' => [
+                'name' => 'I',
+                'data' => []
+            ],
+            'J' => [
+                'name' => 'J',
+                'data' => []
+            ],
+            'K' => [
+                'name' => 'K',
+                'data' => []
+            ],
+            'L' => [
+                'name' => 'L',
+                'data' => []
+            ],
+            'M' => [
+                'name' => 'M',
+                'data' => []
+            ],
+            'N' => [
+                'name' => 'N',
+                'data' => []
+            ],
+            'O' => [
+                'name' => 'O',
+                'data' => []
+            ],
+            'P' => [
+                'name' => 'P',
+                'data' => []
+            ],
+            'Q' => [
+                'name' => 'Q',
+                'data' => []
+            ],
+            'R' => [
+                'name' => 'R',
+                'data' => []
+            ],
+            'S' => [
+                'name' => 'S',
+                'data' => []
+            ],
+            'T' => [
+                'name' => 'T',
+                'data' => []
+            ],
+            'U' => [
+                'name' => 'U',
+                'data' => []
+            ],
+            'V' => [
+                'name' => 'V',
+                'data' => []
+            ],
+            'W' => [
+                'name' => 'W',
+                'data' => []
+            ],
+            'X' => [
+                'name' => 'X',
+                'data' => []
+            ],
+            'Y' => [
+                'name' => 'Y',
+                'data' => []
+            ],
+            'Z' => [
+                'name' => 'Z',
+                'data' => []
+            ],
+        ];
+        foreach ($data->get() as $key => $value) {
+            $alphabtical[$value->name[0]]['data'][] = $value;
+        }
+        $collection = collect($alphabtical);
+        return response()->json($collection->values()->all(), 200);
+    }
 }

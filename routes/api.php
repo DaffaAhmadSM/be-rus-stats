@@ -150,6 +150,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
                 Route::get('show/{id}', [SubSkillController::class, 'subSkillReadById']);
                 Route::get('/delete/{id}', [SubSkillController::class, 'subSkillDelete']);
                 Route::post('/update/{id}', [SubSkillController::class, 'subSkillUpdate']);
+                Route::get('search/{search}/alphabetical', [SubSkillController::class, 'subSkillSearchAlphabetical']);
                 Route::get('/divisi/{divisi}/skill/{skill}', [SubSkillController::class, 'subSkillByDivisiandskill']);
             });
 
