@@ -195,7 +195,7 @@ class SubSkillController extends Controller
 
     public function subSkillSearchAlphabetical($search)
     {
-        $data = SubSkill::where('name', 'like', $search . '%')->with('skill')->get();
+        $data = SubSkill::where('name', 'like','%'. $search . '%')->get();
         $alphabtical = [
             'A' => [
                 'name' => 'A',
@@ -302,7 +302,7 @@ class SubSkillController extends Controller
                 'data' => []
             ],
         ];
-        foreach ($data->get() as $key => $value) {
+        foreach ($data as $key => $value) {
             $alphabtical[$value->name[0]]['data'][] = $value;
         }
         $collection = collect($alphabtical);
