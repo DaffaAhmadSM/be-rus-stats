@@ -15,7 +15,7 @@ class ProjectController extends Controller
 {
     public function findProject($code) {
         $project = Project::where('code', $code)->with(['projectUser'=> function($q){
-            $q->with('user');
+            $q->where('status', 'diterima')->with('user');
         }])
         ->join('users','users.id', 'projects.user_id')
         ->select('projects.*','users.nama as owner_name')
