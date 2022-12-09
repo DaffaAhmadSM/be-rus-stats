@@ -3,7 +3,8 @@
 use App\Models\Profile;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-
+use App\Imports\UsersImport;
+use Maatwebsite\Excel\Facades\Excel;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -16,8 +17,9 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-    return response()->json([
-        'error' => '401',
-        'message' => 'authentification failed'
-    ], 401);
+    // return response()->json([
+    //     'error' => '401',
+    //     'message' => 'authentification failed'
+    // ], 401);
+    Excel::import(new UsersImport, public_path('subskill.xlsx'));
 })->name("login");

@@ -17,6 +17,7 @@ use App\Http\Controllers\SiswaController;
 use App\Http\Controllers\DivisiController;
 use App\Http\Controllers\MentorController;
 use App\Http\Controllers\CountryController;
+use App\Http\Controllers\CVController;
 use App\Http\Controllers\PekerjaController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\SkillCategoryCrud;
@@ -86,6 +87,11 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
             Route::get('/detail/{code}',[ProjectController::class, 'projectDetail']);
             Route::get('/join/{codeProject}', [ProjectController::class, 'joinStudentProject']);
             Route::get('/find/{codeProject}', [ProjectController::class, 'findProject']);
+        });
+        Route::group(["prefix" => "/cv"], function(){
+            Route::get('/',[CVController::class, 'cvUserAll']);
+            Route::get('/create',[CVController::class, 'cvCreate']);
+            Route::get('/{id}',[CVController::class, 'cvUserId']);
         });
     });
     Route::group(['middleware' => ['role:ceo|supervisor|pekerja|guru|management'], "prefix" => "/mentor"], function () {
@@ -167,8 +173,8 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
                 Route::get('{id}/delete', [SpecialityCrudController::class, 'destroy']);
                 Route::get('user/{id}   ', [SpecialityCrudController::class, 'show']);
             });
-            
-            
+
+
         });
         Route::group(["prefix" => "/user"], function () {
             Route::get('/', [MentorController::class, 'getUser']);
@@ -206,7 +212,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
                 Route::post('/create', [SupervisorController::class, 'Create']);
             });
 
-            Route::group(["prefix" => "/management"], function () { 
+            Route::group(["prefix" => "/management"], function () {
                 Route::get('/search/{search}', [ManagementController::class, 'search']);
                 Route::get('/', [ManagementController::class, 'index']);
                 Route::get('/top3/gold', [ManagementController::class, 'top3gold']);

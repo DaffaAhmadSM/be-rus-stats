@@ -36,8 +36,8 @@ class ProjectController extends Controller
         if ($validator->fails()) {
             return response()->json(["Error" => $validator->errors()->first()], 400);
         }
-        
-            
+
+
             try {
             $bytes = Str::random(24);
             $check = Project::where('code', $bytes)->first();
@@ -53,14 +53,14 @@ class ProjectController extends Controller
                     'description' => $request->description,
                     'code' => strtoupper($bytes),
                     'user_id' => $request->user_id
-    
+
                 ]);
                 return response()->json($project,200);
             } catch (\Exception $e) {
                 return response()->json(["Error" => $e->getMessage()], 400);
             }
             // var_dump();
-            
+
     }
 
     public function searchProject(Request $request){
@@ -77,15 +77,22 @@ class ProjectController extends Controller
             'Project' => $project->get()
         ],400);
     }
-    public function inviteUserProject($uuid, $codeProject){
+    public function inviteUserProject($uuid, $codeProject, Request $request){
         try {
+            $validator = Validator::make($request->all(), [
+                'tanggal_gabung' => 'required'
+            ]);
+            if ($validator->fails()) {
+                return response()->json(["Error" => $validator->errors()->first()], 400);
+            }
             $user = User::where('uuid', $uuid)->first();
             $project = Project::where('code', $codeProject)->first();
             if($user && $project) {
                 ProjectUser::create([
                     'user_id' => $user->id,
                     'project_id' => $project->id,
-                    'status' => 'diterima'
+                    'status' => 'diterima',
+                    'tanggal_gabung' => $request->tanggal_keluar
                 ]);
                 return response()->json([
                     'message' => 'siswa telah diundang'
@@ -101,13 +108,22 @@ class ProjectController extends Controller
         }
     }
 
-    public function leaveUserProject($uuid, $codeProject){
+    public function leaveUserProject($uuid, $codeProject, Request $request){
         try {
+            $validator = Validator::make($request->all(), [
+                'tanggal_keluar' => 'required',
+                'status' => 'keluar'
+            ]);
+            if ($validator->fails()) {
+                return response()->json(["Error" => $validator->errors()->first()], 400);
+            }
             $user = User::where('uuid', $uuid)->first();
             $project = Project::where('code', $codeProject)->first();
             $data = ProjectUser::where('user_id', $user->id)->where('project_id', $project->id);
             if($data->get()){
-                $data->delete();
+                $data->update([
+                    'tanggal_keluar' => $request->tanggal_keluar
+                ]);
                 return response()->json([
                     'message' => 'siswa telah dikeluarkan dari project'
                 ],200);
@@ -231,11 +247,17 @@ class ProjectController extends Controller
         $projectUser = ProjectUser::where('user_id', $user->id)->with(['project' => function($q){
             $q->with('projectOwner')->withCount('projectUser');
         }])->get();
-            
+
         return response()->json($projectUser,200);
     }
-    public function joinStudentProject($codeProject){
+    public function joinStudentProject($codeProject, Request $request){
         try {
+            $validator = Validator::make($request->all(), [
+                'tanggal_gabung' => 'required'
+            ]);
+            if ($validator->fails()) {
+                return response()->json(["Error" => $validator->errors()->first()], 400);
+            }
             $user = Auth::user();
             $project = Project::where('code', $codeProject)->first();
             $checkUser = ProjectUser::where('user_id', $user->id)->where('project_id', $project->id);
@@ -253,7 +275,7 @@ class ProjectController extends Controller
                 ProjectUser::create([
                     'user_id' => $user->id,
                     'project_id' => $project->id,
-                    'status' => 'pending'
+                    'status' => 'pending',
                 ]);
                 return response()->json([
                     'message' => 'siswa telah diundang'
