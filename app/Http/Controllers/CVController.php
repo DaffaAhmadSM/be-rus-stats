@@ -9,6 +9,7 @@ use App\Models\Education;
 use App\Models\LanguageUser;
 use App\Models\ProjectUser;
 use App\Models\SoftwareUser;
+use App\Models\UserSkill;
 use Illuminate\Http\Request;
 
 class CVController extends Controller
@@ -21,7 +22,9 @@ class CVController extends Controller
         $languageModel = LanguageUser::where('user_id', $id)->with('language')->get();
         $softwareModel = SoftwareUser::where('user_id', $id)->with('software')->get();
         $educationUser = Education::where('user_id', $id)->get();
-        $projectUser = ProjectUser::where('user_id', $id)->get();
+        $projectUser = ProjectUser::where('user_id', $id)->where('status', 'diterima')->with('project')->get();
+        $user_skills = UserSkill::where('user_id', $id)->where('nilai', '>=' , 90)->with('subSkill')->get();
+        // dd($user_skills); 
         $softwareUser = [];
         $languageUser = [];
         foreach($softwareModel as $s){
@@ -40,6 +43,13 @@ class CVController extends Controller
             }
         }
 
+        //merge duplicate user skill subskill.name
+        $user_skills = $user_skills->groupBy('subSkill.name');
+        $user_skills = $user_skills->map(function($item){
+            return $item->first();
+        });
+        $user_skills = $user_skills->values()->all();
+
 
         return response()->json([
             'user' => $user,
@@ -47,6 +57,7 @@ class CVController extends Controller
             'language' => $languageUser,
             'software' => $softwareUser,
             'project' => $projectUser,
+            'skill' => $user_skills,
         ],200);
     }
 }
