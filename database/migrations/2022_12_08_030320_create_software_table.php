@@ -16,6 +16,7 @@ class CreateSoftwareTable extends Migration
         Schema::create('software', function (Blueprint $table) {
             $table->id();
             $table->string('name');
+            $table->string('image');
             $table->timestamps();
         });
     }

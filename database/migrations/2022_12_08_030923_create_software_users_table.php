@@ -15,8 +15,6 @@ class CreateSoftwareUsersTable extends Migration
     {
         Schema::create('software_users', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
-            $table->foreignId('software_id')->constrained('software')->onDelete('cascade');
             $table->timestamps();
         });
     }
