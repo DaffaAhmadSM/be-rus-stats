@@ -20,6 +20,11 @@ class SubSkillController extends Controller
         if ($validator->fails()) {
             return response()->json(["Error" => $validator->errors()->first()], 401);
         }
+
+        $subskill = SubSkill::where('name', $request->name)->where('skill_id', $request->skill['id'])->first();
+        if ($subskill) {
+            return response()->json(["Error" => "SubSkill Sudah Ada!"], 401);
+        }
         $subSkillC = SubSkill::create([
             'name' => $request->name,
             'skill_id' => $request->skill['id']
@@ -46,7 +51,7 @@ class SubSkillController extends Controller
     }
     public function subSkillReadAll()
     {
-        $data = SubSkill::with('skill')->paginate(15);
+        $data = SubSkill::with('skill')->cursorPaginate(15);
         return response()->json($data);
     }
     public function subSkillReadById(Request $request, $id)
