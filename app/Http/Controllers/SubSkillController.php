@@ -23,7 +23,7 @@ class SubSkillController extends Controller
 
         $subskill = SubSkill::where('name', $request->name)->where('skill_id', $request->skill['id'])->first();
         if ($subskill) {
-            return response()->json(["Error" => "SubSkill Sudah Ada!"], 401);
+            return response()->json(["Error" => "SubSkill Sudah Ada!"], 400);
         }
         $subSkillC = SubSkill::create([
             'name' => $request->name,
