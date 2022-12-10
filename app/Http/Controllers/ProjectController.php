@@ -81,7 +81,15 @@ class ProjectController extends Controller
     public function inviteUserProject($uuid, $codeProject, Request $request){
         try {
             $user = User::where('uuid', $uuid)->first();
+            // return $user;
             $project = Project::where('code', $codeProject)->first();
+            $userCheckProject = ProjectUser::where('user_id', $user->id);
+            // dd($userCheckProject->first());
+            if($userCheckProject->first()){
+                return response()->json([
+                    'message' => 'data siswa di dalam project sudah ada!'
+                ],200);
+            }
             if($user && $project) {
                 ProjectUser::create([
                     'user_id' => $user->id,
