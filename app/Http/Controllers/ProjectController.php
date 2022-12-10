@@ -118,7 +118,7 @@ class ProjectController extends Controller
             if($data->get()){
                 $data->update([
                     'tanggal_keluar' => Carbon::now(),
-                    'status' => 'keluar'
+                    // 'status' => 'keluar'
                 ]);
                 return response()->json([
                     'message' => 'siswa telah dikeluarkan dari project'
@@ -138,7 +138,8 @@ class ProjectController extends Controller
             $data = ProjectUser::where('user_id', $user->id)->where('project_id', $project->id);
             if($data->get()){
                 $data->update([
-                    'status' => 'diterima'
+                    'status' => 'diterima',
+                    'tanggal_gabung' => Carbon::now()
                 ]);
                 return response()->json([
                     'message' => 'siswa telah ditambahkan ke project'
