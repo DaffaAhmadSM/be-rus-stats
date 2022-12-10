@@ -7,6 +7,7 @@ use App\Models\Project;
 use App\Models\Language;
 use App\Models\Education;
 use App\Models\LanguageUser;
+use App\Models\ProjectUser;
 use App\Models\SoftwareUser;
 use Illuminate\Http\Request;
 
@@ -20,7 +21,7 @@ class CVController extends Controller
         $languageModel = LanguageUser::where('user_id', $id)->with('language')->get();
         $softwareModel = SoftwareUser::where('user_id', $id)->with('software')->get();
         $educationUser = Education::where('user_id', $id)->get();
-        $projectUser = Project::where('user_id', $id)->get();
+        $projectUser = ProjectUser::where('user_id', $id)->get();
         $softwareUser = [];
         $languageUser = [];
         foreach($softwareModel as $s){
