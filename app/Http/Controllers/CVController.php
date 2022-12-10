@@ -33,8 +33,10 @@ class CVController extends Controller
         foreach($softwareUser as $s){
             if($s->image == null){
                 $s->image = asset('storage/software_images/default.png');
+            }else{
+
+                $s->image = asset('storage/software_images/'.$s->image);
             }
-            $s->image = asset('storage/software_images'.$s->image);
         }
 
 
