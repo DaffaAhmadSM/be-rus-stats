@@ -2,13 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use App\Models\Project;
 use App\Models\ProjectUser;
-use App\Models\User;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Str;
 
 
 class ProjectController extends Controller
@@ -79,12 +80,6 @@ class ProjectController extends Controller
     }
     public function inviteUserProject($uuid, $codeProject, Request $request){
         try {
-            $validator = Validator::make($request->all(), [
-                'tanggal_gabung' => 'required'
-            ]);
-            if ($validator->fails()) {
-                return response()->json(["Error" => $validator->errors()->first()], 400);
-            }
             $user = User::where('uuid', $uuid)->first();
             $project = Project::where('code', $codeProject)->first();
             if($user && $project) {
@@ -92,7 +87,7 @@ class ProjectController extends Controller
                     'user_id' => $user->id,
                     'project_id' => $project->id,
                     'status' => 'diterima',
-                    'tanggal_gabung' => $request->tanggal_keluar
+                    'tanggal_gabung' => Carbon::now()
                 ]);
                 return response()->json([
                     'message' => 'siswa telah diundang'
