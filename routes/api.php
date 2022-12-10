@@ -29,6 +29,8 @@ use App\Http\Controllers\ManagementController;
 use App\Http\Controllers\PortofolioController;
 use App\Http\Controllers\SupervisorController;
 use App\Http\Controllers\DepartmentCrudController;
+use App\Http\Controllers\LanguageController;
+use App\Http\Controllers\SoftwareController;
 use App\Http\Controllers\SpecialityCrudController;
 
 /*
@@ -93,6 +95,12 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
             Route::get('/create',[CVController::class, 'cvCreate']);
             Route::get('/{id}',[CVController::class, 'cvUserId']);
         });
+        Route::group(["prefix" => "/software"], function(){
+            Route::post('/{idSoftware}', [SoftwareController::class, 'softwareUserCreate']);
+        });
+        Route::group(["prefix" => "/language"], function(){
+            Route::post('/{idLanguage}', [LanguageController::class, 'languageUserCreate']);
+        });
     });
     Route::group(['middleware' => ['role:ceo|supervisor|pekerja|guru|management'], "prefix" => "/mentor"], function () {
         Route::group(["prefix" => "/data"], function(){
@@ -102,6 +110,20 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
                 Route::post('/create', [DepartmentController::class, 'departmentCreate']);
                 Route::post('/update/{id}', [DepartmentController::class, 'departmentUpdate']);
                 Route::get('/delete/{id}', [DepartmentController::class, 'deleteDepartment']);
+            });
+            Route::group(["prefix" => "/software"], function(){
+                Route::get('/', [SoftwareController::class, 'softwareAll']);
+                Route::get('/detail/{id}', [SoftwareController::class, 'softwareOne']);
+                Route::post('/create', [SoftwareController::class, 'softwareCreate']);
+                // Route::post('/update/{id}', [SoftwareController::class, 'departmentUpdate']);
+                // Route::get('/delete/{id}', [SoftwareController::class, 'deleteDepartment']);
+            });
+            Route::group(["prefix" => "/language"], function(){
+                Route::get('/', [LanguageController::class, 'languageAll']);
+                Route::get('/detail/{id}', [LanguageController::class, 'languageOne']);
+                Route::post('/create', [LanguageController::class, 'languageCreate']);
+                // Route::post('/update/{id}', [SoftwareController::class, 'departmentUpdate']);
+                // Route::get('/delete/{id}', [SoftwareController::class, 'deleteDepartment']);
             });
             Route::group(["prefix" => "/divisi"], function(){
                 Route::get('/department/{id}', [DivisiController::class, 'divisiByDepartment']);

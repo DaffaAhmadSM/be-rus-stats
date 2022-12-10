@@ -103,21 +103,22 @@ class ProjectController extends Controller
         }
     }
 
-    public function leaveUserProject($uuid, $codeProject, Request $request){
+    public function leaveUserProject($uuid, $codeProject){
         try {
-            $validator = Validator::make($request->all(), [
-                'tanggal_keluar' => 'required',
-                'status' => 'keluar'
-            ]);
-            if ($validator->fails()) {
-                return response()->json(["Error" => $validator->errors()->first()], 400);
-            }
+            // $validator = Validator::make($request->all(), [
+            //     'tanggal_keluar' => 'required',
+            //     'status' => 'keluar'
+            // ]);
+            // if ($validator->fails()) {
+            //     return response()->json(["Error" => $validator->errors()->first()], 400);
+            // }
             $user = User::where('uuid', $uuid)->first();
             $project = Project::where('code', $codeProject)->first();
             $data = ProjectUser::where('user_id', $user->id)->where('project_id', $project->id);
             if($data->get()){
                 $data->update([
-                    'tanggal_keluar' => $request->tanggal_keluar
+                    'tanggal_keluar' => Carbon::now(),
+                    'status' => 'keluar'
                 ]);
                 return response()->json([
                     'message' => 'siswa telah dikeluarkan dari project'
