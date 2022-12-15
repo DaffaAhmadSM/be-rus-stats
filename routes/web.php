@@ -17,9 +17,8 @@ use Maatwebsite\Excel\Facades\Excel;
 */
 
 Route::get('/', function () {
-    // return response()->json([
-    //     'error' => '401',
-    //     'message' => 'authentification failed'
-    // ], 401);
-    Excel::import(new UsersImport, public_path('subskill.xlsx'));
+    return response()->json([
+        'error' => '401',
+        'message' => 'authentification failed'
+    ], 401);
 })->name("login");

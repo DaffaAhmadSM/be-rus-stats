@@ -51,10 +51,10 @@ class UsersImport implements ToModel, WithHeadingRow
         //     "bio" => "Perkenalkan Namaku ".$row['nickname'],
         //     'gambar' => ''
         // ]);
-        SubSkill::create([
-            'name' => $row['name'],
-            'skill_id' => $row['id_skill']
-        ]);
+        // SubSkill::create([
+        //     'name' => $row['name'],
+        //     'skill_id' => $row['id_skill']
+        // ]);
         // DivisiSkillSubskill::create([
         //     'skill_id' => $row['skill'],
         //     'sub_skill_id' => $row['desc'],
