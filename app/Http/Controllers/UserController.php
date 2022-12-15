@@ -118,6 +118,11 @@ class UserController extends Controller
                     'kota_id' => $request->profile['kota_id'],
                 ]);
             }
+            if($request->profile['bio']){
+                $user->profile()->update([
+                    'bio' => $request->profile['bio'],
+                ]);
+            }
             if($request->speciality){
 
                 $user_speciality = Speciality::where('user_id', $user->id);
@@ -152,7 +157,7 @@ class UserController extends Controller
 
                 }
             }
-            
+
             return response()->json($user->load(['profile.province', 'profile.city', 'divisi']));
         }
     }
