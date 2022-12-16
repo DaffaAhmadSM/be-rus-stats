@@ -18,7 +18,7 @@ class SoftwareController extends Controller
         if ($validator->fails()) {
             return response()->json(["Error" => $validator->errors()->first()], 400);
         }
-        software::create([
+        Software::create([
             'name' => $request->name,
             'image' => $request->image
         ]);
@@ -43,7 +43,7 @@ class SoftwareController extends Controller
         return response()->json($softwareUser, 200);
     }
     public function softwareOne($id){
-        $data = software::where('id', $id)->first();
+        $data = Software::where('id', $id)->first();
         if($data){
             return response()->json($data, 200);
         }
@@ -52,7 +52,7 @@ class SoftwareController extends Controller
         ], 400);
     }
     public function softwareUpdate(Request $request,$id){
-        $data = software::where('id', $id)->first();
+        $data = Software::where('id', $id)->first();
         if($data){
             return response()->json($data, 200);
         }
@@ -62,13 +62,13 @@ class SoftwareController extends Controller
     }
     public function softwareUserCreate(Request $request, $idSoftware){
         $user = Auth::user();
-        $data = software::where('id', $idSoftware)->first();
+        $data = Software::where('id', $idSoftware)->first();
         if(!$data){
             return response()->json([
                 'message' => 'data software not found!'
             ], 400);
         }
-        $userSoftware = software::create([
+        $userSoftware = Software::create([
             'user_id' => $user->id,
             'software_id' => $data->id
         ]);
