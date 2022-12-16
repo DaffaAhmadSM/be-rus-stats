@@ -27,7 +27,7 @@ class SoftwareController extends Controller
         ],200);
     }
     public function softwareAll(){
-        $data = software::all();
+        $data = Software::all();
         $softwareUser = [];
         foreach($data as $s){
             $softwareUser []= $s;

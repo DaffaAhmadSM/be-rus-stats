@@ -53,7 +53,7 @@ class CVController extends Controller
 
         return response()->json([
             'user' => $user,
-            'education' => $educationUser,  
+            'education' => $educationUser->sortBy('out'),  
             'language' => $languageUser,
             'software' => $softwareUser,
             'project' => $projectUser,
