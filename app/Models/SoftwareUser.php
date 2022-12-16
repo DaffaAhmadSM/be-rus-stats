@@ -10,6 +10,7 @@ class SoftwareUser extends Model
 {
     use HasFactory;
     protected $guarded = ['id'];
+    protected $hidden = ['created_at','updated_at'];
     public function software(){
         return $this->hasOne(Software::class, 'id', 'software_id');
     }

@@ -29,9 +29,11 @@ use App\Http\Controllers\ManagementController;
 use App\Http\Controllers\PortofolioController;
 use App\Http\Controllers\SupervisorController;
 use App\Http\Controllers\DepartmentCrudController;
+use App\Http\Controllers\EducationController;
 use App\Http\Controllers\LanguageController;
 use App\Http\Controllers\SoftwareController;
 use App\Http\Controllers\SpecialityCrudController;
+use App\Models\Education;
 
 /*
 |--------------------------------------------------------------------------
@@ -71,7 +73,8 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::get('/users/{id}/getbyuserid', [UserController::class, 'show']);
     Route::get('/users/{id}/roles', [UserController::class, 'getRoleById']);
     Route::post('users/update/password', [UserController::class, 'updatePassword']);
-
+    Route::get('/language/all', [LanguageController::class, 'languageAll']);
+    Route::get('/software/all', [SoftwareController::class, 'softwareAll']);
     Route::group(['middleware' => ['role:student|ceo|supervisor|pekerja|guru|management'], "prefix" => "/student"], function () {
         Route::get('user', [SiswaController::class, 'show']);
         Route::post('user/create', [SiswaController::class, 'store']);
@@ -96,10 +99,19 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
             Route::get('/{id}',[CVController::class, 'cvUserId']);
         });
         Route::group(["prefix" => "/software"], function(){
-            Route::post('/{idSoftware}', [SoftwareController::class, 'softwareUserCreate']);
+            Route::post('/create/{idLanguage}', [SoftwareController::class, 'softwareUserCreate']);
+            Route::get('/user', [SoftwareController::class, 'softwareHaveUser']);
+            Route::post('/update', [SoftwareController::class, 'softwareUserUpdate']);
         });
         Route::group(["prefix" => "/language"], function(){
-            Route::post('/{idLanguage}', [LanguageController::class, 'languageUserCreate']);
+            Route::post('/create/{idLanguage}', [LanguageController::class, 'languageUserCreate']);
+            Route::get('/user', [LanguageController::class, 'languageHaveUser']);
+            Route::post('/update', [LanguageController::class, 'languageUserUpdate']);
+        });
+        Route::group(["prefix" => "/education"], function(){
+            Route::post('/create', [EducationController::class, 'educationCreate']);
+            Route::post('/update', [EducationController::class, 'educationUpdate']);
+            Route::get('/user', [EducationController::class, 'educationUser']);
         });
     });
     Route::group(['middleware' => ['role:ceo|supervisor|pekerja|guru|management'], "prefix" => "/mentor"], function () {
@@ -112,14 +124,12 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
                 Route::get('/delete/{id}', [DepartmentController::class, 'deleteDepartment']);
             });
             Route::group(["prefix" => "/software"], function(){
-                Route::get('/', [SoftwareController::class, 'softwareAll']);
                 Route::get('/detail/{id}', [SoftwareController::class, 'softwareOne']);
                 Route::post('/create', [SoftwareController::class, 'softwareCreate']);
                 // Route::post('/update/{id}', [SoftwareController::class, 'departmentUpdate']);
                 // Route::get('/delete/{id}', [SoftwareController::class, 'deleteDepartment']);
             });
             Route::group(["prefix" => "/language"], function(){
-                Route::get('/', [LanguageController::class, 'languageAll']);
                 Route::get('/detail/{id}', [LanguageController::class, 'languageOne']);
                 Route::post('/create', [LanguageController::class, 'languageCreate']);
                 // Route::post('/update/{id}', [SoftwareController::class, 'departmentUpdate']);

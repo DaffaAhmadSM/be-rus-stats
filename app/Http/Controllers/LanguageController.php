@@ -37,6 +37,24 @@ class LanguageController extends Controller
             'message' => 'data not found!'
         ], 400);
     }
+    public function languageUpdate(Request $request, $id){
+        $validator = Validator::make($request->all(),[
+            'name' => 'required'
+        ]);
+        if ($validator->fails()) {
+            return response()->json(["Error" => $validator->errors()->first()], 400);
+        }
+        $data = Language::where('id', $id)->first();
+        if($data){
+            $data->update([
+                'name' => $request->name
+            ]);
+            return response()->json(["message"=> "data updated!"], 200);
+        }
+        return response()->json([
+            'message' => 'data not found!'
+        ], 400);
+    }
     public function languageUserCreate(Request $request, $idLanguage){
         $user = Auth::user();
         $data = Language::where('id', $idLanguage)->first();
@@ -54,4 +72,31 @@ class LanguageController extends Controller
             'data' => $userLanguage
         ], 200);
     }
+    public function languageUserUpdate(Request $request){
+        $validator = Validator::make($request->all(),[
+            'language' => 'required'
+        ]);
+        if ($validator->fails()) {
+            return response()->json(["Error" => $validator->errors()->first()], 400);
+        }
+        $data = LanguageUser::where('user_id', Auth::user()->id);
+        $data->delete();
+        foreach($request->language as $r){
+            $da = LanguageUser::create([
+                'user_id' =>  Auth::user()->id,
+                'language_id' => $r['language_id']
+            ]);
+        }
+        $datanew = LanguageUser::where('user_id', Auth::user()->id)->with('language');
+        return response()->json([
+            'Message => Data User Language Updated!',
+            'data' => $datanew->get()
+        ], 200);
+    }
+    public function languageHaveUser(){
+        $user = Auth::user();
+        $data =  LanguageUser::where('user_id', $user->id)->with('language')->get();
+        return response()->json($data, 200);
+    }
+
 }
