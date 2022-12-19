@@ -96,6 +96,6 @@ class EducationController extends Controller
     }
     public function educationUser(){
         $dataUser = Education::where('user_id', Auth::user()->id)->get();
-        return response()->json($dataUser, 200);
+        return response()->json($dataUser->sortBy('in')->values()->all(), 200);
     }
 }

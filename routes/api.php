@@ -1,17 +1,9 @@
 <?php
-use App\Imports\UsersImport;
-use Illuminate\Http\Request;
-use Illuminate\Auth\Events\Login;
-use Spatie\Permission\Models\Role;
-use App\Http\Controllers\SkillCrud;
-use Illuminate\Support\Facades\Hash;
-use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CityController;
 use App\Http\Controllers\GuruController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UserController;
-use App\Http\Controllers\ExcelController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\SiswaController;
 use App\Http\Controllers\DivisiController;
@@ -28,12 +20,10 @@ use App\Http\Controllers\DivisiCrudController;
 use App\Http\Controllers\ManagementController;
 use App\Http\Controllers\PortofolioController;
 use App\Http\Controllers\SupervisorController;
-use App\Http\Controllers\DepartmentCrudController;
 use App\Http\Controllers\EducationController;
 use App\Http\Controllers\LanguageController;
 use App\Http\Controllers\SoftwareController;
 use App\Http\Controllers\SpecialityCrudController;
-use App\Models\Education;
 
 /*
 |--------------------------------------------------------------------------
