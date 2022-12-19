@@ -247,7 +247,7 @@ class ProjectController extends Controller
         $project_user = ProjectUser::where('project_id', $project->id)->where('status', 'pending')->with('user');
         return response()->json($project_user->get());
     }
-    public function studentHaveProject(){
+    public function studentProject(){
         $user = Auth::user();
         $projectUser = ProjectUser::where('user_id', $user->id)->with(['project' => function($q){
             $q->with('projectOwner')->withCount('projectUser');

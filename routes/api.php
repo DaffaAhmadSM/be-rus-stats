@@ -78,7 +78,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
             Route::get('/delete/{id}', [PortofolioController::class, 'deletePortofolio']);
         });
         Route::group(["prefix" => "/project"], function(){
-            Route::get('/',[ProjectController::class, 'studentHaveProject']);
+            Route::get('/',[ProjectController::class, 'studentProject']);
             Route::get('/detail/{code}',[ProjectController::class, 'projectDetail']);
             Route::get('/join/{codeProject}', [ProjectController::class, 'joinStudentProject']);
             Route::get('/find/{codeProject}', [ProjectController::class, 'findProject']);
@@ -89,8 +89,8 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
             Route::get('/{id}',[CVController::class, 'cvUserId']);
         });
         Route::group(["prefix" => "/software"], function(){
-            Route::post('/create/{idLanguage}', [SoftwareController::class, 'softwareUserCreate']);
-            Route::get('/user', [SoftwareController::class, 'softwareHaveUser']);
+            Route::post('/create/{idSoftware}', [SoftwareController::class, 'softwareUserCreate']);
+            Route::get('/user', [SoftwareController::class, 'softwareUser']);
             Route::post('/update', [SoftwareController::class, 'softwareUserUpdate']);
         });
         Route::group(["prefix" => "/language"], function(){

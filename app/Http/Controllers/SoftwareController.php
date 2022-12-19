@@ -77,7 +77,7 @@ class SoftwareController extends Controller
             'data' => $userSoftware
         ], 200);
     }
-    public function softwareHaveUser(){
+    public function softwareUser(){
         $user = Auth::user();
         $data =  SoftwareUser::where('user_id', $user->id)->with('software')->get();
         $softwareUser = [];
