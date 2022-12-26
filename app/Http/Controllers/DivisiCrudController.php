@@ -35,7 +35,7 @@ class DivisiCrudController extends Controller
     }
     public function searchSubSkill($search)
     {
-        $res = SubSkill::where('name', 'like', '%' . $search . '%')->paginate(10);
+        $res = SubSkill::where('name', 'like', '%' . $search . '%')->with('skill')->cursorPaginate(10);
         return response()->json($res, 200);
     }
 

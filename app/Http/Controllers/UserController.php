@@ -11,6 +11,7 @@ use App\Models\Speciality;
 use Illuminate\Http\Request;
 use App\Models\DivisiSkillSubskill;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 
@@ -117,6 +118,11 @@ class UserController extends Controller
                     'kota_id' => $request->profile['kota_id'],
                 ]);
             }
+            if($request->profile['bio']){
+                $user->profile()->update([
+                    'bio' => $request->profile['bio'],
+                ]);
+            }
             if($request->speciality){
 
                 $user_speciality = Speciality::where('user_id', $user->id);
@@ -151,7 +157,7 @@ class UserController extends Controller
 
                 }
             }
-            
+
             return response()->json($user->load(['profile.province', 'profile.city', 'divisi']));
         }
     }
@@ -177,5 +183,34 @@ class UserController extends Controller
         return response()->json(
             $res->getRoleNames()->first()
         );
+    }
+
+    public function updatePassword(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            "old_password" => "required",
+            "new_password" => "required",
+            "confirm_password" => "required|same:new_password"
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(["Error" => $validator->errors()->first()], 400);
+        }
+
+        $user = User::findOrFail(Auth::user()->id);
+        if (Hash::check($request->old_password, $user->password)) {
+            $user->password = Hash::make($request->new_password);
+            $user->save();
+            return response()->json([
+                'message_id' => 'Password berhasil diubah',
+                'message_en' => 'Password successfully changed'
+            ], 200);
+        } else {
+            return response()->json([
+                'message_id' => 'Password lama tidak sesuai',
+                'message_en' => 'Old password is not correct'
+            ], 400);
+        }
+
     }
 }

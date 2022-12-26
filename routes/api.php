@@ -1,22 +1,15 @@
 <?php
-use App\Imports\UsersImport;
-use Illuminate\Http\Request;
-use Illuminate\Auth\Events\Login;
-use Spatie\Permission\Models\Role;
-use App\Http\Controllers\SkillCrud;
-use Illuminate\Support\Facades\Hash;
-use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CityController;
 use App\Http\Controllers\GuruController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UserController;
-use App\Http\Controllers\ExcelController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\SiswaController;
 use App\Http\Controllers\DivisiController;
 use App\Http\Controllers\MentorController;
 use App\Http\Controllers\CountryController;
+use App\Http\Controllers\CVController;
 use App\Http\Controllers\PekerjaController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\SkillCategoryCrud;
@@ -27,7 +20,9 @@ use App\Http\Controllers\DivisiCrudController;
 use App\Http\Controllers\ManagementController;
 use App\Http\Controllers\PortofolioController;
 use App\Http\Controllers\SupervisorController;
-use App\Http\Controllers\DepartmentCrudController;
+use App\Http\Controllers\EducationController;
+use App\Http\Controllers\LanguageController;
+use App\Http\Controllers\SoftwareController;
 use App\Http\Controllers\SpecialityCrudController;
 
 /*
@@ -67,7 +62,9 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::post('users/{id}/updateaccount', [UserController::class, 'update']);
     Route::get('/users/{id}/getbyuserid', [UserController::class, 'show']);
     Route::get('/users/{id}/roles', [UserController::class, 'getRoleById']);
-
+    Route::post('users/update/password', [UserController::class, 'updatePassword']);
+    Route::get('/language/all', [LanguageController::class, 'languageAll']);
+    Route::get('/software/all', [SoftwareController::class, 'softwareAll']);
     Route::group(['middleware' => ['role:student|ceo|supervisor|pekerja|guru|management'], "prefix" => "/student"], function () {
         Route::get('user', [SiswaController::class, 'show']);
         Route::post('user/create', [SiswaController::class, 'store']);
@@ -81,9 +78,30 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
             Route::get('/delete/{id}', [PortofolioController::class, 'deletePortofolio']);
         });
         Route::group(["prefix" => "/project"], function(){
-            Route::get('/',[ProjectController::class, 'studentHaveProject']);
+            Route::get('/',[ProjectController::class, 'studentProject']);
+            Route::get('/detail/{code}',[ProjectController::class, 'projectDetail']);
             Route::get('/join/{codeProject}', [ProjectController::class, 'joinStudentProject']);
             Route::get('/find/{codeProject}', [ProjectController::class, 'findProject']);
+        });
+        Route::group(["prefix" => "/cv"], function(){
+            Route::get('/',[CVController::class, 'cvUserAll']);
+            Route::get('/create',[CVController::class, 'cvCreate']);
+            Route::get('/{id}',[CVController::class, 'cvUserId']);
+        });
+        Route::group(["prefix" => "/software"], function(){
+            Route::post('/create/{idSoftware}', [SoftwareController::class, 'softwareUserCreate']);
+            Route::get('/user', [SoftwareController::class, 'softwareUser']);
+            Route::post('/update', [SoftwareController::class, 'softwareUserUpdate']);
+        });
+        Route::group(["prefix" => "/language"], function(){
+            Route::post('/create/{idLanguage}', [LanguageController::class, 'languageUserCreate']);
+            Route::get('/user', [LanguageController::class, 'languageHaveUser']);
+            Route::post('/update', [LanguageController::class, 'languageUserUpdate']);
+        });
+        Route::group(["prefix" => "/education"], function(){
+            Route::post('/create', [EducationController::class, 'educationCreate']);
+            Route::post('/update', [EducationController::class, 'educationUpdate']);
+            Route::get('/user', [EducationController::class, 'educationUser']);
         });
     });
     Route::group(['middleware' => ['role:ceo|supervisor|pekerja|guru|management'], "prefix" => "/mentor"], function () {
@@ -94,6 +112,18 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
                 Route::post('/create', [DepartmentController::class, 'departmentCreate']);
                 Route::post('/update/{id}', [DepartmentController::class, 'departmentUpdate']);
                 Route::get('/delete/{id}', [DepartmentController::class, 'deleteDepartment']);
+            });
+            Route::group(["prefix" => "/software"], function(){
+                Route::get('/detail/{id}', [SoftwareController::class, 'softwareOne']);
+                Route::post('/create', [SoftwareController::class, 'softwareCreate']);
+                // Route::post('/update/{id}', [SoftwareController::class, 'departmentUpdate']);
+                // Route::get('/delete/{id}', [SoftwareController::class, 'deleteDepartment']);
+            });
+            Route::group(["prefix" => "/language"], function(){
+                Route::get('/detail/{id}', [LanguageController::class, 'languageOne']);
+                Route::post('/create', [LanguageController::class, 'languageCreate']);
+                // Route::post('/update/{id}', [SoftwareController::class, 'departmentUpdate']);
+                // Route::get('/delete/{id}', [SoftwareController::class, 'deleteDepartment']);
             });
             Route::group(["prefix" => "/divisi"], function(){
                 Route::get('/department/{id}', [DivisiController::class, 'divisiByDepartment']);
@@ -117,6 +147,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
                 Route::get('/leave/{uuid}/{codeProject}', [ProjectController::class, 'leaveUserProject']);
                 Route::get('/accept/{uuid}/{codeProject}', [ProjectController::class, 'terimaUserProject']);
                 Route::get('/reject/{uuid}/{codeProject}', [ProjectController::class, 'tolakUserProject']);
+                Route::get('{codeProject}/users', [ProjectController::class, 'usersInProject']);
             });
 
             //* route portfolio
@@ -147,6 +178,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
                 Route::get('show/{id}', [SubSkillController::class, 'subSkillReadById']);
                 Route::get('/delete/{id}', [SubSkillController::class, 'subSkillDelete']);
                 Route::post('/update/{id}', [SubSkillController::class, 'subSkillUpdate']);
+                Route::get('skill/{id}/search/{search}/alphabetical', [SubSkillController::class, 'subSkillSearchAlphabetical']);
                 Route::get('/divisi/{divisi}/skill/{skill}', [SubSkillController::class, 'subSkillByDivisiandskill']);
             });
 
@@ -163,8 +195,8 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
                 Route::get('{id}/delete', [SpecialityCrudController::class, 'destroy']);
                 Route::get('user/{id}   ', [SpecialityCrudController::class, 'show']);
             });
-            
-            
+
+
         });
         Route::group(["prefix" => "/user"], function () {
             Route::get('/', [MentorController::class, 'getUser']);
@@ -172,6 +204,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
             Route::get('/top3/gold', [MentorController::class, 'top3gold']);
             Route::get('/top3/silver', [MentorController::class, 'top3silver']);
             Route::post('/updateskills/{id}', [MentorController::class, 'updateSkill']);
+            Route::post('{id}/update/password', [MentorController::class, 'updateUserPassword']);
             Route::group(["prefix" => "/student"], function () {
                 Route::get('/', [MentorController::class, 'getStudents']);
                 Route::post('/create', [MentorController::class, 'studentCreate']);
@@ -201,7 +234,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
                 Route::post('/create', [SupervisorController::class, 'Create']);
             });
 
-            Route::group(["prefix" => "/management"], function () { 
+            Route::group(["prefix" => "/management"], function () {
                 Route::get('/search/{search}', [ManagementController::class, 'search']);
                 Route::get('/', [ManagementController::class, 'index']);
                 Route::get('/top3/gold', [ManagementController::class, 'top3gold']);

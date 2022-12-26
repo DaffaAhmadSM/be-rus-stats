@@ -11,7 +11,7 @@ class SupervisorController extends Controller
     {
         $search = $request->search;
         $res = User::role('supervisor')
-            ->where('name', 'like', '%' . $search . '%')
+            ->where('nama', 'like', '%' . $search . '%')
             ->cursorPaginate(10);
         return response()->json($res);
     }

@@ -20,7 +20,7 @@ class LoginController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json(["Error" => $validator->errors()->first()], 401);
+            return response()->json(["Error" => $validator->errors()->first()], 400);
         }
 
         $user = User::where('email', $request['email'])->first();
@@ -30,7 +30,7 @@ class LoginController extends Controller
                 ->json([
                     'message' => 'Email or Password not correct',
                     'status'  => 'error'
-                ], 401);
+                ], 400);
         }
 
         $token = $user->createToken('auth_token')->plainTextToken;

@@ -11,7 +11,7 @@ class ManagementController extends Controller
     {
         $search = $request->search;
         $res = User::role('management')
-            ->where('name', 'like', '%' . $search . '%')
+            ->where('nama', 'like', '%' . $search . '%')
             ->cursorPaginate(10);
         return response()->json($res);
     }

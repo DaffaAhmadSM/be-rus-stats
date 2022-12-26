@@ -30,7 +30,7 @@ class UsersImport implements ToModel, WithHeadingRow
      */
     public function model(array $row)
     {
-        // dd($row['tgl']);
+        // dd($row['name']);
         // return ['name', 'co'];
         // return var_dump($row['name']);
         // User::create([
@@ -42,15 +42,19 @@ class UsersImport implements ToModel, WithHeadingRow
         //     "average" => 30,
         //     "UUID" => Str::orderedUuid()
         // ]);
-        Profile::create([
-            "user_id" => $row['userid'],
-            "nickname" => $row['nickname'],
-            "notelp" => '',
-            "provinsi_id" => $row['provinsi'],
-            "kota_id" => $row['kota'],
-            "bio" => "Perkenalkan Namaku ".$row['nickname'],
-            'gambar' => ''
-        ]);
+        // Profile::create([
+        //     "user_id" => $row['userid'],
+        //     "nickname" => $row['nickname'],
+        //     "notelp" => '',
+        //     "provinsi_id" => $row['provinsi'],
+        //     "kota_id" => $row['kota'],
+        //     "bio" => "Perkenalkan Namaku ".$row['nickname'],
+        //     'gambar' => ''
+        // ]);
+        // SubSkill::create([
+        //     'name' => $row['name'],
+        //     'skill_id' => $row['id_skill']
+        // ]);
         // DivisiSkillSubskill::create([
         //     'skill_id' => $row['skill'],
         //     'sub_skill_id' => $row['desc'],

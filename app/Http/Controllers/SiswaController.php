@@ -116,7 +116,7 @@ class SiswaController extends Controller
     {
         $user = Auth::user();
         $data = DivisiSkillSubskill::getuser($user);
-        return response()->json($data->original);
+        return response()->json($data, 200);
     }
 
 
