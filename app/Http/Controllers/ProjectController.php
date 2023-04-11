@@ -255,14 +255,8 @@ class ProjectController extends Controller
 
         return response()->json($projectUser,200);
     }
-    public function joinStudentProject($codeProject, Request $request){
+    public function joinStudentProject($codeProject){
         try {
-            $validator = Validator::make($request->all(), [
-                'tanggal_gabung' => 'required'
-            ]);
-            if ($validator->fails()) {
-                return response()->json(["Error" => $validator->errors()->first()], 400);
-            }
             $user = Auth::user();
             $project = Project::where('code', $codeProject)->first();
             $checkUser = ProjectUser::where('user_id', $user->id)->where('project_id', $project->id);
@@ -277,10 +271,12 @@ class ProjectController extends Controller
                     'message' => 'data project tidak ada!'
                 ],400);
             }
+            $date_now= Carbon::now();
                 ProjectUser::create([
                     'user_id' => $user->id,
                     'project_id' => $project->id,
                     'status' => 'pending',
+                    'tanggal_gabung' => $date_now
                 ]);
                 return response()->json([
                     'message' => 'siswa telah diundang'
