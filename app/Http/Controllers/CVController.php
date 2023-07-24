@@ -9,6 +9,7 @@ use App\Models\Education;
 use App\Models\LanguageUser;
 use App\Models\ProjectUser;
 use App\Models\SoftwareUser;
+use App\Models\Speciality;
 use App\Models\UserSkill;
 use Illuminate\Http\Request;
 
@@ -57,7 +58,7 @@ class CVController extends Controller
             'language' => $languageUser,
             'software' => $softwareUser,
             'project' => $projectUser,
-            'skill' => $user_skills,
+            "Speciality"=> $user->speciality,
         ],200);
     }
 }
